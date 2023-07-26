@@ -1,0 +1,1 @@
+(()=>{"use strict";!function(){const t=document.querySelector("#app");t.innerHTML="Hello World!",t.classList.add("with-bg")}()})();
