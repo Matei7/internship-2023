@@ -3,9 +3,14 @@
   --antique-white1: hsl(34, 78%, 91%);
   --antique-white2: hsl(34, 78%, 60%);
   --gray1: hsl(0, 0%, 59%);
+  --gray2: hsl(0, 0%, 90%);
   --yellow1: hsl(55, 100%, 50%);
+  --yellow2: hsl(55, 100%, 40%);
   --green1: hsl(118, 88%, 49%);
 
+  --button-unpressed: #55c2da;
+  --button-hover: #5783db;
+  --button-pressed: #4848ff;
 }
 
 html {
@@ -23,18 +28,21 @@ body {
   min-height: 100vh;
   padding: 50px;
   box-sizing: border-box;
-
+  /*
   &.with-bg {
-    background-image: url("../../public/images/bg.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
+    background-image: url("../../public/images/new-bg.jpg");
+    background-size: 1000px;
+    background-repeat: repeat;
 
-  }
+  }*/
 }
 
 h1{
   text-align: center;
-  color: var(--white1);
+}
+
+#products-section{
+  margin-top: 100px;
 }
 
 #products-list{
@@ -47,9 +55,10 @@ h1{
 }
 
 .item-container{
-  background-color: var(--white1);
+  border-radius: 10px 10px 0 0;
   width: 300px;
   height: 450px;
+  background-color: var(--gray2);
 }
 
 .item-title{
@@ -59,39 +68,45 @@ h1{
 }
 
 .item-thumbnail{
+  border-radius: 10px 10px 0 0;
   top: 30px;
   display: block;
   margin: 0 auto;
-  width: 200px;
-  height: 200px;
+  width: 100%;
+  height: 50%;
 }
 
 .item-description{
   height: 40px;
   text-align: center;
+  margin-bottom: 15%;
 }
 
 .item-rating{
-  margin-left: 10%;
+  margin-left: 2%;
 }
 
 .item-purchase-details{
   align-items: center;
-  margin-top: 20%;
-  margin-left: 10%;
-  gap: 35%;
+  margin: 0 2%;
+  width: 100%;
   display: flex;
 }
 
 .item-price{
   margin: 0;
+  width: 60%;
 }
 
 .add-to-cart-button{
   height: 30px;
   width: 35%;
-  background-color: var(--yellow1);
+  background-color: var(--button-unpressed);
   /*border: none;*/
+}
+
+.add-to-cart-button:hover{
+  background-color: var(--button-hover);
 }
 
 .add-to-cart-popup{
@@ -112,7 +127,7 @@ h1{
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 500px;
+  width: 700px;
   height: 100%;
   margin: auto;
   background-color: var(--antique-white1);
