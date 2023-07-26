@@ -1,7 +1,7 @@
 
 
 html {
-  overflow-y: hidden;
+
 }
 
 body {
@@ -11,7 +11,7 @@ body {
 #app {
   min-width: 100vw;
   min-height: 100vh;
-  padding: 50px;
+  //padding: 50px;
   box-sizing: border-box;
 
   &.with-bg {
@@ -20,4 +20,18 @@ body {
     background-repeat: no-repeat;
 
   }
+  .shop-items{
+    display: flex;
+    border: 1px solid black;
+    flex-wrap: wrap;
+    min-height: 70vh;
+    min-width: 80vw;
+    gap: 10px;
+
+  }
+  .item{
+    border: 1px solid red;
+
+  }
+
 }
