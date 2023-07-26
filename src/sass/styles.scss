@@ -52,8 +52,12 @@ main {
 
 .price {
   /* styling */
-  font-size: 2.5rem;
+  ins {
+    font-size: 2.5rem;
+    text-decoration: none;
+  }
 
+  display: inline-block;
 }
 
 .item-card {
@@ -62,7 +66,7 @@ main {
   flex-direction: column;
 
   /* styling */
-  height: 400px;
+  height: 700px;
   width: 350px;
   border-radius: var(--def_border_radius);
 }
@@ -70,6 +74,9 @@ main {
 .item-information-wrapper {
   /* positioning */
   padding: var(--def_padding);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 
   /* styling */
   background-color: var(--def_background);
@@ -82,22 +89,78 @@ main {
 
 .item-image {
   /* styling */
-  height: 60%;
-  background-size: cover;
+  height: 250px;
+  object-fit: cover;
   border-top-left-radius: var(--def_border_radius);
   border-top-right-radius: var(--def_border_radius);
+  border: 1px solid lightgray;
 }
 
-.item-title-button-wrapper {
+.item-title-wrapper {
+  /* positioning */
   display: flex;
   align-content: space-between;
   justify-content: space-between;
+  align-items: center;
+  padding-top: var(--def_padding);
 }
 
 .buy-btn {
+  /* styling */
   height: 50px;
   align-self: center;
   width: 80px;
+  background: white;
+  border-radius: 1rem;
+}
+
+.buy-btn:hover {
+  /* styling */
+  background: lightgray;
+}
+
+.buy-btn-clicked {
+  /* styling */
+  height: 50px;
+  align-self: center;
+  width: 80px;
+  background: black;
+  color: white;
+  border-radius: 1rem;
+}
+
+/* pop up */
+
+.popUpVisible {
+  /* styling */
+  width: max-content;
+  height: max-content;
+  border: 1px solid black;
+  background: lightgray;
+  padding: var(--def_padding);
+  transition: opacity 0.3s linear;
+  opacity: 1;
+
+  /* positioning */
+  position: fixed;
+  left: 50%;
+  text-align: center;
+}
+
+.popUpHidden {
+  /* styling */
+  opacity: 0;
+  width: max-content;
+  height: max-content;
+  border: 1px solid black;
+  background: lightgray;
+  padding: var(--def_padding);
+  transition: opacity 0.3s linear;
+
+  /* positioning */
+  position: fixed;
+  left: 50%;
+  text-align: center;
 }
 
 /* footer */
