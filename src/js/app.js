@@ -18,11 +18,11 @@ export async function init() {
         title.classList.add('product-title');
 
         const brand = document.createElement('h3');
-        brand.innerText = product.brand;
+        brand.innerText = `Made by ${product.brand}`;
         brand.classList.add('product-brand');
 
         const category = document.createElement('h5');
-        category.innerText = product.category;
+        category.innerText = `Category: ${product.category}`;
         category.classList.add('product-category');
 
         const description = document.createElement('p');
@@ -30,7 +30,8 @@ export async function init() {
         description.classList.add('product-description');
 
         const discountPercentage = document.createElement('p');
-        discountPercentage.innerText = `SALE ${product.discountPercentage}%!!`;
+        const lastPrice = Math.floor(product.price + product.price * product.discountPercentage / 100);
+        discountPercentage.innerText = `$${lastPrice}`;
         discountPercentage.classList.add('product-discount-percentage');
 
         productContainer.setAttribute('data-id', product.id);
@@ -41,7 +42,7 @@ export async function init() {
 
 
         const rating = document.createElement('h3');
-        rating.innerText = `Rating: ${product.rating}`;
+        rating.innerText = `Rating: ${product.rating}/5.00`;
         rating.classList.add('product-rating');
 
         const stock = document.createElement('h3');
@@ -56,15 +57,29 @@ export async function init() {
         productContainer.appendChild(title);
         productContainer.appendChild(brand);
         productContainer.appendChild(category);
-        productContainer.appendChild(discountPercentage);
-        productContainer.appendChild(price);
         productContainer.appendChild(rating);
         productContainer.appendChild(stock);
         productContainer.appendChild(description);
+        productContainer.appendChild(discountPercentage);
+        productContainer.appendChild(price);
         productContainer.appendChild(button);
         productsContainer.appendChild(productContainer);
     }
+}
 
+export function addToCartPopUp() {
+    const buttons = document.querySelectorAll('.product-button');
+    const popUp = document.querySelector('.pop-up');
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            popUp.style.display = 'flex';
+            button.innerText = 'Added to cart';
+            setTimeout(() => {
+                popUp.style.display = 'none';
+                button.innerText = 'Add to cart';
+            }, 5000);
+        });
+    });
 }
 
 

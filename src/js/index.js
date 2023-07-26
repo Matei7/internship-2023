@@ -1,4 +1,5 @@
 import '../sass/styles.scss';
-import { init } from "./app";
+import {addToCartPopUp, init} from "./app";
 
-init();
+await init();
+addToCartPopUp();
