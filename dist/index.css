@@ -14,10 +14,63 @@ html {
   --def_lower_background: lightgray; }
 
 /* header */
+.container {
+  /* spacing */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  padding: var(--def-padding);
+  padding-bottom: 0;
+  padding-top: 0; }
+
+header h3 {
+  margin: 0; }
+
+header {
+  /* spacing */
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: max-content;
+  padding: var(--def-padding);
+  /* styling */
+  background-color: white; }
+
+nav ul {
+  /* spacing */
+  list-style: none;
+  margin: 0;
+  padding: 0; }
+
+nav li {
+  /* spacing */
+  display: inline-block;
+  margin-right: 10px; }
+
+nav li a {
+  /* styling */
+  color: black;
+  text-decoration: none;
+  /* spacing */
+  padding: 0.25rem;
+  border-radius: 1rem; }
+
+nav li a:hover {
+  /* styling */
+  background-color: black;
+  color: white;
+  transition: 0.1s; }
+
+nav li:last-of-type {
+  margin-right: 0; }
+
 /* main section */
 main {
   /* positioning */
   display: flex;
+  justify-content: space-evenly;
   /* styling */
   background-color: var(--def_background);
   height: max-content; }
