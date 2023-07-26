@@ -1,41 +1,32 @@
-
-
+/*!***************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/sass/styles.scss ***!
+  \***************************************************************************************************************/
 html {
-  font-family: 'Roboto', 'sans-serif';
-}
+  font-family: 'Roboto', 'sans-serif'; }
 
 /* main styles and positioning */
-
 :root {
   /* positioning */
   --def_padding: 1rem;
   --def_border_radius: 0.5rem;
-
   /* styling */
   --def_background: white;
-  --def_lower_background: lightgray;
-}
+  --def_lower_background: lightgray; }
 
 /* header */
-
 /* main section */
-
 main {
   /* positioning */
   display: flex;
-
   /* styling */
   background-color: var(--def_background);
-  height: max-content;
-}
+  height: max-content; }
 
 .filter {
   /* positioning */
   width: 20%;
-
   /* styling */
-  border-radius: var(--def_border_radius);
-}
+  border-radius: var(--def_border_radius); }
 
 .items {
   /* positioning */
@@ -46,58 +37,47 @@ main {
   grid-template-rows: repeat(4, 1fr);
   grid-column-gap: var(--def_padding);
   grid-row-gap: var(--def_padding);
-
-  /* styling */
-}
+  /* styling */ }
 
 .price {
   /* styling */
-  font-size: 2.5rem;
-
-}
+  font-size: 2.5rem; }
 
 .item-card {
   /* positioning */
   display: flex;
   flex-direction: column;
-
   /* styling */
   height: 400px;
   width: 350px;
-  border-radius: var(--def_border_radius);
-}
+  border-radius: var(--def_border_radius); }
 
 .item-information-wrapper {
   /* positioning */
   padding: var(--def_padding);
-
   /* styling */
   background-color: var(--def_background);
   border: 1px solid lightgray;
   border-bottom-left-radius: var(--def_border_radius);
   border-bottom-right-radius: var(--def_border_radius);
-  height: 40%;
-
-}
+  height: 40%; }
 
 .item-image {
   /* styling */
   height: 60%;
   background-size: cover;
   border-top-left-radius: var(--def_border_radius);
-  border-top-right-radius: var(--def_border_radius);
-}
+  border-top-right-radius: var(--def_border_radius); }
 
 .item-title-button-wrapper {
   display: flex;
   align-content: space-between;
-  justify-content: space-between;
-}
+  justify-content: space-between; }
 
 .buy-btn {
   height: 50px;
   align-self: center;
-  width: 80px;
-}
+  width: 80px; }
 
 /* footer */
+
