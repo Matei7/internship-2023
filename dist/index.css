@@ -1,0 +1,19 @@
+/*!***************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/sass/styles.scss ***!
+  \***************************************************************************************************************/
+html {
+  overflow-y: hidden; }
+
+body {
+  margin: 0; }
+
+#app {
+  min-width: 100vw;
+  min-height: 100vh;
+  padding: 50px;
+  box-sizing: border-box; }
+  #app.with-bg {
+    background-image: url(ca9acd23a8dedea32f7c.jpg);
+    background-size: cover;
+    background-repeat: no-repeat; }
+
