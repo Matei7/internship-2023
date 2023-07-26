@@ -18,6 +18,7 @@ async function loadShopProducts() {
 
 function getProductHTML(productObject)
 {
+    console.log(productObject);
     let productId = productObject["id"];
     let productTitle = productObject["title"];
     let productThumbnail = productObject["thumbnail"];
