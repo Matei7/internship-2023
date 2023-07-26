@@ -12,13 +12,112 @@ body {
     background-image: url(ca9acd23a8dedea32f7c.jpg);
     background-size: cover;
     background-repeat: no-repeat; }
-  #app .shop-items {
-    display: flex;
+  #app .notification-container {
+    z-index: 10;
+    position: fixed;
+    top: 5px;
+    right: 50%;
+    transform: translate(50%, 0);
     border: 1px solid black;
+    padding: 1rem;
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: bold;
+    background: #e1e1e1;
+    box-shadow: 1px 2px 10px 1px rgba(0, 0, 0, 0.5);
+    visibility: hidden;
+    transition: all 0.3s ease-in-out; }
+  #app header {
+    display: flex;
+    position: fixed;
+    top: 0;
+    z-index: 9;
+    justify-content: space-between;
+    min-width: 100%;
+    background-color: #e8e8e8;
+    box-shadow: 1px 2px 10px 1px rgba(0, 0, 0, 0.5); }
+  #app #cart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    margin: 1rem;
+    right: 0; }
+    #app #cart:hover {
+      transform: scale(1.1); }
+  #app #cart-count {
+    font-size: 1.2rem;
+    margin: 0.3rem; }
+  #app h1 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 2rem;
+    margin: 1rem; }
+  #app .shop-items {
+    margin-top: 10rem;
+    display: flex;
     flex-wrap: wrap;
     min-height: 70vh;
     min-width: 80vw;
-    gap: 10px; }
+    gap: 10px;
+    align-items: center;
+    justify-content: center; }
   #app .item {
-    border: 1px solid red; }
+    border: 1px solid #bebebe;
+    overflow: hidden; }
+  #app .item_thumbnail {
+    height: 15rem;
+    width: 20rem;
+    object-fit: cover;
+    margin: 0; }
+  #app .item_title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 140px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0 10px 0 10px; }
+  #app .item_price, #app .item_discount {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    margin: 0 0 0 10px; }
+  #app .item_thumbnail_container {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    display: inline-block; }
+  #app .item_main_info, #app .item_secondary_info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 5px 0 0; }
+  #app .add_to_cart_btn {
+    margin: 5px 0 17px 0;
+    padding: 4px;
+    border-radius: 10px;
+    background-color: #f5f5f5;
+    border: 1px solid #bebebe;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out; }
+  #app .item_rating {
+    margin: 0 0 0 11px; }
+  #app footer {
+    margin: 0rem 0 0 0;
+    background-color: #343434;
+    width: 100vw;
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center; }
+  #app footer p {
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 1rem; }
 

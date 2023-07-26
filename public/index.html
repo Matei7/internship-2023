@@ -4,14 +4,36 @@
 	<meta charset="UTF-8">
 	<title>Title</title>
 	<link rel="stylesheet" href="../dist/index.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300&family=Nunito:wght@200&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
 <div id="app">
-	<h1>Thrift shop</h1>
-	<div class="shop-items">
 
-	</div>
+	<section class="notification-container">
+		<div id="notification">AAAAAAAAAAAAA</div>
+	</section>
+
+	<header>
+		<h1>Thrift shop</h1>
+		<nav>
+			<div id="cart" class="fa-solid fa-cart-shopping">
+				<span id="cart-count">0</span>
+			</div>
+
+		</nav>
+	</header>
+	<main>
+		<div class="shop-items"></div>
+	</main>
+	<footer>
+		<p>© 2021 - Thrift shop</p>
+	</footer>
 </div>
 
 <script defer src="../dist/index.js" class="app-js"></script>

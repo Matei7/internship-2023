@@ -26,7 +26,17 @@ eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extr
   \***********************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   init: () => (/* binding */ init)\n/* harmony export */ });\nfunction init() {\r\n\tconst appElement = document.querySelector( '#app' );\r\n\t//appElement.classList.add( 'with-bg' );\r\n}\r\n\n\n//# sourceURL=webpack://internship-2023/./src/js/app.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   init: () => (/* binding */ init)\n/* harmony export */ });\nasync function init() {\r\n\tconst appElement = document.querySelector( '#app' );\r\n\t//appElement.classList.add( 'with-bg' );\r\n}\r\n\n\n//# sourceURL=webpack://internship-2023/./src/js/app.js?");
+
+/***/ }),
+
+/***/ "./src/js/cart_script.js":
+/*!*******************************!*\
+  !*** ./src/js/cart_script.js ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   addToCart: () => (/* binding */ addToCart)\n/* harmony export */ });\n// TODO: Add to cart logic\r\nfunction updateCartCount(){\r\n    const cartCount=document.getElementById('cart-count');\r\n    const count=parseInt(cartCount.innerText);\r\n    cartCount.innerText=String(count+1);\r\n}\r\nfunction addToCart(productId){\r\n    updateCartCount();\r\n\r\n}\n\n//# sourceURL=webpack://internship-2023/./src/js/cart_script.js?");
 
 /***/ }),
 
@@ -36,17 +46,27 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _sass_styles_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sass/styles.scss */ \"./src/sass/styles.scss\");\n/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./app */ \"./src/js/app.js\");\n/* harmony import */ var _shopitems__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./shopitems */ \"./src/js/shopitems.js\");\n\r\n\r\n\r\n\r\n(0,_app__WEBPACK_IMPORTED_MODULE_1__.init)();\r\n(0,_shopitems__WEBPACK_IMPORTED_MODULE_2__.loadItems)();\n\n//# sourceURL=webpack://internship-2023/./src/js/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _sass_styles_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sass/styles.scss */ \"./src/sass/styles.scss\");\n/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./app */ \"./src/js/app.js\");\n/* harmony import */ var _load_script__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./load_script */ \"./src/js/load_script.js\");\n\r\n\r\n\r\n(0,_app__WEBPACK_IMPORTED_MODULE_1__.init)();\r\n(0,_load_script__WEBPACK_IMPORTED_MODULE_2__.loadItems)();\n\n//# sourceURL=webpack://internship-2023/./src/js/index.js?");
 
 /***/ }),
 
-/***/ "./src/js/shopitems.js":
-/*!*****************************!*\
-  !*** ./src/js/shopitems.js ***!
-  \*****************************/
+/***/ "./src/js/load_script.js":
+/*!*******************************!*\
+  !*** ./src/js/load_script.js ***!
+  \*******************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   loadItems: () => (/* binding */ loadItems)\n/* harmony export */ });\nconst sampleItem={\r\n    \"id\": 1,\r\n    \"title\": \"iPhone 9\",\r\n    \"description\": \"An apple mobile which is nothing like apple\",\r\n    \"price\": 549,\r\n    \"discountPercentage\": 12.96,\r\n    \"rating\": 4.69,\r\n    \"stock\": 94,\r\n    \"brand\": \"Apple\",\r\n    \"category\": \"smartphones\",\r\n    \"thumbnail\": \"https://i.dummyjson.com/data/products/1/thumbnail.jpg\",\r\n    \"images\": [\r\n        \"https://i.dummyjson.com/data/products/1/1.jpg\",\r\n        \"https://i.dummyjson.com/data/products/1/2.jpg\",\r\n        \"https://i.dummyjson.com/data/products/1/3.jpg\",\r\n        \"https://i.dummyjson.com/data/products/1/4.jpg\",\r\n        \"https://i.dummyjson.com/data/products/1/thumbnail.jpg\"\r\n    ]\r\n};\r\n\r\nfunction getHtmlNodeItem(jsonItem){\r\n    const itemNode=document.createElement('div');\r\n    itemNode.classList.add('item');\r\n    itemNode.innerHTML=`\r\n    <div class=\"item_thumbnail\">\r\n        <img src=\"${jsonItem.thumbnail}\" alt=\"${jsonItem.title}\">\r\n    </div>\r\n    <div class=\"item_title\">${jsonItem.title}</div>\r\n    <div class=\"item_price\">\r\n        <p class=\"item_price_original\">$${jsonItem.price}</p>\r\n    </div>\r\n    <p class=\"item_discount\">${jsonItem.discountPercentage}% off</p>\r\n    <p class=\"item_rating\">Rating: ${jsonItem.rating}</p>\r\n    `;\r\n    return itemNode;\r\n}\r\nfunction loadItems(){\r\n    const shopContainer=document.getElementsByClassName('shop-items')[0];\r\n    shopContainer.appendChild(getHtmlNodeItem(sampleItem));\r\n    shopContainer.appendChild(getHtmlNodeItem(sampleItem));\r\n    shopContainer.appendChild(getHtmlNodeItem(sampleItem));\r\n    shopContainer.appendChild(getHtmlNodeItem(sampleItem));\r\n    shopContainer.appendChild(getHtmlNodeItem(sampleItem));\r\n    shopContainer.appendChild(getHtmlNodeItem(sampleItem));\r\n    shopContainer.appendChild(getHtmlNodeItem(sampleItem));\r\n    shopContainer.appendChild(getHtmlNodeItem(sampleItem));\r\n    shopContainer.appendChild(getHtmlNodeItem(sampleItem));\r\n}\r\n\r\n\n\n//# sourceURL=webpack://internship-2023/./src/js/shopitems.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   loadItems: () => (/* binding */ loadItems)\n/* harmony export */ });\n/* harmony import */ var _cart_script_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./cart_script.js */ \"./src/js/cart_script.js\");\n/* harmony import */ var _product_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./product_api.js */ \"./src/js/product_api.js\");\n\r\n\r\n\r\nfunction getHtmlNodeItem(jsonItem){\r\n\r\n    if (jsonItem.currentImageIndex===undefined)\r\n        jsonItem['currentImageIndex']=0;\r\n\r\n    const itemNode=document.createElement('div');\r\n    itemNode.classList.add('item');\r\n    const discountPrice=jsonItem.price-jsonItem.price*(jsonItem.discountPercentage/100);\r\n    itemNode.innerHTML=`\r\n\r\n        \r\n       <div class=\"item_thumbnail_container\">\r\n          \r\n           <img class=\"item_thumbnail\" src=\"${jsonItem.thumbnail}\" alt=\"${jsonItem.title}\">\r\n       </div>\r\n\r\n    \r\n    <div class=\"item_info_container\">\r\n        <div class=\"item_main_info\">\r\n            <p class=\"item_title\">${jsonItem.title}</p>\r\n            <p class=\"item_price\"><s>$${jsonItem.price}</s> $${discountPrice.toFixed(2)}</p>\r\n        </div>\r\n     <div class=\"item_secondary_info\">\r\n        <p class=\"item_rating\">Rating: ${jsonItem.rating}/5</p>\r\n<!--        <button class=\"add_to_cart_btn\" onclick=\"addToCart(${jsonItem.id})\">Add to cart</button>-->\r\n        <button class=\"add_to_cart_btn\" \"product-id\"=\"${jsonItem.id}\">Add to cart</button> <!--\"product id\" may be without quotes-->\r\n    </div>\r\n    \r\n    </div>\r\n    `;\r\n\r\n    return itemNode;\r\n}\r\nfunction showNotification(message){\r\n    const notification=document.getElementById('notification');\r\n    const notificationParent=document.getElementsByClassName('notification-container')[0];\r\n    notificationParent.style.visibility='visible';\r\n    notification.innerHTML=message;\r\n    setTimeout(()=>{\r\n        notificationParent.style.visibility='hidden';\r\n    },5000);\r\n}\r\nfunction handleButtonEvents(){\r\n    const buttons=document.getElementsByClassName('add_to_cart_btn');\r\n    for (const btn of buttons){\r\n        const productId=btn.getAttribute(\"product-id\");\r\n        btn.addEventListener('click',()=>{\r\n            (0,_cart_script_js__WEBPACK_IMPORTED_MODULE_0__.addToCart)(productId);\r\n            showNotification(\"Added to cart\");\r\n            btn.innerHTML='Added to cart';\r\n            btn.style.backgroundColor='#d0ffd3';\r\n            btn.setAttribute('disabled','true');\r\n            setTimeout(() => {\r\n                btn.innerHTML = 'Add to cart';\r\n                btn.style.backgroundColor = '#f5f5f5';\r\n                btn.removeAttribute('disabled');\r\n            }, 5000);\r\n        });\r\n\r\n    }\r\n}\r\nasync function loadItems(){\r\n\r\n    const shopContainer=document.getElementsByClassName('shop-items')[0];\r\n    const items=await (0,_product_api_js__WEBPACK_IMPORTED_MODULE_1__.getItems)();\r\n    for (const item of items){\r\n        shopContainer.appendChild(getHtmlNodeItem(item));\r\n    }\r\n    handleButtonEvents();\r\n\r\n\r\n\r\n\r\n}\r\n\r\n\n\n//# sourceURL=webpack://internship-2023/./src/js/load_script.js?");
+
+/***/ }),
+
+/***/ "./src/js/product_api.js":
+/*!*******************************!*\
+  !*** ./src/js/product_api.js ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   getItems: () => (/* binding */ getItems)\n/* harmony export */ });\nasync function getItems(api='https://dummyjson.com/products'){\r\n    const response=await fetch(api);\r\n    const items=await response.json();\r\n    return items.products;\r\n}\n\n//# sourceURL=webpack://internship-2023/./src/js/product_api.js?");
 
 /***/ })
 

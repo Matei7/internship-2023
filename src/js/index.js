@@ -1,6 +1,5 @@
 import '../sass/styles.scss';
 import { init } from "./app";
-
-import {loadItems} from "./shopitems";
+import {loadItems} from "./load_script";
 init();
 loadItems();
