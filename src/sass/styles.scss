@@ -1,11 +1,21 @@
+:root{
+  --white1: hsl(0, 0%, 100%);
+  --antique-white1: hsl(34, 78%, 91%);
+  --antique-white2: hsl(34, 78%, 60%);
+  --gray1: hsl(0, 0%, 59%);
+  --yellow1: hsl(55, 100%, 50%);
+  --green1: hsl(118, 88%, 49%);
 
+}
 
 html {
-  overflow-y: hidden;
+  /*overflow-y: hidden;*/
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
+  font-family: "Roboto Thin", sans-serif;
 }
 
 #app {
@@ -20,4 +30,91 @@ body {
     background-repeat: no-repeat;
 
   }
+}
+
+h1{
+  text-align: center;
+  color: var(--white1);
+}
+
+#products-list{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 350px);
+  grid-template-rows: repeat(auto-fill, 450px);
+  row-gap: 50px;
+  align-content: center;
+  justify-content: center;
+}
+
+.item-container{
+  background-color: var(--white1);
+  width: 300px;
+  height: 450px;
+}
+
+.item-title{
+  text-align: center;
+  padding: 10px 0;
+  margin: 0 auto;
+}
+
+.item-thumbnail{
+  top: 30px;
+  display: block;
+  margin: 0 auto;
+  width: 200px;
+  height: 200px;
+}
+
+.item-description{
+  height: 40px;
+  text-align: center;
+}
+
+.item-rating{
+  margin-left: 10%;
+}
+
+.item-purchase-details{
+  align-items: center;
+  margin-top: 20%;
+  margin-left: 10%;
+  gap: 35%;
+  display: flex;
+}
+
+.item-price{
+  margin: 0;
+}
+
+.add-to-cart-button{
+  height: 30px;
+  width: 35%;
+  background-color: var(--yellow1);
+  /*border: none;*/
+}
+
+.add-to-cart-popup{
+  width: 100%;
+  height: 100px;
+  top:10%;
+  position: fixed;
+  animation-timing-function: ease-in;
+  animation: popup-slide 1s forwards;
+}
+
+@keyframes popup-slide {
+  from {top: -20%;}
+  to {top: 10%;}
+}
+
+.add-to-cart-popup div{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 500px;
+  height: 100%;
+  margin: auto;
+  background-color: var(--antique-white1);
+  border: 5px solid var(--antique-white2);
 }
