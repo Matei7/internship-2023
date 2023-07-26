@@ -1,23 +1,154 @@
-
-
 html {
-  overflow-y: hidden;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
 }
 
+a {
+  text-decoration: none;
+}
+
 #app {
   min-width: 100vw;
   min-height: 100vh;
-  padding: 50px;
   box-sizing: border-box;
+}
 
-  &.with-bg {
-    background-image: url("../../public/images/bg.jpg");
+.shop-name {
+  position: absolute;
+  margin: 15px 0 0 0;
+  left: 43%;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(1rem, 1.5vw, 2rem);
+}
+
+.nav-bar {
+  background-color: black;
+  color: #f0f0f0;
+}
+
+.nav-bar-menu {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 45px;
+  padding: 2vh 0;
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+  }
+
+  li {
+    margin-right: 15px;
+  }
+
+  a {
+    color: #f0f0f0;
+  }
+}
+
+.products-container {
+  display: flex;
+  flex-direction: row;
+  margin: 1.5vh 45px;
+}
+
+.filters {
+  width: 20%;
+  height: 100%;
+  max-width: 20%;
+}
+
+@media only screen and (max-width: 1200px) {
+  .filters {
+    display: none;
+  }
+}
+
+.products {
+  min-width: 85%;
+  margin: 0;
+
+  &-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: clamp(1rem, 1.3vw, 2rem);
+    margin: 1vh 0;
+  }
+
+  &-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 25px;
+    row-gap: 50px;
+  }
+
+  @media only screen and (max-width: 1600px) {
+    &-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media only screen and (max-width: 900px) {
+    &-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+.product {
+  color: #666;
+
+  &:hover {
+    cursor: pointer;
+    color: #000;
+    transform: translateY(-5px);
+  }
+
+  .product-image {
+    position: relative;
+
+    img {
+      visibility: hidden;
+      width: 100%;
+      height: auto;
+      max-width: 400px;
+      margin: 0;
+      padding: 0;
+    }
+
+    div {
+      position: absolute;
+      bottom: 10%;
+      left: 3px;
+      background-color: red;
+      color: #f0f0f0;
+      min-width: 10%;
+      padding: 6px;
+      font-size: 1rem;
+    }
+  }
+
+  & .id1 {
+    background-image: url("https://static.footshop.com/781861/232942.jpg");
     background-size: cover;
-    background-repeat: no-repeat;
+  }
+  &:hover .id1 {
+    background-image: url("https://static.footshop.com/781876/232942.jpg");
+  }
 
+
+
+  .product-info {
+    margin-top: 5px;
+    font-size: clamp(0.9rem, 0.8vw, 2rem);
   }
 }
