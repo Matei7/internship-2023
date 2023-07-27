@@ -13,7 +13,7 @@
   --button-pressed: #4848ff;
 
 
-  --star-size: 60px;
+  --star-size: 25px;
   --star-color: #fff;
   --star-background: #fc0;
 }
@@ -46,6 +46,84 @@ h1{
   text-align: center;
 }
 
+.cart-wrapper{
+  display: flex;
+  width: 80%;
+  margin: 0 auto;
+  justify-content: right;
+}
+
+.cart-container{
+  display: block;
+  position: relative;
+}
+
+.cart-contents{
+  display: none;
+  width: 300px;
+  height: 200px;
+
+  background-color: var(--white1);
+  border: 2px solid black;
+  box-shadow: black;
+
+  position: absolute;
+  top: 60px;
+  right: -50px;
+  z-index: 10000;
+  overflow-y: scroll;
+}
+
+#cart-icon{
+  position: absolute;
+  display: inline;
+  margin: 0;
+  font-size: 40px;
+  top: 2%;
+  right: -3%;
+}
+
+#cart-counter{
+  display: inline-flex;
+  width: 10%;
+  height: 10%;
+  justify-content: center;
+  align-items: center;
+  background-color: red;
+  /*color: var(--white1);*/
+  color: black;
+  border-radius: 50%;
+  margin: 0;
+  position: absolute;
+  right: -8%;
+  top: 2%;
+  z-index: 20000;
+}
+
+.cart-item-container{
+  height: 40px;
+  display: flex;
+  gap: 5%;
+}
+
+.cart-item-thumbnail{
+  height: 35px;
+  width: 35px;
+}
+
+.cart-item-title{
+  display: inline-block;
+  font-size: 0.8rem;
+}
+
+.cart-item-price{
+  display: inline-block;
+}
+
+.cart-item-amount{
+  display: inline-block;
+}
+
 #products-section{
   margin-top: 100px;
 }
@@ -72,13 +150,35 @@ h1{
   margin: 0 auto;
 }
 
+.carousel-container{
+  width: 100%;
+  height: 50%;
+  display: inline-block;
+  position: relative;
+}
+
+.thumbnails-container{
+  height: 100%;
+}
+
+.nav-arrows{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+}
+
 .item-thumbnail{
   border-radius: 10px 10px 0 0;
   top: 30px;
   display: block;
   margin: 0 auto;
   width: 100%;
-  height: 50%;
+  height: 100%;
 }
 
 .item-description{
@@ -90,12 +190,6 @@ h1{
 .item-rating{
   display: inline;
   margin-left: 2%;
-}
-
-:root {
-  --star-size: 25px;
-  --star-color: #fff;
-  --star-background: #fc0;
 }
 
 .star-rating {
@@ -149,7 +243,7 @@ h1{
 
 @keyframes popup-slide {
   from {top: -20%;}
-  to {top: 10%;}
+  to {top: 20%;}
 }
 
 .add-to-cart-popup div{
