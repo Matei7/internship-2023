@@ -3,4 +3,4 @@ import { init } from "./app";
 import {loadProducts} from "./products";
 
 init();
-loadProducts()
+loadProducts();

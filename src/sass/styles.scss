@@ -16,6 +16,39 @@ a {
   box-sizing: border-box;
 }
 
+.notification {
+  visibility: hidden;
+  position: fixed;
+  top: 5%;
+  left: calc(50% - 11vw);
+  width: 20vw;
+  height: 8vh;
+  background-color: rgba(240, 240, 240, 0.75);
+  color: #000;
+  border-radius: 5px;
+  border: 1px solid #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: clamp(1rem, 1.5vw, 2rem);
+  z-index: 9;
+}
+
+.show {
+  transition: all 2s ease-in-out;
+  visibility: visible;
+}
+
+.button {
+  background-color: #f0f0f0;
+  color: #000;
+  border: none;
+  padding: 5px 10px;
+  font-size: 1rem;
+  border-radius: 5px;
+  margin: 0;
+}
+
 .shop-name {
   position: absolute;
   margin: 15px 0 0 0;
@@ -33,7 +66,7 @@ a {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
+  font-size: clamp(1rem, 1vw, 2rem);
   margin: 0 45px;
   padding: 2vh 0;
 
@@ -49,8 +82,37 @@ a {
     margin-right: 15px;
   }
 
+  li:last-child {
+    margin-right: 0;
+  }
+
   a {
     color: #f0f0f0;
+  }
+
+  a:hover {
+    color: #999;
+    text-decoration: underline;
+  }
+
+  &-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  &-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 10vw;
+  }
+
+  .search-button {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 
@@ -110,25 +172,35 @@ a {
   &:hover {
     cursor: pointer;
     color: #000;
-    transform: translateY(-5px);
+
+    .product-image {
+      background-image: none;
+      img {
+        visibility: visible;
+      }
+    }
   }
 
   .product-image {
     position: relative;
+    margin: 0;
+    padding: 0;
 
     img {
       visibility: hidden;
       width: 100%;
       height: auto;
       max-width: 400px;
-      margin: 0;
+      max-height: 25vh;
+      min-height: 25vh;
+      object-fit: cover;
+      margin: 0 0 -4px 0;
       padding: 0;
     }
 
     div {
       position: absolute;
       bottom: 10%;
-      left: 3px;
       background-color: red;
       color: #f0f0f0;
       min-width: 10%;
@@ -137,18 +209,35 @@ a {
     }
   }
 
-  & .id1 {
-    background-image: url("https://static.footshop.com/781861/232942.jpg");
-    background-size: cover;
-  }
-  &:hover .id1 {
-    background-image: url("https://static.footshop.com/781876/232942.jpg");
-  }
-
-
-
   .product-info {
     margin-top: 5px;
     font-size: clamp(0.9rem, 0.8vw, 2rem);
+    display: flex;
+    flex-direction: row;;
+    justify-content: space-between;
+
+    .product-info-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .product-info-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-end;
+
+      .add-to-cart-button {
+        transition: all 0.2s ease-in-out;
+
+        &:hover {
+          cursor: pointer;
+          background-color: #000;
+          color: #f0f0f0;
+        }
+      }
+    }
   }
 }

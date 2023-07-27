@@ -1,71 +1,64 @@
-/*
-<div class="product">
-                    <div class="product-image">
-                        <img src="https://static.footshop.com/781861-full_product/232942.jpg" alt="Adidas White">
-                        <div>-15%</div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-info-name">Adidas Nmd 1</div>
-                        <div class="product-info-price">$ 100</div>
-                    </div>
-                </div>
-*/
+async function fetchProducts() {
+    let jsonProducts = await fetch('https://dummyjson.com/products')
+        .then(res => res.json());
+    return jsonProducts['products'];
+}
 
-let products = [
-    {
-        "id": 1,
-        "name": "Adidas Nmd 1",
-        "price": 100,
-        "image": "https://static.footshop.com/781861/232942.jpg",
-        "discount": 15
-    },
-    {
-        "id": 2,
-        "name": "Adidas Nmd S1",
-        "price": 150,
-        "image": "https://static.footshop.com/780280-full_product/232959.jpg",
-        "discount": 20
-    },
-    {
-        "id": 3,
-        "name": "Asics",
-        "price": 70,
-        "image": "https://static.footshop.com/844153-full_product/265171.jpg",
-        "discount": 0
-    },
-    {
-        "id": 4,
-        "name": "Adidas Nmd S1",
-        "price": 150,
-        "image": "https://static.footshop.com/781876/232942.jpg",
-        "discount": 20
-    },
-    {
-        "id": 5,
-        "name": "Adidas Nmd S1",
-        "price": 150,
-        "image": "https://static.footshop.com/780280-full_product/232959.jpg",
-        "discount": 20
-    },
-]
+function createCssClass(className, urlSimple) {
+    let style = document.createElement('style');
+    style.textContent = 'style';
+    style.innerHTML = `
+    .product .${className} {
+        background-image: url(${urlSimple});
+        background-size: cover;
+        margin: 0;
+        padding: 0;
+    }
+    `;
+    document.getElementsByTagName('head')[0].appendChild(style);
+}
 
+function showNotification() {
+    let notification = document.querySelector('.notification');
+    notification.classList.add('show');
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 5000);
+}
 
+function addToCart() {
+    showNotification();
+}
 
-export function loadProducts() {
-    
+function addAddToCartListeners() {
+    document.querySelectorAll('.add-to-cart-button').forEach((button) => {
+        button.addEventListener('click', addToCart);
+    });
+}
+
+export async function loadProducts() {
+    let products = await fetchProducts();
 
     products.forEach((product) => {
         let productHTML = `
         <div class="product">
             <div class="product-image id${product.id}">
-                <img src="${product.image}" alt="${product.name}">` + (product.discount > 0 ? `<div>-${product.discount}%</div>` : '') +
+                <img src="${product.images[product.images.length - 1]}" alt="${product.title}">` + (product.discountPercentage > 7 ? `<div>-${product.discountPercentage}%</div>` : '') +
             `</div>
             <div class="product-info">
-                <div class="product-info-name">${product.name}</div>
-                <div class="product-info-price">$ ${product.price}</div>
+                <div class="product-info-left">
+                    <div class="product-info-name">${product.title}</div>
+                    <div class="product-info-price">$ ${product.price}</div>
+                </div>
+                <div class="product-info-right">
+                    <button class="button add-to-cart-button">Add to cart</button>
+                </div>
             </div>
         </div>
         `;
         document.querySelector('.products-grid').insertAdjacentHTML('beforeend', productHTML);
+        createCssClass('id' + product.id, product.images[0]);
     });
+
+    addAddToCartListeners();
 }
