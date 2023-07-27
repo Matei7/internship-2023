@@ -1,4 +1,5 @@
 import * as events from "events";
+import {initCart} from "./cart";
 
 export async function init() {
 	// fetch products and generate cards
@@ -9,6 +10,9 @@ export async function init() {
 
 	// add event listeners for every image
 	addListenersForImg()
+
+	// initialize cart functionality
+	initCart()
 }
 
 // Generate pop up when clicking "Add to cart button"
