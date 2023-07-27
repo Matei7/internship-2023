@@ -2,9 +2,11 @@ import * as events from "events";
 let cart = {}
 let nrOfProducts = 0
 function productTemplate(product) {
+    console.log(product)
     return {
         title: product.title,
-        price: product.price,
+        price: Math.floor(product.price - product.price * product.discountPercentage / 100),
+        thumbnail: product.thumbnail,
         nr: 1
     }
 }
@@ -56,7 +58,14 @@ function displayProducts() {
     let totalPrice = 0
     let newCartHtml = ``;
     for (let id in cart) {
-        newCartHtml += `<div class="cart-product"><p>${cart[id].title}<br><small>$${cart[id].price}</small></p><p>x${cart[id].nr}</p></div>`
+        newCartHtml += `
+            <div class="cart-product">
+                <div class="cart-product-info">
+                    <img src="${cart[id].thumbnail}" class="cart-product-img">
+                    &nbsp<p>${cart[id].title}</p>
+                </div>
+                <p>x${cart[id].nr}<br><small>$${cart[id].price}</small></p>
+            </div>`
         totalPrice += cart[id].price * cart[id].nr
     }
     document.getElementById("cart").innerHTML = newCartHtml

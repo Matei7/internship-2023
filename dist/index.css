@@ -231,13 +231,13 @@ main {
 .cartVisible {
   /* styling */
   opacity: 1;
-  width: 200px;
+  width: 300px;
   height: max-content;
   background-color: lightgray;
   border-radius: var(--def_border_radius);
   padding: var(--def_padding);
   /* positioning */
-  left: calc(100% - 250px);
+  left: calc(100% - 350px);
   position: fixed;
   display: flex;
   flex-direction: column; }
@@ -248,6 +248,15 @@ main {
   /* positioning */
   display: flex;
   justify-content: space-between; }
+
+.cart-product-img {
+  /* styling */
+  width: 50px;
+  height: 50px;
+  object-fit: scale-down; }
+
+.cart-product-info {
+  display: flex; }
 
 /* footer */
 
