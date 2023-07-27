@@ -106,7 +106,7 @@ html{
 }
 
 .product-grid__product-card {
-  border: 1px solid #ccc;
+  border: 1px solid midnightblue;
   border-radius: 10px;
   background-color: #fff;
   padding: 20px;
@@ -114,6 +114,7 @@ html{
   margin-bottom: 10px;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
 }
 
 .product-grid__product-card__image-wrapper {
@@ -222,3 +223,106 @@ html{
   font-size: 2rem;
   font-weight: 800;
 }
+
+.product-grid__product-card__image-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 500px; /* Setează lățimea maximă a containerului pentru a împiedica elementele să se extindă prea mult pe orizontală */
+  height: 300px;
+  margin: 0 auto; /* Centrează containerul pe pagină */
+}
+.product-grid__product-card__image-wrapper__gallery {
+  position: relative;
+}
+
+.product-grid__product-card__image-wrapper__image {
+  width: 100%;
+  border-radius: 10px;
+  height: 300px;
+  object-fit: cover;
+}
+.product-grid__product-card__image-wrapper__arrows {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  z-index: 1; /* Adaugă z-index pentru a se afișa deasupra imaginii */
+}
+
+.arrow {
+  cursor: pointer;
+  font-size: 50px;
+  color: black; /* Adaugă culoare săgeților */
+  background-color: white;
+  border:2px solid midnightblue;
+  height:50px;
+  display: flex;
+  justify-content:flex-start;
+  align-content:space-between;
+  flex-wrap: wrap;
+  flex-direction:column-reverse;
+}
+
+.product-image-transition-left {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.product-image-transition-right {
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.cart-window{
+  z-index:10;
+  position: fixed;
+  top:85px;
+  background-color: black;
+  color:white;
+  width:20rem;
+  right:8px;
+  cursor:pointer;
+  margin-right:20px;
+  display:none;
+
+}
+
+//.cart-window.show {
+//  opacity: 1;
+//}
+.cart-window-list{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  gap:0.5rem;
+  padding:0.5rem;
+
+}
+.item-box{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width:100%;
+  right:10px;
+}
+
+.item-box__image{
+  width:40px;
+  height:40px;
+  object-fit:cover;
+  border-radius:5px;
+}
+.item-box p {
+    margin-right: 20px;
+
+  }
+.item-box-title{
+  margin-left:15px;
+}
+
