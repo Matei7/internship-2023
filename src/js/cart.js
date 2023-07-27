@@ -32,7 +32,7 @@ function generateAddToCartListener() {
     for (let btn of document.getElementsByClassName("buy-btn"))
         btn.addEventListener("click", async () => {
             // fetch the wanted product and push it in the cart
-            let product = await fetchProduct(btn.id)
+            let product = await fetchProduct(btn.id.split("-")[1])
 
             // add product to cart hashmap
             if (cart[product.id] !== undefined) {

@@ -18,6 +18,7 @@ export async function init() {
 // Generate pop up when clicking "Add to cart button"
 function popUp(event) {
 	let popUpElement = document.getElementById("popUp")
+	console.log(event.target.id)
 
 	// set style for clicked button
 	popUpElement.classList.replace("popUpHidden", "popUpVisible")
@@ -70,7 +71,7 @@ function generateCards(products) {
 			`<p class=\"item-description\">${product["description"]}</p>` +
 			`<div class="item-title-wrapper">` +
 			price +
-			`<button class="buy-btn" id="${product.id}">Add to cart</button>` +
+			`<button class="buy-btn" id="btn-${product.id}">Add to cart</button>` +
 			`</div>` +
 			`</div>` +
 			`</div>`
