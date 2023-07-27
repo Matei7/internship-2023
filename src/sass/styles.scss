@@ -1,7 +1,9 @@
+@import "variables";
 
 
 html {
   overflow-y: hidden;
+  color: $bg;
 }
 
 body {
@@ -20,4 +22,17 @@ body {
     background-repeat: no-repeat;
 
   }
+}
+
+#app {
+  min-width: 100vw;
+  min-height: 100vh;
+  padding: 50px;
+  box-sizing: border-box;
+}
+
+#app.with-bg {
+  background-image: url("../../public/images/bg.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
 }

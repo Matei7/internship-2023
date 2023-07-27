@@ -1,0 +1,29 @@
+$primary-color: white;
+$bg: black;
+
+
+:root {
+  --primary-color: #345e26;
+}
+
+/* Used for generating margins and padding */
+$distances: '0', '5', '10', '15', '20', '25', '30', '35', '40', '45', '50';
+$positions: ('top', 't'), ('right', 'r'), ('bottom', 'b'), ('left', 'l');
+@each $distance in $distances {
+  .p-#{$distance} {
+    padding: #{$distance}px !important;
+  }
+  .m-#{$distance} {
+    margin: #{$distance}px !important;
+  }
+  @each $p in $positions {
+    $position: nth($p, 1);
+    $position-short: nth($p, 2);
+    .p#{$position-short}-#{$distance} {
+      padding-#{$position}: #{$distance}px !important;
+    }
+    .m#{$position-short}-#{$distance} {
+      margin-#{$position}: #{$distance}px !important;
+    }
+  }
+}
