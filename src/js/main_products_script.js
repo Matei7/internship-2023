@@ -1,9 +1,9 @@
-import {addToCart} from "./cart_script.js";
+import {addToCart, handleCartHoverEvent} from "./cart_script.js";
 import {getItems} from "./product_api.js";
 
 function getHtmlNodeItem(jsonItem){
 
-    if (jsonItem.currentImageIndex===undefined)
+    if (!jsonItem.currentImageIndex)
         jsonItem['currentImageIndex']=0;
 
     const itemNode=document.createElement('div');
@@ -12,9 +12,9 @@ function getHtmlNodeItem(jsonItem){
     itemNode.innerHTML=`
 
         
-       <div class="item_thumbnail_container">
+       <div class="item_thumbnail_container" product-id="${jsonItem.id}">
           
-           <img class="item_thumbnail" src="${jsonItem.thumbnail}" alt="${jsonItem.title}">
+           <img class="item_thumbnail" src="${jsonItem.thumbnail}" alt="${jsonItem.title}" loading="lazy">
        </div>
 
     
@@ -25,8 +25,8 @@ function getHtmlNodeItem(jsonItem){
         </div>
      <div class="item_secondary_info">
         <p class="item_rating">Rating: ${jsonItem.rating}/5</p>
-<!--        <button class="add_to_cart_btn" onclick="addToCart(${jsonItem.id})">Add to cart</button>-->
-        <button class="add_to_cart_btn" "product-id"="${jsonItem.id}">Add to cart</button> <!--"product id" may be without quotes-->
+        <button class="add_to_cart_btn" product-id="${jsonItem.id}">Add to cart</button> <!--"product id" may be without quotes-->
+        
     </div>
     
     </div>
@@ -46,9 +46,11 @@ function showNotification(message){
 function handleButtonEvents(){
     const buttons=document.getElementsByClassName('add_to_cart_btn');
     for (const btn of buttons){
-        const productId=btn.getAttribute("product-id");
-        btn.addEventListener('click',()=>{
+        btn.addEventListener('click',(event)=>{
+            const productId=event.target.getAttribute("product-id");
+            // console.log(event);
             addToCart(productId);
+
             showNotification("Added to cart");
             btn.innerHTML='Added to cart';
             btn.style.backgroundColor='#d0ffd3';
@@ -62,17 +64,46 @@ function handleButtonEvents(){
 
     }
 }
+
 export async function loadItems(){
 
     const shopContainer=document.getElementsByClassName('shop-items')[0];
     const items=await getItems();
     for (const item of items){
-        shopContainer.appendChild(getHtmlNodeItem(item));
+        const itemNode=getHtmlNodeItem(item);
+        const thumbnailContainer=itemNode.getElementsByClassName('item_thumbnail_container')[0];
+        thumbnailContainer.addEventListener('click',()=>{
+            const url=`product.html?id=${item.id}`;
+            window.open(url,'_blank');
+        });
+        shopContainer.appendChild(itemNode);
+
     }
+    // for (let index=0; index<30; index++){
+    //     shopContainer.appendChild(getHtmlNodeItem(sampleItem))
+    // }
+
     handleButtonEvents();
-
-
-
-
+    handleCartHoverEvent();
+}
+const sampleItem=
+{
+    "id": 1,
+    "title": "iPhone 9",
+    "description": "An apple mobile which is nothing like apple",
+    "price": 549,
+    "discountPercentage": 12.96,
+    "rating": 4.69,
+    "stock": 94,
+    "brand": "Apple",
+    "category": "smartphones",
+    "thumbnail": "https://i.dummyjson.com/data/products/1/thumbnail.jpg",
+    "images": [
+    "https://i.dummyjson.com/data/products/1/1.jpg",
+    "https://i.dummyjson.com/data/products/1/2.jpg",
+    "https://i.dummyjson.com/data/products/1/3.jpg",
+    "https://i.dummyjson.com/data/products/1/4.jpg",
+    "https://i.dummyjson.com/data/products/1/thumbnail.jpg"
+]
 }
 

@@ -23,7 +23,7 @@ body {
   .notification-container{
     z-index: 10;
     position: fixed;
-    top: 5px;
+    top: 5rem;
     right: 50%;
     transform: translate(50%, 0);
     border: 1px solid black;
@@ -35,6 +35,9 @@ body {
     box-shadow: 1px 2px 10px 1px rgba(0,0,0,0.5);
     visibility: hidden;
     transition: all 0.3s ease-in-out;
+
+
+
 
   }
 
@@ -65,6 +68,72 @@ body {
     font-size: 1.2rem;
     margin: 0.3rem;
   }
+
+  #cart-items{
+    background-color: #ffffff;
+    position: absolute;
+    top: 110%;
+    display: flex;
+    flex-direction: row;
+    right: 1rem;
+    width: 30rem;
+    flex-wrap: wrap;
+    transition: width 2s, height 2s, transform 2s;
+    overflow-y: auto;
+    white-space: nowrap;
+    max-height: 40rem;
+    overflow-x: hidden;
+  }
+  .cart-item-thumbnail-container img{
+    height: 6rem;
+    width: 6rem;
+    object-fit: cover;
+  }
+  .cart-item-title,.cart-item-count{
+    font-size: 0.93rem;
+    margin-left: 10px;
+
+  }
+  .cart-title-wrapper{
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    margin-left: 10px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .cart-item-price{
+    margin-top: 0;
+    font-size: 0.8rem;
+
+  }
+  .cart-item{
+    background-color: #fafafa;
+    width: 97%;
+    margin: 0.5rem;
+    padding-right: 0;
+    height: 6.1rem;
+    display: flex;
+
+    font-size: 0.8rem;
+    font-family: 'Nunito', sans-serif;
+
+  }
+  .remove-from-cart-btn{
+    margin-left: 10px;
+    margin-top: 1rem;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    border-radius: 30px;
+    &:hover{
+      transform: scale(1.1);
+    }
+  }
+
   h1{
     font-family: 'Roboto', sans-serif;
     font-weight: 500;
@@ -137,6 +206,9 @@ body {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
+    &:hover{
+      transform: scale(1.1);
+    }
   }
   .item_rating{
     margin:0 0 0 11px;
@@ -145,7 +217,7 @@ body {
 
 
   footer{
-    margin: 0rem 0 0 0;
+    margin: 2rem 0 0 0;
     background-color: #343434;
     width: 100vw;
     height: 5rem;
