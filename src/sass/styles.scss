@@ -227,4 +227,54 @@ main {
   text-align: center;
 }
 
+/* product */
+
+.product-container {
+  /* positioning */
+  padding: var(--def_padding);
+}
+
+.product-carousel {
+  /* positioning */
+  position: relative;
+  
+  /* styling */
+  width: max-content;
+  height: max-content;
+}
+
+.carousel-img {
+  object-fit: cover;
+  width: 900px;
+  height: 600px;
+}
+
+.carousel-btn {
+  /* positioning */
+  position: absolute;
+  top: 50%;
+
+  /* styling */
+  width: 50px;
+  height: 30px;
+  border-radius: 1rem;
+  border: 0;
+
+  &:hover {
+    background-color: lightgray;
+  }
+}
+
+#btn-left {
+
+}
+
+#btn-right {
+  left: calc(100% - 50px);
+}
+
+.product-information {
+
+}
+
 /* footer */
