@@ -70,7 +70,7 @@ function generateCards(products) {
 			`<p class=\"item-description\">${product["description"]}</p>` +
 			`<div class="item-title-wrapper">` +
 			price +
-			`<button class="buy-btn" id="btn${product.id}">Add to cart</button>` +
+			`<button class="buy-btn" id="${product.id}">Add to cart</button>` +
 			`</div>` +
 			`</div>` +
 			`</div>`

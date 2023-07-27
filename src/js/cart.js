@@ -2,7 +2,6 @@ import * as events from "events";
 let cart = {}
 let nrOfProducts = 0
 function productTemplate(product) {
-    console.log(product)
     return {
         title: product.title,
         price: Math.floor(product.price - product.price * product.discountPercentage / 100),
@@ -33,7 +32,7 @@ function generateAddToCartListener() {
     for (let btn of document.getElementsByClassName("buy-btn"))
         btn.addEventListener("click", async () => {
             // fetch the wanted product and push it in the cart
-            let product = await fetchProduct(btn.id.at(btn.id.length - 1))
+            let product = await fetchProduct(btn.id)
 
             // add product to cart hashmap
             if (cart[product.id] !== undefined) {
