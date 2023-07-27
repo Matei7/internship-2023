@@ -12,6 +12,8 @@
   --button-hover: #5783db;
   --button-pressed: #4848ff;
 
+  --nav-arrows-normal: rgba(161, 161, 161, 0.4);
+  --nav-arrows-highlighted: rgba(161, 161, 161, 0.8);
 
   --star-size: 25px;
   --star-color: #fff;
@@ -46,22 +48,23 @@ h1{
   text-align: center;
 }
 
-.cart-wrapper{
-  display: flex;
+#cart-wrapper{
+  display: inline-flex;
   width: 80%;
   margin: 0 auto;
   justify-content: right;
 }
 
 .cart-container{
-  display: block;
+  display: inline-block;
   position: relative;
 }
 
 .cart-contents{
   display: none;
   width: 300px;
-  height: 200px;
+  height: auto;
+  min-height: 200px;
 
   background-color: var(--white1);
   border: 2px solid black;
@@ -71,7 +74,7 @@ h1{
   top: 60px;
   right: -50px;
   z-index: 10000;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 #cart-icon{
@@ -85,13 +88,12 @@ h1{
 
 #cart-counter{
   display: inline-flex;
-  width: 10%;
-  height: 10%;
+  width: 20px;
+  height: 20px;
   justify-content: center;
   align-items: center;
   background-color: red;
-  /*color: var(--white1);*/
-  color: black;
+  color: var(--white1);
   border-radius: 50%;
   margin: 0;
   position: absolute;
@@ -172,6 +174,25 @@ h1{
   top: 0;
 }
 
+.navigation-button{
+  background-color: var(--nav-arrows-normal);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  border: none;
+  font-size: 30px;
+}
+
+.navigation-button:hover{
+  background-color: var(--nav-arrows-highlighted);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  border: none;
+  font-size: 30px;
+}
+
+
 .item-thumbnail{
   border-radius: 10px 10px 0 0;
   top: 30px;
@@ -239,6 +260,8 @@ h1{
   position: fixed;
   animation-timing-function: ease-in;
   animation: popup-slide 1s forwards;
+  pointer-events: none;
+  z-index: 30000;
 }
 
 @keyframes popup-slide {

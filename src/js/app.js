@@ -44,8 +44,8 @@ function getProductHTML(productObject)
                 ${thumbnailsHTML}
             </div>
             <div class="nav-arrows">
-                <button>A</button>
-                <button>B</button>
+                <button class="navigation-button"><</button>
+                <button class="navigation-button">></button>
             </div>
         </div>
         <p class="item-title">${productTitle}</p>
@@ -108,7 +108,7 @@ function setupAddToCartButtons()
                 button.textContent = "Add to cart";
                 button.style.removeProperty("background-color");
                 newPopup.remove();
-            }, 7000);
+            }, 4000);
         });
 
         button.addEventListener('click', function(clickEvent) {
@@ -215,11 +215,12 @@ function setupCartUI()
     const cartIcon = document.getElementById('cart-icon');
     const cartContents = document.getElementsByClassName('cart-contents')[0];
     cartIcon.addEventListener('mouseover', ()=>{
+        console.log("on icon");
         cartContents.style.setProperty('display', 'inline-block');
     });
 
     cartIcon.addEventListener('mouseout', ()=>{
-        console.log("yo");
+        console.log("out of wrapper");
         cartContents.style.removeProperty('display');
     });
 }
