@@ -4,42 +4,39 @@ export async function init() {
 }
 
 async function loadShopProducts() {
-    let productObjectsArray = (await getAllProductsJSON()).products;
-
-    let productsContainer = document.getElementById("products-list");
-
-
+    const productObjectsArray = (await getAllProductsJSON()).products;
+    const productsContainer = document.getElementById("products-list");
 
     for (const product of productObjectsArray) {
-        let productHTML = getProductHTML(product);
+        const productHTML = getProductHTML(product);
         productsContainer.appendChild(productHTML);
     }
 }
 
 function getProductHTML(productObject)
 {
-    console.log(productObject);
-    let productId = productObject["id"];
-    let productTitle = productObject["title"];
-    let productThumbnail = productObject["thumbnail"];
-    let productDescription = productObject["description"];
-    let productRating = productObject["rating"];
-    let productPrice = productObject["price"];
-    let productDiscount = productObject["discountPercentage"];
-    let productPriceWithDiscount = productPrice * (100 - productDiscount) / 100;
+    const productId = productObject["id"];
+    const productTitle = productObject["title"];
+    const productThumbnail = productObject["thumbnail"];
+    const productDescription = productObject["description"];
+    const productRating = productObject["rating"];
+    const productPrice = productObject["price"];
+    const productDiscount = productObject["discountPercentage"];
+    const productPriceWithDiscount = productPrice * (100 - productDiscount) / 100;
 
-    let productHTML = document.createElement('div');
+    const productHTML = document.createElement('div');
     productHTML.setAttribute('class', "item-container");
     productHTML.setAttribute('data-id', productId);
     productHTML.innerHTML = `
-\t\t\t\t<img class="item-thumbnail" src="${productThumbnail}" alt="placeholder image thumbnail"/>
-\t\t\t\t<p class="item-title">${productTitle}</p>
-\t\t\t\t<p class="item-description">${productDescription}</p>
-\t\t\t\t<p class="item-rating">Rating: ${productRating}/5.00</p>
-\t\t\t\t<div class="item-purchase-details">
-\t\t\t\t\t<p class="item-price">Price: <s>$${productPrice}</s>   <span style="color: red">$${productPriceWithDiscount.toFixed(2)}</span></p>
-\t\t\t\t\t<button class="add-to-cart-button">Add To Cart</button>
-\t\t\t\t</div>
+        <img class="item-thumbnail" src="${productThumbnail}" alt="placeholder image thumbnail"/>
+        <p class="item-title">${productTitle}</p>
+        <p class="item-description">${productDescription}</p>
+        <p class="item-rating">Rating: <div class="star-rating" style="--rating: ${productRating};"></div> ${productRating}/5.00</p>
+        
+        <div class="item-purchase-details">
+          <p class="item-price">Price: <s>$${productPrice}</s>   <span style="color: red">$${productPriceWithDiscount.toFixed(2)}</span></p>
+          <button class="add-to-cart-button">Add To Cart</button>
+        </div>
     `;
 
     return productHTML;
@@ -52,8 +49,7 @@ function getAllProductsJSON() {
 
 function setupAddToCartButtons()
 {
-    let addToCartButtons = document.getElementsByClassName("add-to-cart-button");
-
+    const addToCartButtons = document.getElementsByClassName("add-to-cart-button");
 
     for(const button of addToCartButtons)
     {
@@ -61,9 +57,11 @@ function setupAddToCartButtons()
             button.textContent = "Added to cart";
             button.style.setProperty("background-color", "var(--button-pressed)");
 
-            let buttonID = button.parentElement.parentElement.getAttribute('data-id');
-            let buttonTitle = button.parentElement.parentElement.firstElementChild.nextElementSibling.innerText;
-            let newPopup = createAddToCartPopup(`The product with ID: ${buttonID} and title: ${buttonTitle} has been added to your cart successfully`);
+            const itemContainer = button.parentElement.parentElement;
+
+            const buttonID = itemContainer.getAttribute('data-id');
+            const buttonTitle = itemContainer.getElementsByTagName('p')[0].innerText;
+            const newPopup = createAddToCartPopup(`The product with ID: ${buttonID} and title: ${buttonTitle} has been added to your cart successfully`);
             document.getElementById('app').appendChild(newPopup);
 
             setTimeout(function (){
@@ -76,8 +74,8 @@ function setupAddToCartButtons()
 }
 
 function createAddToCartPopup(text="The product has been added to your cart successfully!"){
-    let newPopup = document.createElement('div');
-    let popupContent = document.createElement('div');
+    const newPopup = document.createElement('div');
+    const popupContent = document.createElement('div');
     newPopup.appendChild(popupContent);
     newPopup.setAttribute('class', 'add-to-cart-popup');
     popupContent.innerText = text;
