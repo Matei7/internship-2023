@@ -6,6 +6,9 @@ export async function init() {
 
 	// add event listeners for every button
 	addButtons()
+
+	// add event listeners for every image
+	addListenersForImg()
 }
 
 // Generate pop up when clicking "Add to cart button"
@@ -33,6 +36,14 @@ function addButtons() {
 		btn.addEventListener("click", popUp)
 }
 
+// Add event listeners for thumbnails
+function addListenersForImg() {
+	for (let img of document.getElementsByClassName("item-image"))
+		img.addEventListener("click", () => {
+			location.href = `product.html?id=${img.id}`
+		})
+}
+
 // Generate and add cards to html
 function generateCards(products) {
 	let cards = []
@@ -46,7 +57,7 @@ function generateCards(products) {
 
 		const card =
 			`<div class='item-card' id="card${product.id}">` +
-			`<img alt= \"\" src=\"${product.thumbnail}" class=\"item-image\">` +
+			`<img alt= \"\" id="${product.id}" src=\"${product.thumbnail}" class=\"item-image\">` +
 			`<div class=\"item-information-wrapper\">` +
 			`<div class="item-title-wrapper">` +
 			`<h2>${product.title}</h2>` +

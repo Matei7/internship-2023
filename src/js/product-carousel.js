@@ -2,8 +2,13 @@ import * as events from "events";
 
 let currentInd = 1;
 let isMouseHover = false;
+let defaultLength = 4
 
-function initCarousel() {
+async function initCarousel() {
+    // fetch product and add images to carousel
+    const queryParams = new URLSearchParams(window.location.search)
+    generateCarouselImages(await fetchProduct(queryParams.get("id")))
+
     // add all necessary event listeners
     addListenersForKeys()
     addListenersForMouse()
@@ -11,6 +16,16 @@ function initCarousel() {
 
     // set current image
     setImage(currentInd)
+}
+
+function generateCarouselImages(product) {
+    defaultLength = product.images.length
+    let id = 1
+    for (let imageUrl of product.images) {
+        document.getElementById("carousel").innerHTML +=
+            `<img id=${id} class="carousel-img" src="${imageUrl}" loading="lazy">`
+        id++
+    }
 }
 
 function addListenersForMouse() {
@@ -36,7 +51,7 @@ function addListenersForButtons() {
 
 function setImage(ind) {
     // set every image that isn't active to display none
-    for (let i = 1; i < 5; i++) {
+    for (let i = 1; i <= defaultLength; i++) {
         if (i !== ind) {
             document.getElementById(String(i)).style.display = "none"
         }
@@ -45,7 +60,7 @@ function setImage(ind) {
 }
 
 function moveRight() {
-    if (currentInd + 1 > 4)
+    if (currentInd + 1 > defaultLength)
         currentInd = 1
     else currentInd++
     setImage(currentInd)
@@ -53,7 +68,7 @@ function moveRight() {
 
 function moveLeft() {
     if (currentInd - 1 < 1)
-        currentInd = 4
+        currentInd = defaultLength
     else currentInd--
     setImage(currentInd)
 }
@@ -65,6 +80,11 @@ function moveByKey(event) {
 
     else if (event.keyCode === 39 && isMouseHover)
         moveRight()
+}
+
+async function fetchProduct(id) {
+    return fetch(`https://dummyjson.com/products/${id}`)
+        .then(res => res.json())
 }
 
 initCarousel()
