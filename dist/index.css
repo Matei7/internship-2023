@@ -339,7 +339,7 @@ ul.top-nav li.icon {
   max-width: 100%;
   margin-left: auto; }
 
-.cart-item-remove {
+.cart-item-button-quantity {
   border: 0;
   background-color: transparent;
   cursor: pointer; }
