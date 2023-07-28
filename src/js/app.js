@@ -4,7 +4,8 @@ let limitPagination = 6;
 const API_CART_ID = '64c3aa50d27ba';
 
 const cartItems = document.querySelector('.cart-items');
-
+let cartData;
+let cartQuantity = 0;
 function createProducts(productsJSON) {
     const productsContainer = document.querySelector('.products');
     for (const product of productsJSON.products) {
@@ -93,16 +94,15 @@ export async function getProducts() {
     skipPagination += limitPagination;
 }
 
-let cartIds = []; // ???
 let total = 0;
 
 export function shoppingCartCount() {
     const shoppingCartCount = document.querySelector('.shopping-cart-count');
-    if (cartItems.children.length-1 === 0) {
+    if (cartQuantity === 0) {
         shoppingCartCount.style.display = 'none';
         return;
     }
-    shoppingCartCount.innerText = cartItems.children.length-1;
+    shoppingCartCount.innerText = cartQuantity;
     shoppingCartCount.style.display = 'flex';
 }
 
@@ -114,20 +114,10 @@ export function addToCartPopUp() {
         button.addEventListener('click', () => {
             popUp.style.display = 'flex';
             const id = button.parentElement.getAttribute('data-id');
-            cartIds.push(id);
-            if (cartIds.length > 0) {
-                shoppingCartCount();
-            }
-            let counterId = 0;
-            for (const cartId of cartIds) {
-                if (cartId === id) {
-                    counterId++;
-                }
-            }
-            if (counterId > 1) {
+            if (cartData.products.find(product => product.id === id)) {
                 const item = cartItems.querySelector(`[data-id="${id}"]`);
                 const itemCounter = item.querySelector('h3');
-                itemCounter.innerText = `x${counterId}`;
+                itemCounter.innerText = `x${cartData.products.find(product => product.id === id).quantity}`;
             } else {
                 const cartItem = document.createElement('div');
                 cartItem.setAttribute('data-id', id);
@@ -149,20 +139,12 @@ export function addToCartPopUp() {
                 removeButton.innerText = 'X';
                 removeButton.classList.add('cart-item-remove');
                 removeButton.addEventListener('click', () => {
-                    let counterId = 0;
-                    for (const cartId of cartIds) {
-                        if (cartId === id) {
-                            counterId++;
-                        }
-                    }
-                    if (counterId > 1) {
+                    if (cartData.products.find(product => product.id === id).quantity > 1) {
                         const cartItems = document.querySelector('.cart-items');
                         const item = cartItems.querySelector(`[data-id="${id}"]`);
                         const itemCounter = item.querySelector('h3');
-                        itemCounter.innerText = `x${counterId - 1}`;
+                        itemCounter.innerText = `x${cartData.products.find(product => product.id === id).quantity - 1}`;
                         addToTotal(total-products[id - 1].price);
-                        const index = cartIds.indexOf(id);
-                        cartIds.splice(index, 1);
                         removeFromCart(id).then(
                             () => {
                                 shoppingCartCount();
@@ -172,8 +154,6 @@ export function addToCartPopUp() {
                         const item = cartItems.querySelector(`[data-id="${id}"]`);
                         cartItems.removeChild(item);
                         addToTotal(total-products[id - 1].price);
-                        const index = cartIds.indexOf(id);
-                        cartIds.splice(index, 1);
                         deleteFromCart(id).then(
                             () => {
                                 shoppingCartCount();
@@ -189,7 +169,7 @@ export function addToCartPopUp() {
 
                 addToCart(id).then(
                     () => {
-
+                        shoppingCartCount();
                     }
                 );
             }
@@ -378,11 +358,10 @@ export async function initCart() {
     const API_CART_GET = `http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${API_CART_ID}`;
 
     const cart = await fetch(API_CART_GET);
-    const cartData = await cart.json();
+    cartData = await cart.json();
     console.log(cartData);
     for (const product of cartData.products) {
         createItemInCart(product);
-        cartIds.push(product.id);
     }
     shoppingCartCount();
     addToTotal(cartData.total);
