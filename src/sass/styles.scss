@@ -401,4 +401,22 @@ main {
   display: flex;
 }
 
+.cart-page-main {
+  /* positioning */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+
+#buy-btn {
+  /* styling */
+  width: max-content;
+  
+  &:hover {
+    background-color: lightgray;
+    cursor: pointer;
+  }
+}
+
 /* footer */

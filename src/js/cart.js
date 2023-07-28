@@ -1,6 +1,6 @@
 import * as events from "events";
-const cartID = "64c39cd6304b2"
-let cart = {};
+const cartID = "64c3b92532684"
+let cart = await getCart();
 function productTemplate(product) {
     return {
         userId: 1,
@@ -13,7 +13,6 @@ function productTemplate(product) {
 }
 
 export async function initCart() {
-    cart = await getCart();
     displayProducts()
     generateCartListener()
     generateAddToCartListener()
@@ -102,19 +101,28 @@ export async function addToCart(productID) {
 }
 
 export async function removeFromCart(productID) {
-    await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            userId: 1,
-            products: [
-                {
-                    id: productID,
-                    quantity: -1
-                }]
-        })
-    })
-        .then(res => res.json())
+    let currentProduct
+    for (let product of cart.products) {
+        if (String(product.id) === productID)
+            currentProduct = product
+    }
+
+    if (currentProduct.quantity - 1 > 0)
+        await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userId: 1,
+                products: [
+                    {
+                        id: productID,
+                        quantity: -1
+                    }]
+            })
+        }).then(res => res.json())
+    else await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}?products[]=${productID}`, {
+        method: 'DELETE'
+        }).then(res => res.json())
 }
 
 export async function getCart() {

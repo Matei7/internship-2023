@@ -1,12 +1,14 @@
 import * as events from "events";
 import {addToCart, getCart, removeFromCart} from "./cart";
+let cart
+const cartID = "64c3b92532684"
 
 // creates a template for a product in HTML format
 function productTemplate(product) {
     return `
         <div class="cart-page-product">
             <img src="${product.thumbnail}" class="cart-product-img" />
-            <title>${product.title}</title>
+            <p>${product.title}</p>
             <p>$${product.price}</p>
             <div class="cart-page-quantity">
                 <button id="minus-${product.id}" class="q-btn"><i class="fa fa-minus" aria-hidden="true"></i>
@@ -22,6 +24,7 @@ function productTemplate(product) {
 async function initCartPage() {
     await updateProducts()
     await generateQuantityBtnListeners()
+    await generateBuyBtnListener()
 }
 
 // create event listeners for quantity buttons of cart product
@@ -39,11 +42,25 @@ async function generateQuantityBtnListeners() {
 
 // update current products
 async function updateProducts() {
-    let cart = await getCart()
+    cart = await getCart()
     document.getElementById("products").innerHTML = ""
     for (let product of cart.products) {
         document.getElementById("products").innerHTML += productTemplate(product)
     }
+}
+
+function generateBuyBtnListener() {
+    document.getElementById("buy-btn").addEventListener("click", async () => {
+        for (let product of cart.products) {
+            fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}?products[]=${product.id}`, {
+                method: 'DELETE',
+                headers: {'Content-Type': 'application/json'}
+            }).then(res => res.json()).finally(async () => {
+                await updateProducts()
+            })
+        }
+        alert("Congratulations! You got scammed!")
+    })
 }
 
 initCartPage()
