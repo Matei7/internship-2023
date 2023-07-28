@@ -10,6 +10,16 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/sass/cart_page_style.scss":
+/*!***************************************!*\
+  !*** ./src/sass/cart_page_style.scss ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n\n\n//# sourceURL=webpack://internship-2023/./src/sass/cart_page_style.scss?");
+
+/***/ }),
+
 /***/ "./src/sass/product_styles.scss":
 /*!**************************************!*\
   !*** ./src/sass/product_styles.scss ***!
@@ -66,7 +76,7 @@ eval("__webpack_require__.a(module, async (__webpack_handle_async_dependencies__
   \*************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {\n__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _sass_styles_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sass/styles.scss */ \"./src/sass/styles.scss\");\n/* harmony import */ var _sass_product_styles_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sass/product_styles.scss */ \"./src/sass/product_styles.scss\");\n/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./app */ \"./src/js/app.js\");\n/* harmony import */ var _main_products_script__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./main_products_script */ \"./src/js/main_products_script.js\");\n/* harmony import */ var _cart_script__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./cart_script */ \"./src/js/cart_script.js\");\nvar __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_main_products_script__WEBPACK_IMPORTED_MODULE_3__, _cart_script__WEBPACK_IMPORTED_MODULE_4__]);\n([_main_products_script__WEBPACK_IMPORTED_MODULE_3__, _cart_script__WEBPACK_IMPORTED_MODULE_4__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);\n\r\n\r\n\r\n\r\n\r\n(0,_app__WEBPACK_IMPORTED_MODULE_2__.init)();\r\n(0,_main_products_script__WEBPACK_IMPORTED_MODULE_3__.loadItems)().catch((error)=>{\r\n    document.querySelector(\"main\").innerHTML='ERROR 404';\r\n});\r\n(0,_cart_script__WEBPACK_IMPORTED_MODULE_4__.loadCart)();\r\n(0,_cart_script__WEBPACK_IMPORTED_MODULE_4__.handleCartHoverEvent)();\n__webpack_async_result__();\n} catch(e) { __webpack_async_result__(e); } });\n\n//# sourceURL=webpack://internship-2023/./src/js/index.js?");
+eval("__webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {\n__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _sass_styles_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sass/styles.scss */ \"./src/sass/styles.scss\");\n/* harmony import */ var _sass_product_styles_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sass/product_styles.scss */ \"./src/sass/product_styles.scss\");\n/* harmony import */ var _sass_cart_page_style_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sass/cart_page_style.scss */ \"./src/sass/cart_page_style.scss\");\n/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./app */ \"./src/js/app.js\");\n/* harmony import */ var _main_products_script__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./main_products_script */ \"./src/js/main_products_script.js\");\n/* harmony import */ var _cart_script__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./cart_script */ \"./src/js/cart_script.js\");\nvar __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_main_products_script__WEBPACK_IMPORTED_MODULE_4__, _cart_script__WEBPACK_IMPORTED_MODULE_5__]);\n([_main_products_script__WEBPACK_IMPORTED_MODULE_4__, _cart_script__WEBPACK_IMPORTED_MODULE_5__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);\n\r\n\r\n\r\n\r\n\r\n\r\n(0,_app__WEBPACK_IMPORTED_MODULE_3__.init)();\r\n(0,_main_products_script__WEBPACK_IMPORTED_MODULE_4__.loadItems)().catch((error)=>{\r\n    document.querySelector(\"main\").innerHTML='ERROR 404';\r\n});\r\n(0,_cart_script__WEBPACK_IMPORTED_MODULE_5__.loadCart)();\r\n(0,_cart_script__WEBPACK_IMPORTED_MODULE_5__.handleCartHoverEvent)();\n__webpack_async_result__();\n} catch(e) { __webpack_async_result__(e); } });\n\n//# sourceURL=webpack://internship-2023/./src/js/index.js?");
 
 /***/ }),
 
