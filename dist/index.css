@@ -122,7 +122,8 @@ ul.top-nav li.icon {
   grid-template-columns: 1fr;
   border-radius: 2rem;
   line-height: 0.5rem;
-  margin-inline: 3rem; }
+  margin-inline: 3rem;
+  animation: fadeIn 1s ease-in-out; }
 
 .arrow-left {
   position: absolute;
@@ -342,4 +343,22 @@ ul.top-nav li.icon {
   border: 0;
   background-color: transparent;
   cursor: pointer; }
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3.5rem;
+  margin-bottom: 8rem;
+  opacity: 0; }
+
+#spinner {
+  padding: 2rem;
+  animation: spinner 1s cubic-bezier(0.5, 0, 0.5, 1) infinite; }
+
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg); }
+  100% {
+    transform: rotate(360deg); } }
 

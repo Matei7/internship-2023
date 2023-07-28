@@ -1,7 +1,7 @@
 import '../sass/styles.scss';
-import {hoverItem, addToCartPopUp, init, nextImageEvent, hoverCart} from "./app";
+import {hoverItem, addToCartPopUp, getProducts, nextImageEvent, hoverCart} from "./app";
 
-await init();
+await getProducts();
 addToCartPopUp();
 nextImageEvent();
 hoverItem();

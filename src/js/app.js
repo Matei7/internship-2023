@@ -1,11 +1,9 @@
 let products = [];
+let skipPagination = 0;
+let limitPagination = 6;
 
-export async function init() {
-    const response = await fetch('https://dummyjson.com/products');
-    const productsJSON = await response.json();
+function createProducts(productsJSON) {
     const productsContainer = document.querySelector('.products');
-    products = productsJSON.products;
-    console.log(productsJSON)
     for (const product of productsJSON.products) {
         const productContainer = document.createElement('div');
         productContainer.classList.add('products-item');
@@ -83,14 +81,24 @@ export async function init() {
     }
 }
 
+export async function getProducts() {
+    const API_GET_PRODUCTS_URL = `https://dummyjson.com/products?limit=${limitPagination}&skip=${skipPagination}&select=id,title,brand,category,description,price,stock,rating,discountPercentage,images`
+    const response = await fetch(API_GET_PRODUCTS_URL);
+    const productsJSON = await response.json();
+    createProducts(productsJSON);
+    products = products.concat(productsJSON.products);
+    skipPagination += limitPagination;
+}
+
 let cartIds = [];
-let total=0;
+let total = 0;
 
 function shoppingCartCount() {
     const shoppingCartCount = document.querySelector('.shopping-cart-count');
     shoppingCartCount.innerText = cartIds.length;
     shoppingCartCount.style.display = 'flex';
 }
+
 export function addToCartPopUp() {
     const buttons = document.querySelectorAll('.product-button');
     const popUp = document.querySelector('.pop-up');
@@ -151,7 +159,7 @@ export function addToCartPopUp() {
                         const item = cartItems.querySelector(`[data-id="${id}"]`);
                         const itemCounter = item.querySelector('h3');
                         itemCounter.innerText = `x${counterId - 1}`;
-                        total-=products[id-1].price;
+                        total -= products[id - 1].price;
                         const cartTotal = document.querySelector('h3');
                         cartTotal.innerText = `Total: $${total}`;
                         const index = cartIds.indexOf(id);
@@ -161,7 +169,7 @@ export function addToCartPopUp() {
                         const cartItems = document.querySelector('.cart-items');
                         const item = cartItems.querySelector(`[data-id="${id}"]`);
                         cartItems.removeChild(item);
-                        total-=products[id-1].price;
+                        total -= products[id - 1].price;
                         const cartTotal = document.querySelector('h3');
                         cartTotal.innerText = `Total: $${total}`;
                         const index = cartIds.indexOf(id);
@@ -178,10 +186,9 @@ export function addToCartPopUp() {
                 cartItem.appendChild(removeButton);
                 cartItems.appendChild(cartItem);
             }
-            total+=products[id-1].price;
+            total += products[id - 1].price;
             const cartTotal = document.querySelector('h3');
             cartTotal.innerText = `Total: $${total}`;
-            const cartItems = document.querySelector('.cart-items');
             button.innerText = 'Added to cart';
             setTimeout(() => {
                 popUp.style.display = 'none';
@@ -297,3 +304,28 @@ export function hoverCart() {
         cartItems.style.display = 'none';
     });
 }
+
+const hideLoader = () => {
+    const loader = document.querySelector('.loader');
+    loader.style.opacity = '0';
+};
+const showLoader = () => {
+    const loader = document.querySelector('.loader');
+    loader.style.opacity = '1';
+};
+
+window.addEventListener('scroll', () => {
+    const {
+        scrollTop,
+        scrollHeight,
+        clientHeight
+    } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight - 5 && products.length < 100) {
+        showLoader();
+        setTimeout(() => {
+            hideLoader();
+        }, 3000);
+        getProducts();
+    }
+}, {passive: true});
+
