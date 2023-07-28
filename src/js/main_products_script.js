@@ -25,7 +25,7 @@ function getHtmlNodeItem(jsonItem){
         </div>
      <div class="item_secondary_info">
         <p class="item_rating">Rating: ${jsonItem.rating}/5</p>
-        <button class="add_to_cart_btn" product-id="${jsonItem.id}">Add to cart</button> <!--"product id" may be without quotes-->
+        <button class="add_to_cart_btn" product-id="${jsonItem.id}" event-set="false">Add to cart</button> <!--"product id" may be without quotes-->
         
     </div>
     
@@ -46,23 +46,25 @@ function showNotification(message){
 function handleButtonEvents(){
     const buttons=document.getElementsByClassName('add_to_cart_btn');
     for (const btn of buttons){
-        btn.addEventListener('click',(event)=>{
-            const productId=event.target.getAttribute("product-id");
-            // console.log(event);
-            addToCart(productId);
+        if (btn.getAttribute('event-set')==='false')
+            btn.addEventListener('click',(event)=>{
+                const productId=event.target.getAttribute("product-id");
+                addToCart(productId);
 
-            showNotification("Added to cart");
-            btn.innerHTML='Added to cart';
-            btn.style.backgroundColor='#d0ffd3';
-            btn.setAttribute('disabled','true');
-            setTimeout(() => {
-                btn.innerHTML = 'Add to cart';
-                btn.style.backgroundColor = '#f5f5f5';
-                btn.removeAttribute('disabled');
-            }, 5000);
-        });
+                showNotification("Added to cart");
+                btn.innerHTML='Added to cart';
+                btn.style.backgroundColor='#d0ffd3';
+                btn.setAttribute('disabled','true');
+                setTimeout(() => {
+                    btn.innerHTML = 'Add to cart';
+                    btn.style.backgroundColor = '#f5f5f5';
+                    btn.removeAttribute('disabled');
+                }, 5000);
+            });
 
     }
+    const loadMoreButton=document.querySelector('.load-more-btn');
+    loadMoreButton.addEventListener('click',loadItems);
 }
 
 export async function loadItems(){
@@ -84,26 +86,6 @@ export async function loadItems(){
     // }
 
     handleButtonEvents();
-    handleCartHoverEvent();
 }
-const sampleItem=
-{
-    "id": 1,
-    "title": "iPhone 9",
-    "description": "An apple mobile which is nothing like apple",
-    "price": 549,
-    "discountPercentage": 12.96,
-    "rating": 4.69,
-    "stock": 94,
-    "brand": "Apple",
-    "category": "smartphones",
-    "thumbnail": "https://i.dummyjson.com/data/products/1/thumbnail.jpg",
-    "images": [
-    "https://i.dummyjson.com/data/products/1/1.jpg",
-    "https://i.dummyjson.com/data/products/1/2.jpg",
-    "https://i.dummyjson.com/data/products/1/3.jpg",
-    "https://i.dummyjson.com/data/products/1/4.jpg",
-    "https://i.dummyjson.com/data/products/1/thumbnail.jpg"
-]
-}
+
 

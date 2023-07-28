@@ -53,8 +53,8 @@ body {
   #app #cart-items {
     background-color: #ffffff;
     position: absolute;
-    top: 110%;
     display: flex;
+    top: 110%;
     flex-direction: row;
     right: 1rem;
     width: 30rem;
@@ -62,8 +62,10 @@ body {
     transition: width 2s, height 2s, transform 2s;
     overflow-y: auto;
     white-space: nowrap;
-    max-height: 40rem;
+    max-height: 70vh;
     overflow-x: hidden; }
+  #app nav {
+    position: relative; }
   #app .cart-item-thumbnail-container img {
     height: 6rem;
     width: 6rem;
@@ -91,6 +93,23 @@ body {
     display: flex;
     font-size: 0.8rem;
     font-family: 'Nunito', sans-serif; }
+  #app .cart-products {
+    position: relative;
+    width: 100%; }
+  #app .cart-total {
+    position: absolute;
+    bottom: 0;
+    height: 3rem;
+    width: 97%;
+    font-size: 1rem;
+    font-family: 'Nunito', sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    background-color: #fafafa;
+    margin: 0.5rem; }
+  #app .cart-total p {
+    padding: 0; }
   #app .remove-from-cart-btn {
     margin-left: 10px;
     margin-top: 1rem;
@@ -118,8 +137,8 @@ body {
     border: 1px solid #bebebe;
     overflow: hidden; }
   #app .item_thumbnail {
-    height: 15rem;
-    width: 20rem;
+    height: 20rem;
+    width: 25rem;
     object-fit: cover;
     margin: 0; }
   #app .item_title {
@@ -159,6 +178,23 @@ body {
       transform: scale(1.1); }
   #app .item_rating {
     margin: 0 0 0 11px; }
+  #app .pagination-controls {
+    display: flex;
+    justify-content: center; }
+  #app .load-more-btn {
+    margin: 0.5rem 0 0 0;
+    padding: 0.5rem;
+    border-radius: 10px;
+    background-color: #f5f5f5;
+    border: 1px solid #bebebe;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out; }
+    #app .load-more-btn:hover {
+      background-color: transparent;
+      border: 1px solid #565656;
+      transition: all 0.3s ease-in-out; }
   #app footer {
     margin: 2rem 0 0 0;
     background-color: #343434;

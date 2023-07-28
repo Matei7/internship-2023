@@ -1,4 +1,4 @@
-export async function getItems(api='https://dummyjson.com/products'){
+export async function getItems(api='https://dummyjson.com/products?limit=10&skip=10'){
     const response=await fetch(api);
     const items=await response.json();
     return items.products;

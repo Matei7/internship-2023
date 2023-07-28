@@ -72,8 +72,8 @@ body {
   #cart-items{
     background-color: #ffffff;
     position: absolute;
-    top: 110%;
     display: flex;
+    top: 110%;
     flex-direction: row;
     right: 1rem;
     width: 30rem;
@@ -81,9 +81,13 @@ body {
     transition: width 2s, height 2s, transform 2s;
     overflow-y: auto;
     white-space: nowrap;
-    max-height: 40rem;
-    overflow-x: hidden;
+    max-height: 70vh;
+    overflow-x: hidden
+
   }
+nav{
+  position: relative;
+}
   .cart-item-thumbnail-container img{
     height: 6rem;
     width: 6rem;
@@ -95,7 +99,6 @@ body {
 
   }
   .cart-title-wrapper{
-
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -117,9 +120,29 @@ body {
     padding-right: 0;
     height: 6.1rem;
     display: flex;
-
     font-size: 0.8rem;
     font-family: 'Nunito', sans-serif;
+
+  }
+  .cart-products{
+    position: relative;
+    width: 100%;
+  }
+  .cart-total{
+    position: absolute;
+    bottom: 0;
+    height: 3rem;
+    width: 97%;
+    font-size: 1rem;
+    font-family: 'Nunito', sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    background-color: #fafafa;
+    margin: 0.5rem;;
+  }
+  .cart-total p{
+    padding:0;
 
   }
   .remove-from-cart-btn{
@@ -163,8 +186,8 @@ body {
   }
   .item_thumbnail{
 
-    height:15rem;
-    width:20rem;
+    height:20rem;
+    width:25rem;
     object-fit: cover;
     margin:0;
   }
@@ -214,7 +237,27 @@ body {
     margin:0 0 0 11px;
   }
 
+  .pagination-controls{
+    display: flex;
+    justify-content: center;
+  }
 
+  .load-more-btn{
+    margin: 0.5rem 0 0 0;
+    padding: 0.5rem;
+    border-radius: 10px;
+    background-color: #f5f5f5;
+    border: 1px solid #bebebe;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    &:hover{
+      background-color: transparent;
+      border: 1px solid #565656;
+      transition: all 0.3s ease-in-out;
+    }
+  }
 
   footer{
     margin: 2rem 0 0 0;
