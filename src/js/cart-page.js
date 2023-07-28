@@ -47,6 +47,7 @@ async function updateProducts() {
     for (let product of cart.products) {
         document.getElementById("products").innerHTML += productTemplate(product)
     }
+    document.getElementById("cart-page-price").innerText = `$${cart.total}`
 }
 
 function generateBuyBtnListener() {
