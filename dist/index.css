@@ -53,7 +53,7 @@ body {
   #app #cart-items {
     background-color: #ffffff;
     position: absolute;
-    display: flex;
+    display: none;
     top: 110%;
     flex-direction: row;
     right: 1rem;

@@ -8,7 +8,7 @@ export async function  getCart(){
     return json;
 }
 export async function addProductToCart(productId,quantity){
-    await fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c38597d8f95`,{
+    return await fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c38597d8f95`,{
         method:'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({"products":[{"id":productId,"quantity":quantity}]}),
@@ -19,7 +19,7 @@ export async function addProductToCart(productId,quantity){
 
 }
 export async function removeProductFromCart(productId){
-    await fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c38597d8f95?products[]=${productId}`,{
+    return await fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c38597d8f95?products[]=${productId}`,{
         method:'DELETE',
         headers: { 'Content-Type': 'application/json' },
     }).then(response=>response.json()).then((json)=>{
@@ -28,8 +28,8 @@ export async function removeProductFromCart(productId){
     });
 }
 
-export async function updateQunatityProduct(productId,value){
-    await fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c38597d8f95`,{
+export async function updateQuantityProduct(productId,value){
+    return await fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c38597d8f95`,{
         method:'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({"products":[{"id":productId,"quantity":value}]}),

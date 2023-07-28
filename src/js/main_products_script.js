@@ -8,7 +8,8 @@ function getHtmlNodeItem(jsonItem){
 
     const itemNode=document.createElement('div');
     itemNode.classList.add('item');
-    const discountPrice=jsonItem.price-jsonItem.price*(jsonItem.discountPercentage/100);
+    // const discountPrice=jsonItem.price-jsonItem.price*(jsonItem.discountPercentage/100);
+    const discountPrice=jsonItem.price*(1-jsonItem.discountPercentage/100);
     itemNode.innerHTML=`
 
         

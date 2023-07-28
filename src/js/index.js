@@ -2,7 +2,10 @@ import '../sass/styles.scss';
 import '../sass/product_styles.scss'
 import { init } from "./app";
 import {loadItems} from "./main_products_script";
-import {handleCartHoverEvent} from "./cart_script";
+import {handleCartHoverEvent, loadCart} from "./cart_script";
 init();
-loadItems();
+loadItems().catch((error)=>{
+    document.querySelector("main").innerHTML='ERROR 404';
+});
+loadCart();
 handleCartHoverEvent();
