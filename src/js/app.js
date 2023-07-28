@@ -1,6 +1,9 @@
 import * as events from "events";
 import {initCart} from "./cart";
 
+// variable to keep track of the current number of products for pagination
+let currentNr = 0
+
 export async function init() {
 	// fetch products and generate cards
 	generateCards(await fetchProducts())
@@ -18,7 +21,6 @@ export async function init() {
 // Generate pop up when clicking "Add to cart button"
 function popUp(event) {
 	let popUpElement = document.getElementById("popUp")
-	console.log(event.target.id)
 
 	// set style for clicked button
 	popUpElement.classList.replace("popUpHidden", "popUpVisible")
@@ -39,6 +41,14 @@ function addButtons() {
 	// add to cart buttons
 	for (let btn of document.getElementsByClassName("buy-btn"))
 		btn.addEventListener("click", popUp)
+
+	// show more button
+	document.getElementById("btn-show-more").addEventListener("click", async () => {
+		generateCards(await fetchProducts())
+		addListenersForImg()
+		addButtons()
+		initCart()
+	})
 }
 
 // Add event listeners for thumbnails
@@ -80,11 +90,14 @@ function generateCards(products) {
 	}
 
 	let items = document.getElementById('items');
-	items.innerHTML = cards.join("\n");
+	items.innerHTML += cards.join("\n");
 }
 
 // Fetch products from dummy json
 async function fetchProducts() {
-	return fetch('https://dummyjson.com/products')
-		.then(res => res.json())
+	return fetch(`https://dummyjson.com/products?limit=10&skip=${currentNr*10}`)
+		.then(res => {
+			currentNr++
+			return res.json()
+		})
 }

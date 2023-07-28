@@ -1,16 +1,20 @@
 import * as events from "events";
-let cart = {}
-let nrOfProducts = 0
+const cartID = "64c39cd6304b2"
+let cart = {};
 function productTemplate(product) {
     return {
-        title: product.title,
-        price: Math.floor(product.price - product.price * product.discountPercentage / 100),
-        thumbnail: product.thumbnail,
-        nr: 1
+        userId: 1,
+        products: [
+            {
+                id: product.id,
+                quantity: 0
+            }]
     }
 }
 
-export function initCart() {
+export async function initCart() {
+    cart = await getCart();
+    displayProducts()
     generateCartListener()
     generateAddToCartListener()
 }
@@ -18,12 +22,17 @@ export function initCart() {
 // display cart container when clicking cart button
 function generateCartListener() {
     document.getElementById("cart-btn").addEventListener("mouseover", () => {
-        let cart = document.getElementById("cart")
-            cart.classList.replace("cartHidden", "cartVisible")
+        let cartHTML = document.getElementById("cart")
+            cartHTML.classList.replace("cartHidden", "cartVisible")
     })
+
     document.getElementById("cart-btn").addEventListener("mouseleave", () => {
-        let cart = document.getElementById("cart")
-        cart.classList.replace("cartVisible", "cartHidden")
+        let cartHTML = document.getElementById("cart")
+        cartHTML.classList.replace("cartVisible", "cartHidden")
+    })
+
+    document.getElementById("cart-btn").addEventListener("click", () => {
+        location.href = `cart.html?id=""`
     })
 }
 
@@ -33,17 +42,14 @@ function generateAddToCartListener() {
         btn.addEventListener("click", async () => {
             // fetch the wanted product and push it in the cart
             let product = await fetchProduct(btn.id.split("-")[1])
-
             // add product to cart hashmap
-            if (cart[product.id] !== undefined) {
-                cart[product.id].nr++
+            if (cart["products"][product.id] !== undefined) {
+                cart["products"][product.id].quantity++
             }
             else cart[product.id] = productTemplate(product)
 
-            // calculate total products
-            nrOfProducts = 0
-            for (let id in cart)
-                nrOfProducts += cart[id].nr
+            await addToCart(product.id)
+            cart = await getCart()
             displayProducts()
         })
 }
@@ -51,21 +57,21 @@ function generateAddToCartListener() {
 // generate html code for current products in cart and display them
 function displayProducts() {
     // set the correct number of products
-    document.getElementById("cart-nr").innerText = String(nrOfProducts)
+    document.getElementById("cart-nr").innerText = String(cart.totalProducts)
 
     // set the correct products and calculate total price
-    let totalPrice = 0
+    let totalPrice = cart.total
     let newCartHtml = ``;
-    for (let id in cart) {
+    for (let id in cart["products"]) {
         newCartHtml += `
             <div class="cart-product">
                 <div class="cart-product-info">
-                    <img src="${cart[id].thumbnail}" class="cart-product-img">
-                    &nbsp<p>${cart[id].title}</p>
+                    <img src="${cart["products"][id].thumbnail}" class="cart-product-img">
+                    &nbsp<p>${cart["products"][id].title}</p>
                 </div>
-                <p>x${cart[id].nr}<br><small>$${cart[id].price}</small></p>
+                <p>x${cart["products"][id].quantity}<br><small>$${cart["products"][id].price}</small></p>
             </div>`
-        totalPrice += cart[id].price * cart[id].nr
+        totalPrice = cart.total
     }
     document.getElementById("cart").innerHTML = newCartHtml
     document.getElementById("cart").innerHTML +=
@@ -76,4 +82,42 @@ function displayProducts() {
 async function fetchProduct(id) {
     return fetch(`https://dummyjson.com/products/${id}`)
         .then(res => res.json())
+}
+
+// GETTERS/SETTER FOR CART
+
+export async function addToCart(productID) {
+    await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            userId: 1,
+            products: [
+                {
+                    id: productID,
+                    quantity: 1
+                }]
+        })
+    }).then(res => res.json())
+}
+
+export async function removeFromCart(productID) {
+    await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            userId: 1,
+            products: [
+                {
+                    id: productID,
+                    quantity: -1
+                }]
+        })
+    })
+        .then(res => res.json())
+}
+
+export async function getCart() {
+    return await fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`)
+        .then((res) => res.json())
 }
