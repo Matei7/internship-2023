@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link rel="stylesheet" href="../dist/index.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,400&family=Raleway&display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="header">
+  <nav class="header__navbar">
+    <div class="header__navbar__shop-name">
+      <img src="./images/magazine.png" alt="logo">
+      <a href="#">Meta<span>Shop</span></a>
+    </div>
+
+    <div class="header__navbar__shop-options">
+      <a href="#">Category</a>
+      <a href="#">What's new</a>
+      <a href="#">Account</a>
+      <a href="#" id="cart"> Cart</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="checkout-window">
+    <p class="checkout-window-text"> Ai adaugat in cos urmatorele produse:</p>
+    <div class="checkout-window__grid">
+      <div class="checkout-window__grid__box-item">
+        <img src="./images/magazine.png" alt="Product Image" class="box-item__image">
+        <p class="box-item__title">Title</p>
+        <p class="box-item__price">189</p>
+        <div class="quantity buttons_added">
+          <input type="button" value="-" class="minus">
+          <input type="number" step="1" min="1" max="" value="1"  class="input-text qty text" size="4">
+          <input type="button" value="+" class="plus">
+        </div>
+        <p class="box-item__tottal-price">100000</p>
+      </div>
+      <div class="checkout-window__grid__box-item">
+        <img src="./images/magazine.png" alt="Product Image" class="box-item__image">
+        <p class="box-item__title">Title</p>
+        <p class="box-item__price">189</p>
+        <div class="quantity buttons_added">
+          <input type="button" value="-" class="minus">
+          <input type="number" step="1" min="1" max="" value="1"  class="input-text qty text" size="4">
+          <input type="button" value="+" class="plus">
+        </div>
+        <p class="box-item__tottal-price">100000</p>
+      </div>
+    </div>
+  </div>
+
+
+
+</main>
+
+</body>
+</html>
