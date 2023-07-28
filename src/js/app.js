@@ -93,7 +93,7 @@ export async function getProducts() {
     skipPagination += limitPagination;
 }
 
-let cartIds = [];
+let cartIds = []; // ???
 let total = 0;
 
 export function shoppingCartCount() {
