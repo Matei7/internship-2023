@@ -1,23 +1,25 @@
 import {getItemById} from "./product_api";
-import {getCart, addProductToCart, removeProductFromCart, updateQuantityProduct} from "./cart_api";
+import {getCart, addToCartAPI, removeFromCartAPI, updateProductAPI} from "./cart_api";
 import {loadItems} from "./main_products_script";
 
-let cartJson = await getCart();
+let cart = await getCart();
 
 export async function loadCart() {
-    updateCartCount();
-    updateCartTotalPrice();
 
-    //remove all cart items with the class .cart-item
-    const cartItemsNode = document.querySelector('.cart-products');
-    for (const cartItem of cartItemsNode.querySelectorAll('.cart-item')) {
-        cartItem.remove();
+    for (let cartItem of cart.products) {
+        let cartItemHTML = findItemInCartHTML(cartItem.id);
+        if (!cartItemHTML) {
+            addNodeElementToCart(cartItem);
+        } else {
+            const cartItemCount = cartItemHTML.querySelector('.cart-item-count');
+            const count = parseInt(cartItemCount.innerText.split('x')[1]);
+            if (count !== cartItem.quantity) {
+                cartItemCount.innerText = ` x${cartItem.quantity}`;
+            }
+        }
     }
-
-    let cart = await getCartProducts();
-    for (let cartItem of cart) {
-        addNodeElementToCart(cartItem);
-    }
+    await updateCartTotalPrice();
+    await updateCartCount();
 
 
 }
@@ -43,30 +45,29 @@ async function removeItemFromCart(productId) {
     const cartItemCount = cartItemNode.querySelector('.cart-item-count');
     const count = parseInt(cartItemCount.innerText.split('x')[1]);
     if (count > 1) {
-        //TODO: update price accordingly
-        updateQuantityProduct(productId, -1).then(() => {
-            updateCountForItem(productId, -1);
-            updateCartTotalPrice();
-            updateCartCount();
-        });
+        cart = (await updateProductAPI(productId, -1))['data'];
+        await updateCountForItem(productId, -1);
     } else {
         cartItemNode.remove();
-        removeProductFromCart(productId).then(() => {
-            updateCartTotalPrice();
-        }).then(() => {
-            updateCartCount();
-        });
+        cart = (await removeFromCartAPI(productId))['data'];
     }
+    await updateCartTotalPrice();
+    await updateCartCount();
 
+}
+
+function findItemInCartHTML(productId) {
+    return document.querySelector(`.cart-item[product_id="${productId}"]`);
 
 }
 
 function addNodeElementToCart(jsonItem) {
-    console.log(jsonItem);
     const cartContainer = document.querySelector('.cart-products');
     const cartItemNode = document.createElement('div');
     const discountedPrice = jsonItem.price * (1 - jsonItem.discountPercentage / 100);
     const quantity = jsonItem.quantity ? jsonItem.quantity : 1;
+
+
     cartItemNode.classList.add('cart-item');
     cartItemNode.setAttribute('product_id', jsonItem.id);
     cartItemNode.innerHTML = `
@@ -88,25 +89,16 @@ function addNodeElementToCart(jsonItem) {
         window.open(url, '_blank');
     });
 
-    cartItemNode.querySelector('.remove-from-cart-btn').addEventListener('click', (event) => {
-        removeItemFromCart(jsonItem.id);
+    cartItemNode.querySelector('.remove-from-cart-btn').addEventListener('click', async (event) => {
+        await removeItemFromCart(jsonItem.id);
     });
     cartContainer.appendChild(cartItemNode);
 }
 
-async function getCartProducts() {
-    const products = getCart().then((json) => {
-        return Object.values(json.products);
-    });
-    return products;
-}
-
 async function updateCartTotalPrice() {
-    let cartJson = await getCart();
-
     const totalPriceNode = document.querySelector('.cart-total');
     const cartItemsNode = document.querySelector('.cart-products');
-    if (cartJson.products.length === 0) {
+    if (cart.products.length === 0) {
         cartItemsNode.style.paddingBottom = '0';
         totalPriceNode.style.display = 'none';
         return;
@@ -114,31 +106,24 @@ async function updateCartTotalPrice() {
     cartItemsNode.style.paddingBottom = '3rem';
     totalPriceNode.style.display = 'block';
 
-    let totalPrice = cartJson.total;
-    totalPriceNode.innerHTML = `<p>Total: <s>$${totalPrice}</s> $${cartJson.discountTotal.toFixed(2)}</p>`;
+    let totalPrice = cart.total;
+    totalPriceNode.innerHTML = `<p>Total: <s>$${totalPrice}</s> $${cart.discountTotal.toFixed(2)}</p>`;
 }
 
-export function addToCart(productId) {
-    getItemById(productId).then(async (jsonItem) => {
-        let cart = await getCartProducts();
-        if (!cart.find(item => item.id === jsonItem.id)) {
-            addNodeElementToCart(jsonItem);
-        } else {
-            updateCountForItem(productId, 1);
-        }
-        addProductToCart(jsonItem.id, 1).then(() => {
-            updateCartTotalPrice();
-            updateCartCount();
-        });
-
-    });
+export async function addToCart(productId) {
+    cart = (await addToCartAPI(productId, 1))['data']; //update cart
+    loadCart();
 }
 
-function updateCartCount() {
+async function updateCartCount() {
+    let count = 0;
+    for (const cartItem of cart.products) {
+        count += cartItem.quantity;
+    }
     const cartCount = document.getElementById('cart-count');
-    getCart().then((json) => {
-        cartCount.innerText = String(json.totalQuantity);
-    });
+    cartCount.innerText = String(count);
+
+
 }
 
 function updateCountForItem(productId, value) {
