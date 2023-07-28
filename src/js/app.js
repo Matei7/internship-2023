@@ -1,13 +1,27 @@
 let selectedItem;
+let numberOfItemsLoaded = 0;
+const numberOfItemsPerPage = 3;
+
 const cartCounter = document.getElementById('cart-counter');
+
+
 export async function init() {
-    await loadShopProducts();
-    setupAddToCartButtons();
+    await setupNewItems(numberOfItemsLoaded, numberOfItemsPerPage);
+    setupLoadButton();
+
+    setupUI();
     setupCartUI();
 }
 
-async function loadShopProducts() {
-    const productObjectsArray = (await getAllProductsJSON()).products;
+async function setupNewItems() {
+    await loadShopProducts(numberOfItemsLoaded, numberOfItemsPerPage);
+    setupAddToCartButtons();
+
+    numberOfItemsLoaded += 3;
+}
+
+async function loadShopProducts(numItemsAlreadyLoaded, numItemsPerPage) {
+    const productObjectsArray = (await getProductsPaginatedJSON(numItemsAlreadyLoaded, numItemsPerPage)).products;
     const productsContainer = document.getElementById("products-list");
 
     for (const product of productObjectsArray) {
@@ -80,6 +94,14 @@ function getProductHTML(productObject)
     });
 
     return productHTML;
+}
+
+function getProductsPaginatedJSON(numberOfProductsSkipped, numberOfProductsToFetch)
+{
+    console.log(numberOfProductsSkipped);
+    console.log(numberOfItemsPerPage)
+    return fetch(`https://dummyjson.com/products?limit=${numberOfProductsToFetch}&skip=${numberOfProductsSkipped}`)
+        .then(res => {return res.json();});
 }
 
 function getAllProductsJSON() {
@@ -253,4 +275,20 @@ function createCartHTMLForItem(item)
     mainItemDiv.appendChild(itemAmount);
 
     return mainItemDiv;
+}
+
+function setupLoadButton(){
+    const loadButton = document.getElementById('load-more-button');
+    loadButton.addEventListener('click', async () => {
+        await setupNewItems(numberOfItemsLoaded, numberOfItemsPerPage);
+    });
+}
+
+
+function setupUI()
+{
+    document.getElementById('load-checkout-button').addEventListener('click', () =>{
+        console.log("ffdfd");
+        window.location = `/public/checkout.html/?=cart-id=1`;
+    });
 }
