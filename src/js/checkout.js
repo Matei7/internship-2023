@@ -51,6 +51,9 @@ function createCartHTMLForItem(item)
     itemAmount.setAttribute('class', 'cart-item-amount');
     itemAmount.setAttribute('data-value', item['quantity']);
 
+    itemAmount.addEventListener("keypress", (e) => {
+        e.preventDefault();
+    })
     itemAmount.addEventListener("change", async function (changeEvent) {
         let addedAmount = 0;
 
