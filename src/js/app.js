@@ -289,12 +289,12 @@ async function setupUI() {
         window.location = `checkout.html?cart-id=${cartID}`;
     });
 
-    let numberOfElementsInCart = (await loadCartData()).totalProducts;
+    let numberOfElementsInCart = (await loadCartData(cartURL)).totalProducts;
     document.getElementById('cart-counter').innerText = numberOfElementsInCart;
 }
 
 async function loadCartUIContent(cartEvent) {
-    let cartData = await loadCartData();
+    let cartData = await loadCartData(cartURL);
 
     let currentCount = cartData.totalProducts;
 
@@ -310,7 +310,7 @@ async function loadCartUIContent(cartEvent) {
     }
 }
 
-async function loadCartData() {
+async function loadCartData(cartURL) {
     let cartData;
 
     let startTime = performance.now();
