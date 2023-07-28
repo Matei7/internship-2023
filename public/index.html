@@ -2,56 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Mogos-Hermanos</title>
     <link rel="stylesheet" href="../dist/index.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"/>
 </head>
 <body>
 <div id="app">
-    <div class="notification">
-        Added to cart.
-    </div>
-    <nav class="nav-bar">
-        <h1 class="shop-name">Mogos-Hermanos</h1>
-        <div class="nav-bar-menu">
-            <div class="nav-bar-menu-left">
-                <ul>
-                    <li><a href="#">Men</a></li>
-                    <li><a href="#">Women</a></li>
-                    <li><a href="#">Kids</a></li>
-                </ul>
-                <ul>
-                    <li><a href="#">New Arrivals</a></li>
-                    <li><a href="#">Shoes</a></li>
-                    <li><a href="#">Clothing</a></li>
-                    <li><a href="#">Accessories</a></li>
-                    <li><a href="#">Sale</a></li>
-                </ul>
-            </div>
-            <div class="nav-bar-menu-right">
-                <ul>
-                    <li><a href="#"><span class="material-symbols-outlined">person</span></a></li>
-                    <li><a href="#"><span class="material-symbols-outlined">favorite</span></a></li>
-                    <li><a href="#"><span class="material-symbols-outlined">shopping_bag</span></a></li>
-                </ul>
-                <button class="button search-button">
-                    <span class="material-symbols-outlined">search</span>
-                    <span>Search</span>
-                </button>
-            </div>
-        </div>
-    </nav>
+    <div id="nav-placeholder"></div>
     <main class="products-container">
         <section class="filters">
-
         </section>
         <section class="products">
             <div class="products-info">
-                <span>Products: </span>
+                <span id="no-of-products">Products: </span>
                 <div>Sort By</div>
             </div>
             <div class="products-grid">
+            </div>
+            <div class="button load-more-button hidden">
+                Load More
             </div>
         </section>
     </main>

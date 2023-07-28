@@ -1,6 +1,9 @@
 import '../sass/styles.scss';
-import { init } from "./app";
-import {loadProducts} from "./products";
+import '../sass/nav.scss';
+import {init} from "./app";
+import {initProducts} from "./products-grid";
+import {initCartList} from "./cart";
 
 init();
-loadProducts();
+await initProducts();
+await initCartList();

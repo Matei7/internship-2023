@@ -1,23 +1,4 @@
-html {
-  overflow-x: hidden;
-}
-
-body {
-  margin: 0;
-}
-
-a {
-  text-decoration: none;
-}
-
-#app {
-  min-width: 100vw;
-  min-height: 100vh;
-  box-sizing: border-box;
-}
-
 .notification {
-  visibility: hidden;
   position: fixed;
   top: 5%;
   left: calc(50% - 11vw);
@@ -27,7 +8,7 @@ a {
   color: #000;
   border-radius: 5px;
   border: 1px solid #000;
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
   font-size: clamp(1rem, 1.5vw, 2rem);
@@ -35,85 +16,8 @@ a {
 }
 
 .show {
-  transition: all 2s ease-in-out;
-  visibility: visible;
-}
-
-.button {
-  background-color: #f0f0f0;
-  color: #000;
-  border: none;
-  padding: 5px 10px;
-  font-size: 1rem;
-  border-radius: 5px;
-  margin: 0;
-}
-
-.shop-name {
-  position: absolute;
-  margin: 15px 0 0 0;
-  left: 43%;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: clamp(1rem, 1.5vw, 2rem);
-}
-
-.nav-bar {
-  background-color: black;
-  color: #f0f0f0;
-}
-
-.nav-bar-menu {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  font-size: clamp(1rem, 1vw, 2rem);
-  margin: 0 45px;
-  padding: 2vh 0;
-
-  ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: row;
-  }
-
-  li {
-    margin-right: 15px;
-  }
-
-  li:last-child {
-    margin-right: 0;
-  }
-
-  a {
-    color: #f0f0f0;
-  }
-
-  a:hover {
-    color: #999;
-    text-decoration: underline;
-  }
-
-  &-left {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  &-right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    width: 10vw;
-  }
-
-  .search-button {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+  transition: all 0.5s ease;
+  display: flex !important;
 }
 
 .products-container {
@@ -164,17 +68,43 @@ a {
       grid-template-columns: repeat(2, 1fr);
     }
   }
+
+  .load-more-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20%;
+    height: 50px;
+    margin-left: 40%;
+    margin-top: 50px;
+    background-color: #f0f0f0;
+    border: 1px solid #000;
+    border-radius: 5px;
+    font-size: clamp(1rem, 1.3vw, 2rem);
+    transition: all 0.2s ease-in-out;
+
+    &.hidden {
+      display: none;
+    }
+
+    &:hover {
+      cursor: pointer;
+      background-color: #000;
+      color: #f0f0f0;
+    }
+  }
 }
 
 .product {
   color: #666;
 
   &:hover {
-    cursor: pointer;
     color: #000;
 
     .product-image {
+      cursor: pointer;
       background-image: none;
+
       img {
         visibility: visible;
       }
@@ -238,6 +168,192 @@ a {
           color: #f0f0f0;
         }
       }
+
+      .added-to-cart {
+        background-color: #000;
+        color: #f0f0f0;
+      }
+    }
+  }
+}
+
+footer {
+  margin-top: 50px;
+}
+
+.cart-list {
+  position: absolute;
+  right: 35px;
+  top: calc(2vh + 28px);
+  z-index: 10;
+  width: 250px;
+  height: auto;
+  background: #f0f0f0;
+  display: none;
+  flex-direction: column;
+
+  hr {
+    width: 100%;
+    height: 2px;
+    background-color: black;
+    margin: 0;
+  }
+
+  &-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7%;
+    font-size: 25px;
+
+    &-title {
+      width: 80%;
+      text-align: center;
+    }
+
+    &-close {
+      width: 20%;
+      text-align: right;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .material-symbols-outlined {
+        font-size: 30px;
+      }
+
+      &:hover {
+        cursor: pointer;
+        color: #000;
+      }
+    }
+  }
+
+  &-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 7%;
+
+    &-item {
+      display: flex;
+      flex-direction: row;
+      position: relative;
+      padding: 0;
+      margin: 0 0 10px 0;
+      width: 100%;
+      height: 50px;
+      font-size: 20px;
+
+      &:last-child {
+        margin: 0;
+      }
+
+      &:hover &-remove {
+        display: flex;
+      }
+
+      &-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        img {
+          width: 50px;
+          height: 50px;
+          object-fit: cover;
+          margin-right: 10px;
+        }
+      }
+
+      &-info {
+        position: absolute;
+        top: 0;
+        left: 60px;
+        width: 90px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+
+        &-title {
+          margin-bottom: 5px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          width: 80px;
+        }
+      }
+
+      &-quantity {
+        position: absolute;
+        top: 0;
+        left: 150px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        font-size: 15px;
+
+        &-decrease {
+          &:hover {
+            cursor: pointer;
+          }
+        }
+
+        &-value {
+          text-align: center;
+
+          &:hover {
+            cursor: default;
+          }
+        }
+
+        &-increase {
+          &:hover {
+            cursor: pointer;
+          }
+        }
+      }
+
+      &-total {
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        display: flex;
+      }
+
+      &-remove {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        background-color: #ccc;
+        border-radius: 25%;
+        border: 0.5px solid black;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  &-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7%;
+
+    &-checkout {
+      border: 1px solid black;
+      border-radius: 15px;
+      padding: 5px;
     }
   }
 }

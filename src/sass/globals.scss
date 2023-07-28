@@ -1,0 +1,28 @@
+.button {
+  background-color: #f0f0f0;
+  color: #000;
+  border: none;
+  padding: 5px 10px;
+  font-size: 1rem;
+  border-radius: 5px;
+  margin: 0;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+#app {
+  min-width: 100vw;
+  min-height: 100vh;
+  box-sizing: border-box;
+  position: relative;
+}
