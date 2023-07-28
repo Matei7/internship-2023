@@ -1,7 +1,9 @@
 let selectedItem;
 let numberOfItemsLoaded = 0;
 const numberOfItemsPerPage = 3;
+const cartID = require('../../cart_id.json').token;
 
+const cartURL = `http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`;
 const cartCounter = document.getElementById('cart-counter');
 
 
@@ -9,8 +11,9 @@ export async function init() {
     await setupNewItems(numberOfItemsLoaded, numberOfItemsPerPage);
     setupLoadButton();
 
-    setupUI();
+    await setupUI();
     setupCartUI();
+    await loadCartUIContent();
 }
 
 async function setupNewItems() {
@@ -98,8 +101,6 @@ function getProductHTML(productObject)
 
 function getProductsPaginatedJSON(numberOfProductsSkipped, numberOfProductsToFetch)
 {
-    console.log(numberOfProductsSkipped);
-    console.log(numberOfItemsPerPage)
     return fetch(`https://dummyjson.com/products?limit=${numberOfProductsToFetch}&skip=${numberOfProductsSkipped}`)
         .then(res => {return res.json();});
 }
@@ -115,6 +116,15 @@ function setupAddToCartButtons()
 
     for(const button of addToCartButtons)
     {
+        console.log(button.getAttribute('data-setup'));
+
+        if(button.getAttribute('data-setup') == 'true')
+        {
+            continue;
+        }
+
+        button.setAttribute('data-setup', 'true');
+
         button.addEventListener('click', function (event){
             button.textContent = "Added to cart";
             button.style.setProperty("background-color", "var(--button-pressed)");
@@ -134,7 +144,6 @@ function setupAddToCartButtons()
         });
 
         button.addEventListener('click', function(clickEvent) {
-            console.log('event fired');
 
             let itemHTML = button.parentElement.parentElement;
 
@@ -152,7 +161,21 @@ function setupAddToCartButtons()
                     amount: 1
                 }
             });
+
+            fetch(cartURL, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    products:[{
+                        id,
+                        quantity: 1
+                    }]
+                })
+            }).then((value) => value.json())
+                .then(console.log);
+
             cartCounter.dispatchEvent(addedToCartEvent);
+
         });
     }
 }
@@ -189,14 +212,12 @@ function selectGalleryImage(currentCarousel, direction)
         }
     }
 
-    console.log(nextImage);
     enabledImage.style.setProperty('display', 'none');
     nextImage.style.setProperty('display', 'inline');
 }
 
 function keyboardSelectGalleryImage(keyEvent)
 {
-    console.log(selectedItem);
     if(keyEvent.keyCode === 37)
     {
         selectGalleryImage(selectedItem.querySelector('.thumbnails-container'), 0);
@@ -210,39 +231,17 @@ function keyboardSelectGalleryImage(keyEvent)
 
 function setupCartUI()
 {
-
-    console.log(cartCounter);
-    cartCounter.addEventListener('addedToCart', (cartEvent) =>{
-        console.log('fdf');
-        let currentCount = Number(cartEvent.target.innerText);
-        cartEvent.target.innerText = currentCount + 1;
-
-        const cartContainer = cartEvent.target.nextElementSibling;
-
-        const existingItem = cartContainer.querySelector(`.cart-item-container[data-id="${cartEvent.detail.id}"]`);
-        console.log(existingItem);
-        if(existingItem == null) {
-            let itemHTML = createCartHTMLForItem(cartEvent.detail);
-            cartContainer.appendChild(itemHTML);
-        }
-        else{
-            let currentCount = Number(existingItem.lastElementChild.innerText.substring(1));
-            currentCount++;
-            existingItem.lastElementChild.innerText = `x${currentCount}`;
-        }
-
-        console.log(cartContainer);
-    });
+    cartCounter.addEventListener('addedToCart', loadCartUIContent);
 
     const cartIcon = document.getElementById('cart-icon');
-    const cartContents = document.getElementsByClassName('cart-contents')[0];
+    const cartContents = document.getElementById('cart-contents');
     cartIcon.addEventListener('mouseover', ()=>{
-        console.log("on icon");
+
         cartContents.style.setProperty('display', 'inline-block');
     });
 
     cartIcon.addEventListener('mouseout', ()=>{
-        console.log("out of wrapper");
+
         cartContents.style.removeProperty('display');
     });
 }
@@ -267,7 +266,7 @@ function createCartHTMLForItem(item)
 
     let itemAmount = document.createElement('p');
     itemAmount.setAttribute('class', 'cart-item-amount');
-    itemAmount.innerText = `x${item['amount']}`;
+    itemAmount.innerText = `x${item['quantity']}`;
 
     mainItemDiv.appendChild(itemThumbnail);
     mainItemDiv.appendChild(itemTitle);
@@ -285,10 +284,49 @@ function setupLoadButton(){
 }
 
 
-function setupUI()
-{
-    document.getElementById('load-checkout-button').addEventListener('click', () =>{
-        console.log("ffdfd");
-        window.location = `/public/checkout.html/?=cart-id=1`;
+async function setupUI() {
+    document.getElementById('load-checkout-button').addEventListener('click', () => {
+        window.location = `checkout.html?cart-id=${cartID}`;
     });
+
+    let numberOfElementsInCart = (await loadCartData()).totalProducts;
+    document.getElementById('cart-counter').innerText = numberOfElementsInCart;
+}
+
+async function loadCartUIContent(cartEvent) {
+    let cartData = await loadCartData();
+
+    let currentCount = cartData.totalProducts;
+
+    const cartContainer = document.getElementById('cart-contents');
+
+    cartContainer.previousElementSibling.innerText = currentCount;
+
+    cartContainer.innerHTML = "";
+
+    for (const item of cartData.products) {
+        let itemHTML = createCartHTMLForItem(item);
+        cartContainer.appendChild(itemHTML);
+    }
+}
+
+async function loadCartData() {
+    let cartData;
+
+    let startTime = performance.now();
+
+    await fetch(cartURL, {
+        method: 'GET',
+        headers: {'Content-Type': 'application/json'}
+    }).then(r => r.json()).then(response => cartData = response);
+
+    let endTime = performance.now();
+    let timeElapsed = endTime - startTime;
+
+    console.log(`The fetch took ${timeElapsed / 1000} seconds to run.`);
+
+    console.log(cartData);
+    console.log("The data is in the house");
+
+    return cartData;
 }

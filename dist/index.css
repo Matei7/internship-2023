@@ -54,7 +54,7 @@ h1 {
   display: inline-block;
   position: relative; }
 
-.cart-contents {
+#cart-contents {
   display: none;
   width: 300px;
   height: auto;
