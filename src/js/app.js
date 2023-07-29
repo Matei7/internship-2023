@@ -4,7 +4,7 @@ let limitPagination = 6;
 const API_CART_ID = '64c3aa50d27ba';
 
 const cartItems = document.querySelector('.cart-items');
-let cartData;
+let cartData = null;
 let cartQuantity = 0;
 function createProducts(productsJSON) {
     const productsContainer = document.querySelector('.products');
@@ -119,7 +119,7 @@ export function addToCartPopUp() {
         button.addEventListener('click', () => {
             popUp.style.display = 'flex';
             const id = button.parentElement.getAttribute('data-id');
-            if (cartData.products.find(product => product.id === id)) {
+            if (cartData != null && cartData.products.find(product => product.id === id)) {
                 const item = cartItems.querySelector(`[data-id="${id}"]`);
                 const itemCounter = item.querySelector('h3');
                 itemCounter.innerText = `x${cartData.products.find(product => product.id === id).quantity}`;
@@ -144,7 +144,7 @@ export function addToCartPopUp() {
                 removeButton.innerText = 'X';
                 removeButton.classList.add('cart-item-remove');
                 removeButton.addEventListener('click', () => {
-                    if (cartData.products.find(product => product.id === id).quantity > 1) {
+                    if (cartData != null && cartData.products.find(product => product.id === id).quantity > 1) {
                         const cartItems = document.querySelector('.cart-items');
                         const item = cartItems.querySelector(`[data-id="${id}"]`);
                         const itemCounter = item.querySelector('h3');
@@ -171,12 +171,13 @@ export function addToCartPopUp() {
                 cartItem.appendChild(price);
                 cartItem.appendChild(removeButton);
                 cartItems.appendChild(cartItem);
-
-                addToCart(id).then(
-                    () => {
-                        shoppingCartCount();
-                    }
-                );
+                cartQuantity++;
+                shoppingCartCount();
+                // addToCart(id).then(
+                //     () => {
+                //         shoppingCartCount();
+                //     }
+                // );
             }
             addToTotal(total+products[id - 1].price);
             button.innerText = 'Added to cart';
