@@ -1,6 +1,12 @@
 /*!***************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/sass/styles.scss ***!
   \***************************************************************************************************************/
+@charset "UTF-8";
+* {
+  --star-size: 2rem;
+  --star-color: #fff;
+  --star-background: #fc0; }
+
 html {
   scroll-behavior: smooth;
   font-size: 62.5%; }
@@ -223,9 +229,20 @@ ul.top-nav li.icon {
 .product-rating {
   text-align: center;
   font-family: 'Roboto', sans-serif;
-  opacity: 0.75;
-  margin: 0.5rem auto;
-  font-size: 1.5rem; }
+  margin-top: 0;
+  font-size: 1.2rem; }
+
+.star-rating {
+  --percent: calc(var(--rating) / 5 * 100%);
+  font-size: 2rem;
+  font-family: sans-serif;
+  line-height: 1; }
+  .star-rating::before {
+    content: '★★★★★';
+    letter-spacing: 3px;
+    background: linear-gradient(90deg, var(--star-background) var(--percent), var(--star-color) var(--percent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; }
 
 .product-stock {
   text-align: center;

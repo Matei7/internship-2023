@@ -56,10 +56,15 @@ function createProducts(productsJSON) {
         price.innerText = `$${product.price}`;
         price.classList.add('product-price');
 
-
+        // <p className="item-rating">Rating: <div className="star-rating"
+        //                                         style="--rating: ${productRating};"></div> ${productRating}/5.00</p>
         const rating = document.createElement('h3');
-        rating.innerText = `Rating: ${product.rating}/5.00`;
+        const starRating = document.createElement('span')
+        starRating.classList.add('star-rating');
+        starRating.style.setProperty('--rating', product.rating);
         rating.classList.add('product-rating');
+        rating.appendChild(starRating);
+        rating.innerHTML += ` ${product.rating}`;
 
         const stock = document.createElement('h3');
         stock.innerText = `Available: ${product.stock}`;
