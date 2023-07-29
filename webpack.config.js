@@ -5,6 +5,7 @@ const config = {
 	entry: {
 		index: './src/js/index.js',
 		product_index: './src/js/product/product_index.js',
+		cart_page_index: './src/js/cart_page_script.js',
 	},
 	output: {
 		path: path.resolve( __dirname, 'dist' ),
