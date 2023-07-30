@@ -4,9 +4,9 @@ import {loadItems} from "./main_products_script";
 
 let cart = await getCart();
 
-export async function loadCart() {
+export async function loadCart(_cart=cart) {
 
-    for (let cartItem of cart.products) {
+    for (let cartItem of _cart.products) {
         let cartItemHTML = findItemInCartHTML(cartItem.id);
         if (!cartItemHTML) {
             addNodeElementToCart(cartItem);
@@ -94,11 +94,14 @@ function addNodeElementToCart(jsonItem) {
     });
     cartContainer.appendChild(cartItemNode);
 }
-
-async function updateCartTotalPrice() {
+export async function updateHeaderCartNumbers(_cart=cart){
+    await updateCartTotalPrice(_cart);
+    await updateCartCount(_cart);
+}
+async function updateCartTotalPrice(_cart=cart){
     const totalPriceNode = document.querySelector('.cart-total');
     const cartItemsNode = document.querySelector('.cart-products');
-    if (cart.products.length === 0) {
+    if (_cart.products.length === 0) {
         cartItemsNode.style.paddingBottom = '0';
         totalPriceNode.style.display = 'none';
         return;
@@ -112,12 +115,12 @@ async function updateCartTotalPrice() {
 
 export async function addToCart(productId) {
     cart = (await addToCartAPI(productId, 1))['data']; //update cart
-    loadCart();
+    await loadCart();
 }
 
-async function updateCartCount() {
+async function updateCartCount(_cart=cart) {
     let count = 0;
-    for (const cartItem of cart.products) {
+    for (const cartItem of _cart.products) {
         count += cartItem.quantity;
     }
     const cartCount = document.getElementById('cart-count');

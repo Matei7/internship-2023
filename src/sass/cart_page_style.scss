@@ -59,6 +59,10 @@
 .cartpage-product-image img {
   width: 10rem;
   height: 10rem;
+  min-width: 10rem;
+  max-width: 10rem;
+  min-height: 10rem;
+    max-height: 10rem;
   object-fit: cover;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
   margin-left: 0.2rem;
