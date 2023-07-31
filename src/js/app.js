@@ -15,24 +15,24 @@ export async function init() {
     await setupUI();
     setupCartUI();
     await loadCartUIContent();
-    handleFilterCriteriaChange();
+    //handleFilterCriteriaChange();
 }
 
 async function setupNewItems() {
     await loadShopProducts(numberOfItemsLoaded, numberOfItemsPerPage);
     setupAddToCartButtons();
+
+    numberOfItemsLoaded += 3;
 }
 
-async function loadShopProducts() {
+async function loadShopProducts(numberOfItemsLoaded, numberOfItemsPerPage) {
     let sessionStorageData = sessionStorage.getItem('store-products');
     let alreadyStoredItems = sessionStorageData !== null ? JSON.parse(sessionStorageData): [];
 
     let productObjectsArray = [];
     if(alreadyStoredItems === [] || numberOfItemsLoaded + numberOfItemsPerPage > alreadyStoredItems.length) {
         console.log((await getProductsPaginatedJSON(numberOfItemsLoaded, numberOfItemsPerPage)));
-        const fetchResult = (await getProductsPaginatedJSON(numberOfItemsLoaded, numberOfItemsPerPage, productFilteringCriterium));
-        productObjectsArray = fetchResult.products;
-        numberOfItemsLoaded = fetchResult.numberOfProductsSkipped;
+        const fetchResult = (await getProductsPaginatedJSON(numberOfItemsLoaded, numberOfItemsPerPage));
         productObjectsArray.forEach(x => {alreadyStoredItems.push(x);});
         sessionStorage.setItem('store-products', JSON.stringify(alreadyStoredItems));
     }
@@ -118,28 +118,25 @@ function getProductHTML(productObject)
 }
 
 async function getProductsPaginatedJSON(numberOfProductsSkipped, numberOfProductsToFetch, filterCategory = "") {
-    const greaterBatch = [];
+    //const greaterBatch = [];
 
-    debugger;
-    console.log(`The desired category is ${filterCategory}`);
-
-    while(greaterBatch.length < numberOfProductsToFetch) {
-        let newBatch = [];
-        await fetch(`https://dummyjson.com/products?limit=${numberOfProductsToFetch}&skip=${numberOfProductsSkipped}`)
-            .then(async res => {
-                newBatch = (await res.json()).products;
+    //while(greaterBatch.length < numberOfProductsToFetch) {
+        //let newBatch = [];
+        return fetch(`https://dummyjson.com/products?limit=${numberOfProductsToFetch}&skip=${numberOfProductsSkipped}`)
+            .then(res => {
+                return res.json();
             });
-
+        /*console.log(newBatch);
         for(const item of newBatch)
         {
-            console.log(`This item's category is ${item["category"]}`);
+            //console.log(item[])
             if(item["category"] === filterCategory || filterCategory === "")
                 greaterBatch.push(item);
         }
         numberOfProductsSkipped += numberOfProductsToFetch;
     }
     console.log(numberOfProductsSkipped);
-    return {products: greaterBatch, numberOfProductsSkipped};
+    return {products: greaterBatch, numberOfProductsSkipped};*/
 }
 
 function getProductsCategories()
@@ -421,7 +418,7 @@ function handleFilterCriteriaChange()
         console.log(productsContainer);
         productsContainer.innerHTML = "";
 
-        await loadShopProducts();
+        await loadShopProducts(numberOfItemsLoaded, numberOfItemsPerPage, productFilteringCriterium);
         setupAddToCartButtons();
     });
 }
