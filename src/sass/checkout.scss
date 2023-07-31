@@ -44,3 +44,13 @@ h1{
   display: flex;
   justify-content: center;
 }
+
+.loader{
+  display: block;
+  margin: 0 auto;
+  width:5%;
+}
+
+.hidden_attribute{
+  visibility: hidden;
+}

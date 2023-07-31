@@ -5,26 +5,44 @@ const cartID = require('../../cart_id.json').token;
 
 const cartURL = `http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`;
 const cartCounter = document.getElementById('cart-counter');
+let productFilteringCriterium = "";
+
 
 
 export async function init() {
     await setupNewItems(numberOfItemsLoaded, numberOfItemsPerPage);
     setupLoadButton();
-
     await setupUI();
     setupCartUI();
     await loadCartUIContent();
+    handleFilterCriteriaChange();
 }
 
 async function setupNewItems() {
     await loadShopProducts(numberOfItemsLoaded, numberOfItemsPerPage);
     setupAddToCartButtons();
-
-    numberOfItemsLoaded += 3;
 }
 
-async function loadShopProducts(numItemsAlreadyLoaded, numItemsPerPage) {
-    const productObjectsArray = (await getProductsPaginatedJSON(numItemsAlreadyLoaded, numItemsPerPage)).products;
+async function loadShopProducts() {
+    let sessionStorageData = sessionStorage.getItem('store-products');
+    let alreadyStoredItems = sessionStorageData !== null ? JSON.parse(sessionStorageData): [];
+
+    let productObjectsArray = [];
+    if(alreadyStoredItems === [] || numberOfItemsLoaded + numberOfItemsPerPage > alreadyStoredItems.length) {
+        console.log((await getProductsPaginatedJSON(numberOfItemsLoaded, numberOfItemsPerPage)));
+        const fetchResult = (await getProductsPaginatedJSON(numberOfItemsLoaded, numberOfItemsPerPage, productFilteringCriterium));
+        productObjectsArray = fetchResult.products;
+        numberOfItemsLoaded = fetchResult.numberOfProductsSkipped;
+        productObjectsArray.forEach(x => {alreadyStoredItems.push(x);});
+        sessionStorage.setItem('store-products', JSON.stringify(alreadyStoredItems));
+    }
+    else{
+        for(let index = numberOfItemsLoaded; index < numberOfItemsLoaded + numberOfItemsPerPage; index++)
+        {
+            productObjectsArray.push(alreadyStoredItems[index]);
+        }
+    }
+
     const productsContainer = document.getElementById("products-list");
 
     for (const product of productObjectsArray) {
@@ -99,10 +117,35 @@ function getProductHTML(productObject)
     return productHTML;
 }
 
-function getProductsPaginatedJSON(numberOfProductsSkipped, numberOfProductsToFetch)
+async function getProductsPaginatedJSON(numberOfProductsSkipped, numberOfProductsToFetch, filterCategory = "") {
+    const greaterBatch = [];
+
+    debugger;
+    console.log(`The desired category is ${filterCategory}`);
+
+    while(greaterBatch.length < numberOfProductsToFetch) {
+        let newBatch = [];
+        await fetch(`https://dummyjson.com/products?limit=${numberOfProductsToFetch}&skip=${numberOfProductsSkipped}`)
+            .then(async res => {
+                newBatch = (await res.json()).products;
+            });
+
+        for(const item of newBatch)
+        {
+            console.log(`This item's category is ${item["category"]}`);
+            if(item["category"] === filterCategory || filterCategory === "")
+                greaterBatch.push(item);
+        }
+        numberOfProductsSkipped += numberOfProductsToFetch;
+    }
+    console.log(numberOfProductsSkipped);
+    return {products: greaterBatch, numberOfProductsSkipped};
+}
+
+function getProductsCategories()
 {
-    return fetch(`https://dummyjson.com/products?limit=${numberOfProductsToFetch}&skip=${numberOfProductsSkipped}`)
-        .then(res => {return res.json();});
+    return fetch('https://dummyjson.com/products/categories')
+        .then(res => {return res.json();})
 }
 
 function getAllProductsJSON() {
@@ -116,8 +159,6 @@ function setupAddToCartButtons()
 
     for(const button of addToCartButtons)
     {
-        console.log(button.getAttribute('data-setup'));
-
         if(button.getAttribute('data-setup') == 'true')
         {
             continue;
@@ -128,6 +169,7 @@ function setupAddToCartButtons()
         button.addEventListener('click', function (event){
             button.textContent = "Added to cart";
             button.style.setProperty("background-color", "var(--button-pressed)");
+            //button.disabled = true;
 
             const itemContainer = button.parentElement.parentElement;
 
@@ -139,18 +181,18 @@ function setupAddToCartButtons()
             setTimeout(function (){
                 button.textContent = "Add to cart";
                 button.style.removeProperty("background-color");
+                button.disabled = false;
                 newPopup.remove();
             }, 4000);
         });
 
-        button.addEventListener('click', function(clickEvent) {
+        button.addEventListener('click', async function (clickEvent) {
+            const itemHTML = button.parentElement.parentElement;
 
-            let itemHTML = button.parentElement.parentElement;
-
-            let id = itemHTML.getAttribute('data-id');
-            let thumbnail = itemHTML.querySelector('img').getAttribute('src');
-            let title = itemHTML.querySelector('p[class="item-title"]').innerText;
-            let price = itemHTML.querySelector('p[class="item-price"]').innerText.split(' ')[1];
+            const id = itemHTML.getAttribute('data-id');
+            const thumbnail = itemHTML.querySelector('img').getAttribute('src');
+            const title = itemHTML.querySelector('p[class="item-title"]').innerText;
+            const price = itemHTML.querySelector('p[class="item-price"]').innerText.split(' ')[1];
 
             const addedToCartEvent = new CustomEvent("addedToCart", {
                 detail: {
@@ -162,20 +204,17 @@ function setupAddToCartButtons()
                 }
             });
 
-            fetch(cartURL, {
+            await fetch(cartURL, {
                 method: 'PUT',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    products:[{
+                    products: [{
                         id,
                         quantity: 1
                     }]
                 })
             }).then((value) => value.json())
-                .then(console.log);
-
-            cartCounter.dispatchEvent(addedToCartEvent);
-
+                .then(() => cartCounter.dispatchEvent(addedToCartEvent));
         });
     }
 }
@@ -248,23 +287,23 @@ function setupCartUI()
 
 function createCartHTMLForItem(item)
 {
-    let mainItemDiv = document.createElement('div');
+    const mainItemDiv = document.createElement('div');
     mainItemDiv.setAttribute('data-id', item["id"]);
     mainItemDiv.setAttribute('class', 'cart-item-container');
 
-    let itemThumbnail = document.createElement('img');
+    const itemThumbnail = document.createElement('img');
     itemThumbnail.setAttribute('class', 'cart-item-thumbnail');
     itemThumbnail.setAttribute('src', item['thumbnail']);
 
-    let itemTitle = document.createElement('p');
+    const itemTitle = document.createElement('p');
     itemTitle.setAttribute('class', 'cart-item-title');
     itemTitle.innerText = item['title'];
 
-    let itemPrice = document.createElement('p');
+    const itemPrice = document.createElement('p');
     itemPrice.setAttribute('class', 'cart-item-price');
     itemPrice.innerText = `${item['price']}`;
 
-    let itemAmount = document.createElement('p');
+    const itemAmount = document.createElement('p');
     itemAmount.setAttribute('class', 'cart-item-amount');
     itemAmount.innerText = `x${item['quantity']}`;
 
@@ -285,16 +324,18 @@ function setupLoadButton(){
 
 
 async function setupUI() {
+    await setupProductCategoriesList();
+
     document.getElementById('load-checkout-button').addEventListener('click', () => {
         window.location = `checkout.html?cart-id=${cartID}`;
     });
 
-    let numberOfElementsInCart = (await loadCartData(cartURL)).totalProducts;
+    let numberOfElementsInCart = (await loadCartData(cartURL, false)).totalProducts;
     document.getElementById('cart-counter').innerText = numberOfElementsInCart;
 }
 
 async function loadCartUIContent(cartEvent) {
-    let cartData = await loadCartData(cartURL);
+    let cartData = await loadCartData(cartURL, true);
 
     let currentCount = cartData.totalProducts;
 
@@ -310,8 +351,14 @@ async function loadCartUIContent(cartEvent) {
     }
 }
 
-async function loadCartData(cartURL) {
-    let cartData;
+async function loadCartData(cartURL, fullRefresh = false) {
+    let cartStringData = sessionStorage.getItem("cart-products");
+
+    let cartData = JSON.parse(cartStringData);
+    if(cartData !== null && fullRefresh === false)
+    {
+        return cartData;
+    }
 
     let startTime = performance.now();
 
@@ -325,8 +372,57 @@ async function loadCartData(cartURL) {
 
     console.log(`The fetch took ${timeElapsed / 1000} seconds to run.`);
 
-    console.log(cartData);
-    console.log("The data is in the house");
 
+
+    const stringObjData = JSON.stringify(cartData);
+
+    sessionStorage.setItem("cart-products", stringObjData);
     return cartData;
 }
+
+async function setupProductCategoriesList() {
+    const productCategoriesList = document.getElementsByClassName('product-categories')[0];
+
+    const productCategories = (await getProductsCategories());
+
+    for(const category of productCategories)
+    {
+        const categoryHTML = getHTMLForCategory(category);
+        productCategoriesList.appendChild(categoryHTML);
+    }
+}
+
+function getHTMLForCategory(category)
+{
+    const listItem = document.createElement('li');
+    const checkboxInput = document.createElement('input');
+
+    checkboxInput.setAttribute('type', 'radio');
+    checkboxInput.setAttribute('id', 'category-selection');
+    checkboxInput.setAttribute('name', 'category-selection');
+    const textNode = document.createTextNode(category);
+
+    listItem.appendChild(checkboxInput);
+    listItem.appendChild(textNode);
+
+
+    return listItem;
+}
+
+function handleFilterCriteriaChange()
+{
+    const categorySelectionRadio = document.getElementById('category-selection');
+    categorySelectionRadio.addEventListener('change', async (event) => {
+        sessionStorage.clear();
+        productFilteringCriterium = categorySelectionRadio.value;
+        console.log(productFilteringCriterium);
+
+        const productsContainer = document.getElementById("products-list");
+        console.log(productsContainer);
+        productsContainer.innerHTML = "";
+
+        await loadShopProducts();
+        setupAddToCartButtons();
+    });
+}
+

@@ -126,8 +126,24 @@ h1{
   display: inline-block;
 }
 
+.side-bar{
+  height: 100%;
+  width: 200px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: beige;
+  text-align: center;
+}
+
+.product-categories{
+  text-align: left;
+  list-style-type: none;
+}
+
 #products-section{
   margin-top: 100px;
+  margin-left: 200px;
 }
 
 #products-list{
@@ -251,6 +267,11 @@ h1{
 
 .add-to-cart-button:hover{
   background-color: var(--button-hover);
+}
+
+.add-to-cart-button:disabled{
+  color: black;
+  border: 1px solid black;
 }
 
 .add-to-cart-popup{
