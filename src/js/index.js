@@ -6,4 +6,4 @@ addToCartPopUp();
 nextImageEvent();
 hoverItem();
 hoverCart();
-// await initCart();
+await initCart();

@@ -119,7 +119,7 @@ export function addToCartPopUp() {
         button.addEventListener('click', () => {
             popUp.style.display = 'flex';
             const id = button.parentElement.getAttribute('data-id');
-            if (cartData != null && cartData.products.find(product => product.id === id)) {
+            if (cartData != null && cartData.products.find(product => product.id === id) !== undefined) {
                 const item = cartItems.querySelector(`[data-id="${id}"]`);
                 const itemCounter = item.querySelector('h3');
                 itemCounter.innerText = `x${cartData.products.find(product => product.id === id).quantity}`;
@@ -144,6 +144,7 @@ export function addToCartPopUp() {
                 removeButton.innerText = 'X';
                 removeButton.classList.add('cart-item-remove');
                 removeButton.addEventListener('click', () => {
+                    const productQuantity = cartData.products.find(product => product.id === id).quantity
                     if (cartData != null && cartData.products.find(product => product.id === id).quantity > 1) {
                         const cartItems = document.querySelector('.cart-items');
                         const item = cartItems.querySelector(`[data-id="${id}"]`);
@@ -152,6 +153,7 @@ export function addToCartPopUp() {
                         addToTotal(total-products[id - 1].price);
                         removeFromCart(id).then(
                             () => {
+                                cartQuantity--;
                                 shoppingCartCount();
                             });
                     } else {
@@ -161,6 +163,7 @@ export function addToCartPopUp() {
                         addToTotal(total-products[id - 1].price);
                         deleteFromCart(id).then(
                             () => {
+                                cartQuantity--;
                                 shoppingCartCount();
                             });
                     }
@@ -173,11 +176,11 @@ export function addToCartPopUp() {
                 cartItems.appendChild(cartItem);
                 cartQuantity++;
                 shoppingCartCount();
-                // addToCart(id).then(
-                //     () => {
-                //         shoppingCartCount();
-                //     }
-                // );
+                addToCart(id).then(
+                    () => {
+                        shoppingCartCount();
+                    }
+                );
             }
             addToTotal(total+products[id - 1].price);
             button.innerText = 'Added to cart';
@@ -365,7 +368,6 @@ export async function initCart() {
 
     const cart = await fetch(API_CART_GET);
     cartData = await cart.json();
-    console.log(cartData);
     for (const product of cartData.products) {
         createItemInCart(product);
     }
@@ -379,6 +381,7 @@ function addToTotal(newTotal) {
     totalElement.innerText = `TOTAL: $${newTotal}`;
 }
 function createItemInCart(product) {
+    cartQuantity += product.quantity;
     const cartItem = document.createElement('div');
     cartItem.setAttribute('data-id', product.id);
     cartItem.classList.add('cart-item');
@@ -410,6 +413,7 @@ function createItemInCart(product) {
             removeFromCart(product.id).then(
                 () => {
                     addToTotal(total-product.price);
+                    cartQuantity--;
                     shoppingCartCount();
                 });
         } else {
@@ -418,6 +422,7 @@ function createItemInCart(product) {
             deleteFromCart(product.id).then(
                 () => {
                     addToTotal(total-product.price);
+                    cartQuantity--;
                     shoppingCartCount();
                 }
             );
