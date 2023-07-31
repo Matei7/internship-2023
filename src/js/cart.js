@@ -1,6 +1,9 @@
 import * as events from "events";
+
 const cartID = "64c3b92532684"
+let modified = false;
 let cart = await getCart();
+
 function productTemplate(product) {
     return {
         userId: 1,
@@ -48,7 +51,8 @@ function generateAddToCartListener() {
             else cart[product.id] = productTemplate(product)
 
             await addToCart(product.id)
-            cart = await getCart()
+
+            cart = await getCart(true)
             displayProducts()
         })
 }
@@ -85,7 +89,7 @@ async function fetchProduct(id) {
 
 // GETTERS/SETTER FOR CART
 
-export async function addToCart(productID) {
+export async function addToCart(productID, quantity= 1) {
     await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -94,20 +98,15 @@ export async function addToCart(productID) {
             products: [
                 {
                     id: productID,
-                    quantity: 1
+                    quantity
                 }]
         })
     }).then(res => res.json())
+    modified = true
 }
 
-export async function removeFromCart(productID) {
-    let currentProduct
-    for (let product of cart.products) {
-        if (String(product.id) === productID)
-            currentProduct = product
-    }
-
-    if (currentProduct.quantity - 1 > 0)
+export async function removeFromCart(productID, totalQuantity, quantity = 1) {
+    if (totalQuantity - quantity > 0)
         await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -116,16 +115,27 @@ export async function removeFromCart(productID) {
                 products: [
                     {
                         id: productID,
-                        quantity: -1
+                        quantity: quantity * (-1)
                     }]
             })
         }).then(res => res.json())
     else await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}?products[]=${productID}`, {
         method: 'DELETE'
         }).then(res => res.json())
+    modified = true
 }
 
-export async function getCart() {
-    return await fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`)
+// function for getting user's cart
+export async function getCart(modified = false) {
+    // we first check if we have a cookie of the cart
+    const localCart = localStorage.getItem("cart")
+    if (localCart !== null && !modified) {
+        return JSON.parse(localCart)
+    }
+
+    // otherwise, we fetch the cart and set it as a cookie
+    const newCart = await fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`)
         .then((res) => res.json())
+        localStorage.setItem("cart", JSON.stringify(newCart))
+    return newCart
 }

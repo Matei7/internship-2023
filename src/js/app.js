@@ -2,7 +2,13 @@ import * as events from "events";
 import {initCart} from "./cart";
 
 // variable to keep track of the current number of products for pagination
-let currentNr = 0
+let currentBatchOfProducts = 1
+
+// variable to keep track of the current loaded products
+let currentProducts = []
+
+// variable to keep track of filters
+let checked = false
 
 export async function init() {
 	// fetch products and generate cards
@@ -14,8 +20,11 @@ export async function init() {
 	// add event listeners for every image
 	addListenersForImg()
 
+	// add event listeners for filters
+	filterButtons()
+
 	// initialize cart functionality
-	initCart()
+	await initCart()
 }
 
 // Generate pop up when clicking "Add to cart button"
@@ -43,12 +52,63 @@ function addButtons() {
 		btn.addEventListener("click", popUp)
 
 	// show more button
-	document.getElementById("btn-show-more").addEventListener("click", async () => {
-		generateCards(await fetchProducts())
-		addListenersForImg()
-		addButtons()
-		initCart()
-	})
+	document.getElementById("btn-show-more").addEventListener("click", showMore)
+}
+
+// Add event listeners for filter
+function filterButtons() {
+	for (let checkBox of document.getElementsByClassName("filter-checkbox")) {
+		// add an event listener for each checkbox
+		checkBox.addEventListener("change", checkBoxEvent)
+	}
+}
+
+async function checkBoxEvent() {
+	// set the global variable "checked" accordingly
+	let currentChecked = false;
+	for (let checkBox of document.getElementsByClassName("filter-checkbox")) {
+		if (checkBox.checked) {
+			currentChecked = true
+			break
+		}
+	}
+	checked = currentChecked
+
+	// restart from the first batch, but with now with the correct filters
+	currentBatchOfProducts = 1
+	let items = document.getElementById('items');
+	items.innerHTML = "";
+	await generateCards(await fetchProducts())
+	addListenersForImg()
+	addButtons()
+	await initCart()
+}
+
+function filterProducts(products, filters) {
+	// go through each filter and apply it
+	let resultProducts = new Set()
+	for (let filter of filters) {
+		let currentProducts = new Set(products.filter(product => product.category === filter))
+		resultProducts = [...resultProducts, ...currentProducts]
+	}
+	return Array.from(resultProducts)
+}
+
+function getFilters() {
+	let filters = []
+	for (let checkBox of document.getElementsByClassName("filter-checkbox")) {
+		if (checkBox.checked)
+			filters.push(checkBox.id)
+	}
+	return filters
+}
+
+async function showMore() {
+	currentBatchOfProducts++
+	await generateCards(await fetchProducts())
+	addListenersForImg()
+	addButtons()
+	await initCart()
 }
 
 // Add event listeners for thumbnails
@@ -60,10 +120,25 @@ function addListenersForImg() {
 }
 
 // Generate and add cards to html
-function generateCards(products) {
+async function generateCards(products) {
 	let cards = []
 
-	for (const product of products.products) {
+	// when generating cards, we filter the products first if we have any filters selected
+	let filters = getFilters()
+	let filteredProducts = []
+	if (filters.length > 0) {
+		// search for products that belong to that filter
+		filteredProducts = filterProducts(products, filters)
+		while (filteredProducts.length === 0 && currentBatchOfProducts < 10) {
+			filteredProducts = filterProducts(products, filters)
+			products = await fetchProducts()
+			currentBatchOfProducts++
+		}
+	}
+	else filteredProducts = products
+
+
+	for (const product of filteredProducts) {
 		let price = `<h2 class="price">$${product.price}</h2>`;
 		if (product.discountPercentage > 0.0) {
 			let newPrice = Math.floor((100.0 - product.discountPercentage) * product.price / 100)
@@ -95,9 +170,34 @@ function generateCards(products) {
 
 // Fetch products from dummy json
 async function fetchProducts() {
-	return fetch(`https://dummyjson.com/products?limit=10&skip=${currentNr*10}`)
+	// we first check if we already have stored the products in the local storage
+	const localProducts = localStorage.getItem("products")
+
+	if (localProducts !== null) {
+		// products exist in the local storage, we need to check if the requested products exist
+		let products = JSON.parse(localProducts)
+		if (products.length >= currentBatchOfProducts * 10) {
+			// the requested products already exist
+			return products.slice(currentBatchOfProducts * 10 - 10, currentBatchOfProducts * 10)
+		}
+		else {
+			// the requested products does not exist
+			const newProducts = await fetch(`https://dummyjson.com/products?limit=10&skip=${currentBatchOfProducts * 10}`)
+				.then(res => {
+					return res.json()
+				})
+
+			// update local storage
+			localStorage.setItem("products", JSON.stringify([...products, ...newProducts.products]))
+			return newProducts.products
+		}
+	}
+
+	// we do not have anything stored locally
+	const products = await fetch(`https://dummyjson.com/products?limit=10&skip=${currentBatchOfProducts*10}`)
 		.then(res => {
-			currentNr++
 			return res.json()
 		})
+	localStorage.setItem("products", JSON.stringify(products.products))
+	return products.products
 }

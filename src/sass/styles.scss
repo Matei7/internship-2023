@@ -93,14 +93,6 @@ main {
   height: max-content;
 }
 
-.filter {
-  /* positioning */
-  width: 20%;
-
-  /* styling */
-  border-radius: var(--def_border_radius);
-}
-
 .items {
   /* positioning */
   width: 80%;
@@ -312,6 +304,7 @@ main {
 
   /* positioning */
   position: fixed;
+  left: 100%;
 }
 
 .cartVisible {
@@ -417,6 +410,20 @@ main {
     background-color: lightgray;
     cursor: pointer;
   }
+}
+
+/* filter */
+
+.filter {
+  /* positioning */
+  width: 20%;
+  height: max-content;
+  margin: var(--def_padding);
+
+  /* styling */
+  border-radius: var(--def_border_radius);
+  padding: var(--def_padding);
+  background-color: lightgray;
 }
 
 /* footer */

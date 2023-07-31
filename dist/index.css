@@ -75,12 +75,6 @@ main {
   background-color: var(--def_background);
   height: max-content; }
 
-.filter {
-  /* positioning */
-  width: 20%;
-  /* styling */
-  border-radius: var(--def_border_radius); }
-
 .items {
   /* positioning */
   width: 80%;
@@ -243,7 +237,8 @@ main {
   /* styling */
   opacity: 0;
   /* positioning */
-  position: fixed; }
+  position: fixed;
+  left: 100%; }
 
 .cartVisible {
   /* styling */
@@ -324,6 +319,17 @@ main {
   #buy-btn:hover {
     background-color: lightgray;
     cursor: pointer; }
+
+/* filter */
+.filter {
+  /* positioning */
+  width: 20%;
+  height: max-content;
+  margin: var(--def_padding);
+  /* styling */
+  border-radius: var(--def_border_radius);
+  padding: var(--def_padding);
+  background-color: lightgray; }
 
 /* footer */
 
