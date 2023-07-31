@@ -10,11 +10,20 @@ export async function initCart() {
     const API_CART_ID = '64c3aa50d27ba';
     const API_CART_GET = `http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${API_CART_ID}`;
 
-    const cart = await fetch(API_CART_GET);
-    const cartData = await cart.json();
-    console.log(cartData);
-    createItems(cartData.products);
-    addToTotal(cartData.total);
+    if(localStorage.getItem('cart') === null) {
+        const cart = await fetch(API_CART_GET);
+        const cartData = await cart.json();
+        console.log("Cart fetched from API...");
+        createItems(cartData.products);
+        addToTotal(cartData.total);
+        localStorage.setItem('cart', JSON.stringify(cartData));
+    }
+    else {
+        console.log("Fetching cart from local storage...");
+        const cartData = JSON.parse(localStorage.getItem('cart'));
+        createItems(cartData.products);
+        addToTotal(cartData.total);
+    }
 }
 
 function createItems(cartData) {
@@ -53,12 +62,14 @@ function createItem(product) {
             deleteFromCart(product.id).then(() => {
                 addToTotal(total - product.price * product.quantity);
                 cartItems.removeChild(item);
+                localStorage.removeItem('cart');
             });
         } else {
             removeFromCart(product.id, -numberOfClicksRemove).then(() => {
                 const itemCounter = item.querySelector('h3');
                 itemCounter.innerText = `x${product.quantity - numberOfClicksRemove}`;
                 addToTotal(total - product.price * product.quantity);
+                localStorage.removeItem('cart');
             });
         }
         numberOfClicksRemove = 0;
@@ -83,6 +94,7 @@ function createItem(product) {
             itemCounter.innerText = `x${product.quantity + numberOfClicksAdd}`;
             addToTotal(total + product.price * numberOfClicksAdd);
             numberOfClicksAdd = 0;
+            localStorage.removeItem('cart');
         });
     }
 

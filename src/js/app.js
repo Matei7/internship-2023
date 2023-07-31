@@ -6,6 +6,7 @@ const API_CART_ID = '64c3aa50d27ba';
 const cartItems = document.querySelector('.cart-items');
 let cartData = null;
 let cartQuantity = 0;
+
 function createProducts(productsJSON) {
     const productsContainer = document.querySelector('.products');
     for (const product of productsJSON.products) {
@@ -94,11 +95,26 @@ function createProducts(productsJSON) {
 
 export async function getProducts() {
     const API_GET_PRODUCTS_URL = `https://dummyjson.com/products?limit=${limitPagination}&skip=${skipPagination}&select=id,title,brand,category,description,price,stock,rating,discountPercentage,images`
-    const response = await fetch(API_GET_PRODUCTS_URL);
-    const productsJSON = await response.json();
-    createProducts(productsJSON);
-    products = products.concat(productsJSON.products);
-    skipPagination += limitPagination;
+
+    try {
+        const response = await fetch(API_GET_PRODUCTS_URL);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const productsJSON = await response.json();
+        createProducts(productsJSON);
+        products = products.concat(productsJSON.products);
+        skipPagination += limitPagination;
+        console.log("Products fetched successfully from API!")
+
+    } catch (e) {
+        console.log("Error fetching products from API! Trying to fetch from localStorage...");
+        const allProducts = JSON.parse(localStorage.getItem('products'));
+        products = allProducts.slice(skipPagination, skipPagination + limitPagination)
+        createProducts(products);
+        skipPagination += limitPagination;
+        console.log("Products fetched successfully from localStorage!");
+    }
 }
 
 let total = 0;
@@ -173,7 +189,8 @@ export function addToCartPopUp() {
                     shoppingCartCount();
                 }
             );
-            addToTotal(total+products[id - 1].price);
+            addToTotal(total + products[id - 1].price);
+            localStorage.removeItem('cart');
             button.innerText = 'Added to cart';
             setTimeout(() => {
                 popUp.style.display = 'none';
@@ -333,6 +350,7 @@ export async function addToCart(productID, quantity = 1) {
         })
     }).then(res => res.json())
 }
+
 export async function removeFromCart(productID, quantity = -1) {
     await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${API_CART_ID}`, {
         method: 'POST',
@@ -359,8 +377,16 @@ export async function deleteFromCart(productID) {
 export async function initCart() {
     const API_CART_GET = `http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${API_CART_ID}`;
 
-    const cart = await fetch(API_CART_GET);
-    cartData = await cart.json();
+    if (localStorage.getItem('cart') === null) {
+        const cart = await fetch(API_CART_GET);
+        cartData = await cart.json();
+        console.log("No cart in local storage, fetching from API")
+        localStorage.setItem('cart', JSON.stringify(cartData));
+    } else {
+        console.log("Cart found in local storage")
+        cartData = JSON.parse(localStorage.getItem('cart'));
+    }
+
     for (const product of cartData.products) {
         createItemInCart(product);
     }
@@ -373,6 +399,7 @@ function addToTotal(newTotal) {
     const totalElement = document.querySelector('.cart-total');
     totalElement.innerText = `TOTAL: $${newTotal}`;
 }
+
 function createItemInCart(product) {
     cartQuantity += product.quantity;
     const cartItem = document.createElement('div');
@@ -413,22 +440,21 @@ export function displayItems(filter) {
     }
     const filteredItemsByCategory = products.filter(product => product.category.toLowerCase().startsWith(filter.toLowerCase()));
     if (filteredItemsByCategory.length !== 0) {
-        for (const product of products){
+        for (const product of products) {
             const productToDisplay = document.querySelector(`[data-id="${product.id}"]`);
             productToDisplay.style.display = 'none'
         }
-        for (const product of filteredItemsByCategory){
+        for (const product of filteredItemsByCategory) {
             const productToDisplay = document.querySelector(`[data-id="${product.id}"]`);
             productToDisplay.style.display = 'grid'
         }
-    }
-    else {
+    } else {
         const filteredItemsByTitle = products.filter(product => product.title.toLowerCase().startsWith(filter.toLowerCase()));
-        for (const product of products){
+        for (const product of products) {
             const productToDisplay = document.querySelector(`[data-id="${product.id}"]`);
             productToDisplay.style.display = 'none'
         }
-        for (const product of filteredItemsByTitle){
+        for (const product of filteredItemsByTitle) {
             const productToDisplay = document.querySelector(`[data-id="${product.id}"]`);
             productToDisplay.style.display = 'grid'
         }

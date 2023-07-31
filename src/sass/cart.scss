@@ -1,11 +1,9 @@
-
 .cart-page-items {
   display: flex;
   flex-direction: column-reverse;
-  width: 70%;
   margin: 0 auto;
   flex-grow: 0;
-  background-color: white;
+  max-width: 80%;
   height: 80vh;
   overflow-y: auto;
 }
@@ -20,18 +18,12 @@
   padding: 2rem;
 }
 
-.cart-item:last-child {
-  margin-top: 1rem;
-}
-
 .cart-item:nth-child(odd) {
   background-color: lightblue;
-  border-inline: 1px solid black;
 }
 
 .cart-item:nth-child(even) {
   background-color: lightsteelblue;
-  border: 1px solid black;
 }
 
 .cart-item-image {

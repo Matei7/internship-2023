@@ -358,6 +358,7 @@ ul.top-nav li.icon {
   position: absolute;
   display: none;
   justify-content: center;
+  font-size: 1.5rem;
   align-items: center;
   top: 10%;
   right: 15%;
@@ -377,12 +378,13 @@ ul.top-nav li.icon {
   justify-content: center;
   align-items: center;
   width: 40rem;
+  padding: 1rem;
   flex-grow: 0;
   background-color: white;
   border: 1px solid black;
   border-radius: 1rem;
   overflow-y: auto;
-  z-index: 99999;
+  z-index: 9999;
 }
 
 .cart-item {
@@ -404,11 +406,9 @@ ul.top-nav li.icon {
 }
 
 .cart-total {
-  display: flex;
   font-size: 1.6rem;
   font-family: 'Roboto', sans-serif;
   border-top: 1px solid black;
-  max-width: 100%;
   margin-left: auto;
 }
 
