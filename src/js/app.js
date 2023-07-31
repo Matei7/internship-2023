@@ -4,15 +4,12 @@ import {initCart} from "./cart";
 // variable to keep track of the current number of products for pagination
 let currentBatchOfProducts = 1
 
-// variable to keep track of the current loaded products
-let currentProducts = []
-
 // variable to keep track of filters
 let checked = false
 
 export async function init() {
 	// fetch products and generate cards
-	generateCards(await fetchProducts())
+	await generateCards(await fetchProducts())
 
 	// add event listeners for every button
 	addButtons()
@@ -74,7 +71,7 @@ async function checkBoxEvent() {
 	}
 	checked = currentChecked
 
-	// restart from the first batch, but with now with the correct filters
+	// restart from the first batch, but now with the correct filters
 	currentBatchOfProducts = 1
 	let items = document.getElementById('items');
 	items.innerHTML = "";
@@ -94,6 +91,7 @@ function filterProducts(products, filters) {
 	return Array.from(resultProducts)
 }
 
+// get all checked filters and return them in an array
 function getFilters() {
 	let filters = []
 	for (let checkBox of document.getElementsByClassName("filter-checkbox")) {
@@ -103,9 +101,12 @@ function getFilters() {
 	return filters
 }
 
+// event for when a user presses show more button
 async function showMore() {
+	// increase batch of products variable and generate card for the next batch
 	currentBatchOfProducts++
 	await generateCards(await fetchProducts())
+	// reset listeners and reinitialize cart
 	addListenersForImg()
 	addButtons()
 	await initCart()
@@ -126,18 +127,22 @@ async function generateCards(products) {
 	// when generating cards, we filter the products first if we have any filters selected
 	let filters = getFilters()
 	let filteredProducts = []
+
 	if (filters.length > 0) {
 		// search for products that belong to that filter
 		filteredProducts = filterProducts(products, filters)
+
+		// go through batches of products until we find the first batch that belongs to requested category
 		while (filteredProducts.length === 0 && currentBatchOfProducts < 10) {
 			filteredProducts = filterProducts(products, filters)
 			products = await fetchProducts()
 			currentBatchOfProducts++
 		}
 	}
+	// we don't have any filter
 	else filteredProducts = products
 
-
+	// go through all filtered products and generate cards
 	for (const product of filteredProducts) {
 		let price = `<h2 class="price">$${product.price}</h2>`;
 		if (product.discountPercentage > 0.0) {
@@ -164,11 +169,12 @@ async function generateCards(products) {
 		cards.push(card)
 	}
 
+	// add the cards in HTML
 	let items = document.getElementById('items');
 	items.innerHTML += cards.join("\n");
 }
 
-// Fetch products from dummy json
+// Fetch products from the API
 async function fetchProducts() {
 	// we first check if we already have stored the products in the local storage
 	const localProducts = localStorage.getItem("products")

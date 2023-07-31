@@ -23,6 +23,7 @@ function productTemplate(product) {
     `
 }
 
+// initialize cart page
 async function initCartPage() {
     await updateProducts(false)
     generateQuantityBtnListeners()
@@ -53,6 +54,7 @@ function debounce(func, timeout = 300){
     };
 }
 
+// process changes after the user stops clicking
 const processChanges = debounce(async (btn, currentProduct) => {
     // make changes after user stops pressing button
     await modifyCart(btn, currentProduct)
@@ -74,7 +76,7 @@ async function modifyCart(btn, currentProduct) {
 }
 
 
-// update current products
+// update current products and make call to api if modified is true
 async function updateProducts(modified) {
     cart = await getCart(modified)
     document.getElementById("products").innerHTML = ""
@@ -84,10 +86,12 @@ async function updateProducts(modified) {
     document.getElementById("cart-page-price").innerText = `$${cart.total}`
 }
 
+// generates listener for the buy button
 function generateBuyBtnListener() {
     document.getElementById("buy-btn").addEventListener("click", buyEvent)
 }
 
+// listener for the buy button
 async function buyEvent() {
     let stringOfProducts = ""
     for (let product of cart.products) {

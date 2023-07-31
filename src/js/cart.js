@@ -4,6 +4,7 @@ const cartID = "64c3b92532684"
 let modified = false;
 let cart = await getCart();
 
+// returns a template for a newly added product
 function productTemplate(product) {
     return {
         userId: 1,
@@ -15,6 +16,7 @@ function productTemplate(product) {
     }
 }
 
+// initializes the cart
 export async function initCart() {
     displayProducts()
     generateCartListener()
@@ -23,16 +25,19 @@ export async function initCart() {
 
 // display cart container when clicking cart button
 function generateCartListener() {
+    // event listener for when the user holds the mouse on the cart icon
     document.getElementById("cart-btn").addEventListener("mouseover", () => {
         let cartHTML = document.getElementById("cart")
             cartHTML.classList.replace("cartHidden", "cartVisible")
     })
 
+    // event listener for when the user moves the mouse from the cart icon
     document.getElementById("cart-btn").addEventListener("mouseleave", () => {
         let cartHTML = document.getElementById("cart")
         cartHTML.classList.replace("cartVisible", "cartHidden")
     })
 
+    // event listener for when a user presses the image of a product
     document.getElementById("cart-btn").addEventListener("click", () => {
         location.href = `cart.html?id=""`
     })
@@ -40,6 +45,7 @@ function generateCartListener() {
 
 // add another listener for each add to cart button to push products in an array
 function generateAddToCartListener() {
+    // go through each button and add listeners
     for (let btn of document.getElementsByClassName("buy-btn"))
         btn.addEventListener("click", async () => {
             // fetch the wanted product and push it in the cart
@@ -127,15 +133,15 @@ export async function removeFromCart(productID, totalQuantity, quantity = 1) {
 
 // function for getting user's cart
 export async function getCart(modified = false) {
-    // we first check if we have a cookie of the cart
+    // we first check if we have the cart in local storage
     const localCart = localStorage.getItem("cart")
     if (localCart !== null && !modified) {
         return JSON.parse(localCart)
     }
 
-    // otherwise, we fetch the cart and set it as a cookie
+    // otherwise, we fetch the cart and add it to the local storage
     const newCart = await fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`)
         .then((res) => res.json())
-        localStorage.setItem("cart", JSON.stringify(newCart))
+    localStorage.setItem("cart", JSON.stringify(newCart))
     return newCart
 }
