@@ -1,0 +1,167 @@
+* {
+    box-sizing: border-box;
+}
+
+body{
+    background-image: url("../public/images/hexagon-texture.jpg");
+    display: flex;
+    margin: 20px;
+    padding: 0;
+    align-items: center;
+    flex-direction: column;
+    font-family: "Helvetica", sans-serif;
+}
+
+@font-face{
+    font-family: "Inter";
+    src: url("../public/fonts/Inter-VariableFont_slnt,wght.ttf")
+}
+
+.giga-header{
+    position: fixed;
+    background-color: rgba(255, 255, 255, 0.7);
+    height: 12vh;
+    align-items: center;
+    width: 90%;
+    display: flex;
+    border-radius: 20px;
+    box-shadow: 0 1px 5px rgb(255, 255, 255);
+    z-index: 999;
+}
+
+.home-page{
+    width: 10%;
+    align-items: center;
+    display: flex;
+    text-align: left;
+    margin: 15px 0 15px 15px;
+    min-width: 10vh;
+    /*background-color: rgba(131, 131, 131, 0.5);*/
+}
+
+.giga-logo{
+    width: 10vh;
+    user-select: none;
+}
+
+.giga-title{
+    user-select: none;
+    width: 70%;
+    text-align: left;
+    font-family: "Inter", serif;
+    font-size: min(8vw, 8vh);
+    white-space: nowrap;
+    overflow: hidden;
+    color: #4d4e8d;
+    padding-left: 10px;
+    /*background-color: rgba(52, 52, 52, 0.5);*/
+}
+
+.cart-in-title{
+    width: 20%;
+    text-align: right;
+    font-size: 2em;
+    padding-right: 3%;
+    text-decoration: none;
+    color: #4d4e8d;
+    /*background-color: rgba(131, 131, 131, 0.5);*/
+}
+
+.cart-in-title:hover{
+    font-size: 1.8em;
+    color: #8081c0;
+    padding-right: 3.5%;
+}
+
+.products-display{
+    margin-top: 20vh;
+    width: 90%;
+    height: 90%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.shop-item{
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    width: min(calc(25% - 5vh), 300px);
+    height: 45vh;
+    min-height: 250px;
+    min-width: 200px;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 2vh;
+    align-items: center;
+    padding: 1% 1% 1% 1%;
+    border-radius: 5px;
+}
+
+@media only screen and (max-width: 1100px){
+    .shop-item{
+        width:calc(33% - 2vh);
+    }
+}
+
+@media only screen and (max-width: 700px){
+    .shop-item{
+        width:calc(50% - 2vh);
+    }
+}
+
+.item-category{
+    text-align: left;
+}
+
+.item-image{
+    margin: auto;
+    display: block;
+    height: 30vh;
+    width: 400px;
+    min-height: 150px;
+    object-fit: cover;
+    max-width: 80%;
+    border: 1px solid;
+}
+
+.item-title{
+    text-align: center;
+    font-weight: bold;
+}
+
+.item-price{
+    text-align: right;
+}
+
+.item-add-to-cart{
+    text-align: center;
+    background-color: #4d4e8d;
+    font-weight: bold;
+    border-radius: 6px;
+    width: 60%;
+    user-select: none;
+    margin: 0.3vh;
+    cursor:pointer;
+}
+
+.item-add-to-cart:hover{
+    background-color: #7476ce;
+}
+
+.giga-footer{
+    /*visibility: hidden;*/
+    /*position: fixed;*/
+    color: #c4c4c4;
+    bottom: 2vh;
+    background-color: rgba(2, 0, 0, 0.7);
+    height: 6vh;
+    font-size: 0.9rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+    display: flex;
+    width: 90%;
+    border-radius: 20px;
+    box-shadow: 0 1px 5px rgb(0, 0, 0);
+    z-index: 999;
+}
