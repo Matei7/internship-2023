@@ -1,52 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Title</title>
-	<link rel="stylesheet" href="../dist/index.css">
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200&display=swap" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300&family=Nunito:wght@200&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../dist/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300&family=Nunito:wght@200&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
 <div id="app">
 
-	<section class="notification-container">
-		<div id="notification"></div>
-	</section>
+    <section class="notification-container">
+        <div id="notification"></div>
+    </section>
 
-	<header>
-		<h1>Thrift shop</h1>
-		<nav>
-			<div id="cart" class="fa-solid fa-cart-shopping">
-				<span id="cart-count">0</span>
-			</div>
-			<div id="cart-items">
-				<div class="cart-products">
-					<div class="cart-total"></div>
-				</div>
-			</div>
+    <header>
+        <h1>Thrift shop</h1>
+        <nav>
+            <div id="cart" class="fa-solid fa-cart-shopping">
+                <span id="cart-count">0</span>
+            </div>
+            <div id="cart-items">
+                <div class="cart-products">
+                    <div class="cart-total"></div>
+                </div>
+            </div>
 
-		</nav>
-	</header>
-	<main>
-		<div class="filter-section">
-			<p>Categories:</p>
+        </nav>
+    </header>
+    <main>
+        <div class="filter-wrapper">
+            <div class="filter-section">
+                <p>Categories:</p>
 
-		</div>
-		<div class="shop-items"></div>
-	</main>
+            </div>
+        </div>
+        <div class="shop-items"></div>
+    </main>
 
-	<div class="pagination-controls">
-		<button class="load-more-btn" event-set="false">Load more</button>
-	</div>
-	<footer>
-		<p>© 2023 - Thrift shop</p>
-	</footer>
+    <div class="pagination-controls">
+        <button class="load-more-btn" event-set="false">Load more</button>
+    </div>
+    <footer>
+        <p>© 2023 - Thrift shop</p>
+    </footer>
 </div>
 
 <script defer src="../dist/index.js" class="app-js"></script>

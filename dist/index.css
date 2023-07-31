@@ -128,25 +128,28 @@ body {
     display: flex;
     justify-content: space-between;
     flex-direction: row; }
-  #app .filter-section {
+  #app .filter-wrapper {
+    border: 1px solid rgba(0, 0, 0, 0.2);
     top: 50%;
     transform: translateY(-50%);
-    padding: 2rem 1rem;
-    max-height: 30rem;
-    width: 6.5rem;
     position: fixed;
+    z-index: 7;
+    margin-left: 10px;
+    border-radius: 40px;
+    overflow: hidden;
+    background-color: transparent;
+    box-shadow: 0 0 15px 3px rgba(0, 0, 0, 0.2); }
+  #app .filter-section {
+    padding: 0 1rem 0 1rem;
+    height: 20rem;
+    width: 6.5rem;
     z-index: 8;
     border-radius: 40px;
     display: flex;
     flex-direction: column;
     margin-left: 10px;
-    box-shadow: 0 0 15px 3px rgba(0, 0, 0, 0.5);
-    overflow-x: hidden;
-    justify-content: center;
-    overflow-y: auto;
+    overflow-y: scroll;
     white-space: nowrap; }
-    #app .filter-section:first-child {
-      margin-top: 3rem; }
   #app .filter-section p {
     margin: 0;
     display: flex;
@@ -172,7 +175,7 @@ body {
       transform: scale(1.1); }
   #app .shop-items {
     margin-top: 10rem;
-    margin-left: calc(8rem + 20px);
+    margin-left: 11rem;
     margin-right: calc(8rem + 20px);
     display: flex;
     flex-wrap: wrap;
