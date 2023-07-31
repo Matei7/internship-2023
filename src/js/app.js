@@ -86,6 +86,8 @@ function createProducts(productsJSON) {
         productContainer.appendChild(discountPercentage);
         productContainer.appendChild(price);
         productContainer.appendChild(button);
+
+        productContainer.style.display = 'none';
         productsContainer.appendChild(productContainer);
     }
 }
@@ -144,7 +146,6 @@ export function addToCartPopUp() {
                 removeButton.innerText = 'X';
                 removeButton.classList.add('cart-item-remove');
                 removeButton.addEventListener('click', () => {
-                    const productQuantity = cartData.products.find(product => product.id === id).quantity
                     if (cartData != null && cartData.products.find(product => product.id === id).quantity > 1) {
                         const cartItems = document.querySelector('.cart-items');
                         const item = cartItems.querySelector(`[data-id="${id}"]`);
@@ -321,6 +322,8 @@ window.addEventListener('scroll', () => {
             addToCartPopUp();
             nextImageEvent();
             hoverItem();
+            const filter = document.querySelector('.filter-bar').value;
+            displayItems(filter);
         });
     }
 }, {passive: true});
@@ -383,7 +386,7 @@ function addToTotal(newTotal) {
 function createItemInCart(product) {
     cartQuantity += product.quantity;
     const cartItem = document.createElement('div');
-    cartItem.setAttribute('data-id', product.id);
+    cartItem.setAttribute('data-cart-id', product.id);
     cartItem.classList.add('cart-item');
 
     const counter = document.createElement('h3')
@@ -434,4 +437,45 @@ function createItemInCart(product) {
     cartItem.appendChild(price);
     cartItem.appendChild(removeButton);
     cartItems.appendChild(cartItem);
+}
+
+export function displayItems(filter) {
+    if (filter === '') {
+        for (const product of products) {
+            const productToDisplay = document.querySelector(`[data-id="${product.id}"]`);
+            productToDisplay.style.display = 'grid'
+        }
+        return;
+    }
+    const filteredItemsByCategory = products.filter(product => product.category.toLowerCase().startsWith(filter.toLowerCase()));
+    console.log(filteredItemsByCategory)
+    if (filteredItemsByCategory.length !== 0) {
+        for (const product of products){
+            const productToDisplay = document.querySelector(`[data-id="${product.id}"]`);
+            productToDisplay.style.display = 'none'
+        }
+        for (const product of filteredItemsByCategory){
+            const productToDisplay = document.querySelector(`[data-id="${product.id}"]`);
+            productToDisplay.style.display = 'grid'
+        }
+    }
+    else {
+        const filteredItemsByTitle = products.filter(product => product.title.toLowerCase().startsWith(filter.toLowerCase()));
+        for (const product of products){
+            const productToDisplay = document.querySelector(`[data-id="${product.id}"]`);
+            productToDisplay.style.display = 'none'
+        }
+        for (const product of filteredItemsByTitle){
+            const productToDisplay = document.querySelector(`[data-id="${product.id}"]`);
+            productToDisplay.style.display = 'grid'
+        }
+    }
+}
+
+export function filterBar() {
+    const filterBar = document.querySelector('.filter-bar')
+    filterBar.addEventListener('input', (event) => {
+        const filter = event.target.value;
+        displayItems(filter);
+    });
 }

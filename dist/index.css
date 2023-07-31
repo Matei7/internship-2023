@@ -27,7 +27,7 @@ ul.top-nav {
   background-color: transparent; }
 
 @media screen and (max-width: 800px) {
-  ul.top-nav li:not(:nth-child(3)):not(:nth-child(4)) {
+  ul.top-nav li:not(:nth-child(3)):not(:nth-child(4)):not(:nth-child(5)) {
     display: none; } }
 
 .logo {
@@ -378,4 +378,17 @@ ul.top-nav li.icon {
     transform: rotate(0deg); }
   100% {
     transform: rotate(360deg); } }
+
+.filter-bar {
+  margin: 1.3rem 3rem;
+  width: 90%;
+  border: none;
+  background-color: lightblue;
+  border-radius: 2rem;
+  height: 3rem;
+  font-size: 1.5rem;
+  text-align: center; }
+
+.filter-bar:focus {
+  outline: none; }
 
