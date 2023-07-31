@@ -4,12 +4,37 @@ import {addDocumentListener} from "./galleryFunctions";
 let totalProductsInPage=0;
 let totalProductsInCart;
 let mainContainer = document.querySelector(".product-grid");
+const idCart="64c77ddd8e88f";
+
+// function setCookie(name, value, days) {
+//     const expirationDate = new Date();
+//     expirationDate.setTime(expirationDate.getTime() + (days * 24 * 60 * 60 * 1000));
+//     const expires = "expires=" + expirationDate.toUTCString();
+//     document.cookie = name + "=" + value + ";" + expires + ";path=/";
+// }
+//
+// // obține conținutul unui cookie
+// function getCookie(name) {
+//     const cookieName = name + "=";
+//     const decodedCookie = decodeURIComponent(document.cookie);
+//     const cookieArray = decodedCookie.split(';');
+//     for (let i = 0; i < cookieArray.length; i++) {
+//         let cookie = cookieArray[i];
+//         while (cookie.charAt(0) === ' ') {
+//             cookie = cookie.substring(1);
+//         }
+//         if (cookie.indexOf(cookieName) === 0) {
+//             return cookie.substring(cookieName.length, cookie.length);
+//         }
+//     }
+//     return null;
+// }
 
 export function getTotalProductsInPage(){
     return totalProductsInPage;
 }
 export function fetchCartProducts() {
-    return fetch('https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c3a491accd0', {
+    return fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -31,7 +56,7 @@ export function fetchCartProducts() {
 }
 
 function getHowManyProductsInCart() {
-    fetch('http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c3a491accd0')
+    fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`)
         .then(response => response.json())
         .then(data => {
             totalProductsInCart = data.totalQuantity;
@@ -67,9 +92,6 @@ function loadProductsInPage() {
             throw error;
         });
 }
-
-
-
 
 
 
@@ -131,7 +153,7 @@ function showPopUp() {
 
 function addProductInCartRequest(cardElement) {
     const productId = Number(cardElement.dataset.id);
-    fetch('https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c3a491accd0', {
+    fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json',
             },

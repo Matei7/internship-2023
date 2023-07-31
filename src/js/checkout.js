@@ -3,18 +3,19 @@ let totalText = document.querySelector(".checkout-window-total");
 
 let productsArrayAfterUpdateAProduct = [];
 
+const idCart="64c77ddd8e88f";
+
 async function updateTotalText() {
     try {
-        const total = fetchCartsTotalPrice().then(total => {
-            totalText.textContent = `Total: ${total.toFixed(2)}`;
-        });
-    } catch (error) {
+        const total = productsArrayAfterUpdateAProduct.reduce((acc, product) => acc + product.total, 0);
+        }
+     catch (error) {
         console.error('Error updating total text:', error);
     }
 }
 
 function fetchCartsTotalPrice() {
-    return fetch('https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c3a491accd0', {
+    return fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -36,7 +37,7 @@ function fetchCartsTotalPrice() {
         });
 }
 function fetchCart() {
-    return fetch('https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c3a491accd0', {
+    return fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -87,20 +88,17 @@ function plusMinusBtnListener(card){
         quantity.value++;
         increaseQuantityRequest(card);
         updateQuantityProducts(card);
-
     });
     minusBtn.addEventListener("click", () => {
-        if(quantity.value>1){
             quantity.value--;
             decreaseQuantityRequest(card);
             updateQuantityProducts(card);
-        }
     });
 }
 
 function increaseQuantityRequest(cardElement) {
     const productId = Number(cardElement.dataset.id);
-    fetch('https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c3a491accd0', {
+    fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json',
         },
@@ -119,9 +117,20 @@ function increaseQuantityRequest(cardElement) {
 }
 
 function decreaseQuantityRequest(cardElement) {
-
     const productId = Number(cardElement.dataset.id);
-    fetch('https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c3a491accd0', {
+    console.log("aicea1");
+    if(cardElement.querySelector(".input-text.qty.text").value<1){
+        console.log("aicea2");
+        fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}?products[]=${productId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json',
+            }
+        })
+            .then(res => res.json())
+            .then(console.log)
+           .then(checkoutWindow.removeChild(cardElement));
+    }
+    fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json',
         },
@@ -149,9 +158,11 @@ function updateQuantityProducts(){
                 itemQuantity.textContent = product.quantity;
                 const price=product.price - (product.price * product.discountPercentage) / 100;
                 itemTotalPrice.textContent = `${(product.quantity * price).toFixed(2)}`;
-                updateTotalText();
+
             }
-        })
+            productsArrayAfterUpdateAProduct = productsFromCart;
+             updateTotalText();
+            })
         .catch(error => {
             console.error('Error show cart items:', error);
         });
@@ -166,7 +177,9 @@ function showCheckoutProducts(){
                 let card=createItemBoxCheckout(product);
                 checkoutWindow.appendChild(card);
                 plusMinusBtnListener(card);
-                updateTotalText();
+                fetchCartsTotalPrice().then(total => {
+                    totalText.textContent = total.toFixed(2);
+                });
             }
         })
         .catch(error => {
@@ -179,4 +192,8 @@ buyButton.addEventListener("click", ()=>{
     window.location.href = "index.html";
 });
 
+const titleShop=document.getElementById("meta-shop");
+titleShop.addEventListener("click", ()=>{
+    window.location.href = "index.html";
+});
 showCheckoutProducts();
