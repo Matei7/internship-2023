@@ -28,7 +28,15 @@ export async function addToCartAPI(productId, quantity) {
     });
 
 }
+export async function getCartProductForId(productId) {
+    return await fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c38597d8f95`, {
+        method: 'GET',
+        headers: {'Content-Type': 'application/json'},
+    }).then(response => response.json()).then((res) => {
+        return res.products.find((product) => product.id === productId);
+    });
 
+}
 export async function removeFromCartAPI(productId) {
     return await fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c38597d8f95?products[]=${productId}`, {
         method: 'DELETE',

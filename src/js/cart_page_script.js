@@ -1,12 +1,8 @@
-import {handleCartHoverEvent, loadCart, updateHeaderCartNumbers} from "./cart_script";
-import {getCart, removeFromCartAPI, updateProductAPI} from "./cart_api";
+import {loadCart, updateHeaderCartNumbers} from "./cart_script";
+import {getCart, getCartProductForId, removeFromCartAPI, updateProductAPI} from "./cart_api";
 
-handleCartHoverEvent();
 
-await loadCart();
 let cart = await getCart();
-
-console.log(cart);
 
 function loadCartPage() {
     const cartProductsContainer = document.querySelector(".cartpage-products");
@@ -20,7 +16,7 @@ function loadCartPage() {
             </div>
             <div class="cartpage-product-info">
                 <div class="cartpage-product-name">${cartProduct.title}</div>
-                <div class="cartpage-product-price">$${cartProduct.discountedPrice.toFixed(2)}</div>
+                <div class="cartpage-product-price" product-id="${cartProduct.id}">$${cartProduct.discountedPrice.toFixed(2)}</div>
                 <div class="cartpage-product-controls">
                     <div class="lower-btn" product-id="${cartProduct.id}">&lt;</div>
                     <div class="quantity" product-id="${cartProduct.id}">${cartProduct.quantity}</div>
@@ -31,9 +27,16 @@ function loadCartPage() {
         const higherButtonForCurrentProduct = cartProductItem.querySelector(".higher-btn");
         lowerButtonForCurrentProduct.addEventListener("click", async (event) => {
             await updateCountForProduct(cartProduct.id, -1)
+            const newPriceNode=cartProductItem.querySelector(`.cartpage-product-price[product-id="${cartProduct.id}"]`);
+            const updatedProduct=await getCartProductForId(cartProduct.id);
+            newPriceNode.innerHTML=`$${updatedProduct.discountedPrice.toFixed(2)}`;
+
         });
         higherButtonForCurrentProduct.addEventListener("click", async (event) => {
             await updateCountForProduct(cartProduct.id, 1)
+            const newPriceNode=cartProductItem.querySelector(`.cartpage-product-price[product-id="${cartProduct.id}"]`);
+            const updatedProduct=await getCartProductForId(cartProduct.id);
+            newPriceNode.innerHTML=`$${updatedProduct.discountedPrice.toFixed(2)}`;
         });
         cartProductsContainer.appendChild(cartProductItem);
     }
@@ -49,7 +52,8 @@ function updateCartpageTotalPrice() {
     document.querySelector(".total-price").innerHTML = `Total: $${cart.discountTotal.toFixed(2)}`;
 }
 
-function updateCartCount() {
+async function updatePriceForProduct(productId) {
+
 }
 
 async function updateCountForProduct(productId, value) {
@@ -63,11 +67,14 @@ async function updateCountForProduct(productId, value) {
             cart = json['data'];
             console.log(quantityNode.innerHTML);
             quantityNode.innerHTML = Number(quantityNode.innerHTML) + value;
-            updateCartpageTotalPrice();
-            loadCart(cart);
+
+
         });
     }
-    await updateHeaderCartNumbers(cart);
+    await updateCartpageTotalPrice();
+    await updatePriceForProduct(productId);
+    // await loadCart(cart);
+    //await updateHeaderCartNumbers(cart);
 }
 
 async function removeAllItemsFromCart() {
@@ -90,7 +97,7 @@ async function handleCheckoutButton() {
 }
 
 loadCartPage();
-handleCheckoutButton();
+await handleCheckoutButton();
 
 
 
