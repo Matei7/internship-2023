@@ -6,46 +6,58 @@ const cartID = require('../../cart_id.json').token;
 const cartURL = `http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`;
 const cartCounter = document.getElementById('cart-counter');
 let productFilteringCriterium = "";
-
+let categorySelectionRadio;
 
 
 export async function init() {
     await setupNewItems(numberOfItemsLoaded, numberOfItemsPerPage);
     setupLoadButton();
     await setupUI();
-    setupCartUI();
-    await loadCartUIContent();
-    //handleFilterCriteriaChange();
+    //setupCartUI();
+    //await loadCartUIContent();
+    handleFilterCriteriaChange();
 }
 
 async function setupNewItems() {
-    await loadShopProducts(numberOfItemsLoaded, numberOfItemsPerPage);
+    let addedItemsCount = await addShopProducts(numberOfItemsLoaded, numberOfItemsPerPage, productFilteringCriterium);
     setupAddToCartButtons();
 
-    numberOfItemsLoaded += 3;
+    numberOfItemsLoaded += addedItemsCount;
 }
 
-async function loadShopProducts(numberOfItemsLoaded, numberOfItemsPerPage) {
+async function addShopProducts(numberOfItemsLoaded, numberOfItemsPerPage) {
     let sessionStorageData = sessionStorage.getItem('store-products');
-    let alreadyStoredItems = sessionStorageData !== null ? JSON.parse(sessionStorageData): [];
 
-    let productObjectsArray = [];
+    let alreadyStoredItems = (sessionStorageData !== null) ? JSON.parse(sessionStorageData): [];
+
+    let itemsNotYetAdded = [];
+    let skippedItemsCount = 0;
     if(alreadyStoredItems === [] || numberOfItemsLoaded + numberOfItemsPerPage > alreadyStoredItems.length) {
-        console.log((await getProductsPaginatedJSON(numberOfItemsLoaded, numberOfItemsPerPage)));
-        const fetchResult = (await getProductsPaginatedJSON(numberOfItemsLoaded, numberOfItemsPerPage));
-        productObjectsArray.forEach(x => {alreadyStoredItems.push(x);});
+        let fetchResult = (await getProductsPaginatedJSON(numberOfItemsLoaded, numberOfItemsPerPage));
+
+        fetchResult.products.forEach(x => alreadyStoredItems.push(x));
+        itemsNotYetAdded = fetchResult.products;
+        skippedItemsCount = fetchResult.newSkippedItemsCount;
         sessionStorage.setItem('store-products', JSON.stringify(alreadyStoredItems));
     }
-    else{
+    else {
         for(let index = numberOfItemsLoaded; index < numberOfItemsLoaded + numberOfItemsPerPage; index++)
-        {
-            productObjectsArray.push(alreadyStoredItems[index]);
-        }
+            {
+                skippedItemsCount++;
+                itemsNotYetAdded.push(alreadyStoredItems[index]);
+            }
     }
 
+
+    addItemsToPage(itemsNotYetAdded);
+    return skippedItemsCount;
+}
+
+function addItemsToPage(itemsArray)
+{
     const productsContainer = document.getElementById("products-list");
 
-    for (const product of productObjectsArray) {
+    for (const product of itemsArray) {
         const productHTML = getProductHTML(product);
         productsContainer.appendChild(productHTML);
     }
@@ -123,9 +135,10 @@ async function getProductsPaginatedJSON(numberOfProductsSkipped, numberOfProduct
     //while(greaterBatch.length < numberOfProductsToFetch) {
         //let newBatch = [];
         return fetch(`https://dummyjson.com/products?limit=${numberOfProductsToFetch}&skip=${numberOfProductsSkipped}`)
-            .then(res => {
-                return res.json();
-            });
+            .then(async (res) => {
+                return await res.json();
+                }
+            )
         /*console.log(newBatch);
         for(const item of newBatch)
         {
@@ -315,7 +328,10 @@ function createCartHTMLForItem(item)
 function setupLoadButton(){
     const loadButton = document.getElementById('load-more-button');
     loadButton.addEventListener('click', async () => {
-        await setupNewItems(numberOfItemsLoaded, numberOfItemsPerPage);
+        if(productFilteringCriterium.length === 0)
+            await setupNewItems(numberOfItemsLoaded, numberOfItemsPerPage);
+        else
+            await setupNewItemsFiltered();
     });
 }
 
@@ -323,13 +339,16 @@ function setupLoadButton(){
 async function setupUI() {
     await setupProductCategoriesList();
 
-    document.getElementById('load-checkout-button').addEventListener('click', () => {
+    return; //TODO remove when you have authorization for the internal API
+    /*document.getElementById('load-checkout-button').addEventListener('click', () => {
         window.location = `checkout.html?cart-id=${cartID}`;
     });
 
     let numberOfElementsInCart = (await loadCartData(cartURL, false)).totalProducts;
     document.getElementById('cart-counter').innerText = numberOfElementsInCart;
+    */
 }
+
 
 async function loadCartUIContent(cartEvent) {
     let cartData = await loadCartData(cartURL, true);
@@ -367,8 +386,6 @@ async function loadCartData(cartURL, fullRefresh = false) {
     let endTime = performance.now();
     let timeElapsed = endTime - startTime;
 
-    console.log(`The fetch took ${timeElapsed / 1000} seconds to run.`);
-
 
 
     const stringObjData = JSON.stringify(cartData);
@@ -381,7 +398,7 @@ async function setupProductCategoriesList() {
     const productCategoriesList = document.getElementsByClassName('product-categories')[0];
 
     const productCategories = (await getProductsCategories());
-
+    productCategories.push('all');
     for(const category of productCategories)
     {
         const categoryHTML = getHTMLForCategory(category);
@@ -394,6 +411,7 @@ function getHTMLForCategory(category)
     const listItem = document.createElement('li');
     const checkboxInput = document.createElement('input');
 
+    checkboxInput.setAttribute('value', category);
     checkboxInput.setAttribute('type', 'radio');
     checkboxInput.setAttribute('id', 'category-selection');
     checkboxInput.setAttribute('name', 'category-selection');
@@ -408,18 +426,70 @@ function getHTMLForCategory(category)
 
 function handleFilterCriteriaChange()
 {
-    const categorySelectionRadio = document.getElementById('category-selection');
-    categorySelectionRadio.addEventListener('change', async (event) => {
-        sessionStorage.clear();
-        productFilteringCriterium = categorySelectionRadio.value;
-        console.log(productFilteringCriterium);
+    const categorySelectionRadio = document.getElementsByName('category-selection');
+    categorySelectionRadio.forEach(checkbox => checkbox.addEventListener('change', setupNewItemsFiltered));
+}
+async function setupNewItemsFiltered(event= null)
+{
+    if(event !== null) {
+        categorySelectionRadio = event.target;
+        numberOfItemsLoaded = 0;
 
         const productsContainer = document.getElementById("products-list");
-        console.log(productsContainer);
         productsContainer.innerHTML = "";
+    }
+    productFilteringCriterium = categorySelectionRadio.value;
 
-        await loadShopProducts(numberOfItemsLoaded, numberOfItemsPerPage, productFilteringCriterium);
-        setupAddToCartButtons();
-    });
+    let newlyAddedItemsCount = await loadShopProductsFiltered(numberOfItemsLoaded, numberOfItemsPerPage, productFilteringCriterium);
+    numberOfItemsLoaded += newlyAddedItemsCount;
+    setupAddToCartButtons();
+}
+async function loadShopProductsFiltered(numberOfItemsLoaded, numberOfItemsPerPage, filteredCategory) {
+
+
+    let itemsNotYetAdded = [];
+    let skippedItemsCount = 0;
+    let fetchResult = (await getProductsPaginatedFilteredJSON(numberOfItemsLoaded, numberOfItemsPerPage, filteredCategory));
+
+    itemsNotYetAdded = fetchResult.products;
+    skippedItemsCount = fetchResult.newSkippedItemsCount;
+
+
+    addItemsToPage(itemsNotYetAdded);
+    return skippedItemsCount;
 }
 
+async function getProductsPaginatedFilteredJSON(numberOfItemsToSkip, pageSize, filterCategory) {
+    if(filterCategory === "all")
+    {
+        productFilteringCriterium = "";
+        let newSkippedItemsCount = 0;
+        await setupNewItems();
+        return;
+    }
+
+    const newPage = [];
+    let newSkippedItemsCount = 0;
+    while (newPage.length < pageSize) {
+        let unfilteredPage;
+        unfilteredPage = await fetch(`https://dummyjson.com/products?limit=${pageSize}&skip=${numberOfItemsToSkip + newSkippedItemsCount}`)
+            .then(async (res) => {
+                    return await res.json();
+                }
+            )
+
+        if (unfilteredPage.products.length === 0)
+            return {products: newPage, newSkippedItemsCount};
+        for (const item of unfilteredPage.products) {
+            newSkippedItemsCount++;
+            //console.log(item[])
+            if (item["category"] === filterCategory)
+                newPage.push(item);
+            if (newPage.length === pageSize) {
+                break;
+            }
+        }
+    }
+
+    return {products: newPage, newSkippedItemsCount};
+}
