@@ -2,47 +2,94 @@
 .cart-page-items {
   display: flex;
   flex-direction: column-reverse;
-  justify-content: center;
-  align-items: center;
-  width: 50%;
+  width: 70%;
   margin: 0 auto;
   flex-grow: 0;
   background-color: white;
-  border: 1px solid black;
-  border-radius: 1rem;
+  height: 80vh;
   overflow-y: auto;
 }
 
 .cart-item {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1rem;
-  margin-bottom: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
   height: 5rem;
-  width: 90%;
-  padding: 0 1rem 0 1rem;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
+  padding: 2rem;
+}
+
+.cart-item:last-child {
+  margin-top: 1rem;
+}
+
+.cart-item:nth-child(odd) {
+  background-color: lightblue;
+  border-inline: 1px solid black;
+}
+
+.cart-item:nth-child(even) {
+  background-color: lightsteelblue;
+  border: 1px solid black;
 }
 
 .cart-item-image {
   height: 5rem;
   width: 5rem;
   object-fit: cover;
+  border: 2px solid black;
 }
 
 .cart-total {
   display: flex;
   font-size: 1.6rem;
+  align-items: center;
+  justify-content: center;
   font-family: 'Roboto', sans-serif;
-  border-top: 1px solid black;
-  max-width: 100%;
-  margin-left: auto;
+  margin: 2rem auto;
   text-transform: uppercase;
 }
 
-.cart-item-button-quantity {
-  border: 0;
-  background-color: transparent;
+.cart-item-price {
+  margin: 1rem auto;
+}
+
+.cart-item-button-quantity:hover {
+  opacity: 0.9;
+  cursor: pointer;
+
+}
+
+.logo {
+  text-decoration: none;
+  font-size: 2rem;
+  margin-left: 1rem;
+  color: black;
+}
+
+.logo:hover {
+  color: crimson;
+}
+
+.buy-button, .cart-item-edit-quantity {
+  outline: none;
+  border: none;
+  background-color: crimson;
+  color: white;
+  border-radius: 2rem;
+  height: 3rem;
+  width: 10rem;
+  font-size: 1.5rem;
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.buy-button:hover, .cart-item-edit-quantity:hover {
+  opacity: 0.9;
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.18), 0 0 12px 0 rgba(0, 0, 0, 0.15);
   cursor: pointer;
 }

@@ -113,6 +113,18 @@ export function shoppingCartCount() {
     shoppingCartCount.style.display = 'flex';
 }
 
+function checkIfItemExistsInCart(id) {
+    if (cartData === null) {
+        return false;
+    }
+    for (const product of cartData.products) {
+        if (product.id == id) {
+            return true;
+        }
+    }
+    return false;
+}
+
 export function addToCartPopUp() {
     const buttons = document.querySelectorAll('.product-button:not([data-event="true"])');
     const popUp = document.querySelector('.pop-up');
@@ -120,11 +132,14 @@ export function addToCartPopUp() {
         button.setAttribute('data-event', 'true');
         button.addEventListener('click', () => {
             popUp.style.display = 'flex';
+            button.style.pointerEvents = 'none';
             const id = button.parentElement.getAttribute('data-id');
-            if (cartData != null && cartData.products.find(product => product.id === id) !== undefined) {
-                const item = cartItems.querySelector(`[data-id="${id}"]`);
-                const itemCounter = item.querySelector('h3');
-                itemCounter.innerText = `x${cartData.products.find(product => product.id === id).quantity}`;
+            if (checkIfItemExistsInCart(id)) {
+                const item = cartItems.querySelector(`[data-cart-id="${id}"]`);
+                const itemCounter = item.querySelector('.cart-item-counter');
+                const currentQuantity = parseInt(itemCounter.innerText.slice(1)); // x1 -> 1
+                const newQuantity = currentQuantity + 1;
+                itemCounter.innerText = `x${newQuantity}`;
             } else {
                 const cartItem = document.createElement('div');
                 cartItem.setAttribute('data-id', id);
@@ -132,9 +147,12 @@ export function addToCartPopUp() {
                 const product = products[id - 1];
                 const counter = document.createElement('h3')
                 counter.innerText = 'x1'
+                counter.classList.add('cart-item-counter');
+
                 const title = document.createElement('h3');
                 title.innerText = product.title;
                 title.classList.add('cart-item-title');
+
                 const image = document.createElement('img');
                 image.setAttribute('src', product.images[0]);
                 image.setAttribute('alt', product.title + "image");
@@ -142,52 +160,25 @@ export function addToCartPopUp() {
                 const price = document.createElement('h3');
                 price.innerText = `$${product.price}`;
                 price.classList.add('cart-item-price');
-                const removeButton = document.createElement('button');
-                removeButton.innerText = 'X';
-                removeButton.classList.add('cart-item-remove');
-                removeButton.addEventListener('click', () => {
-                    if (cartData != null && cartData.products.find(product => product.id === id).quantity > 1) {
-                        const cartItems = document.querySelector('.cart-items');
-                        const item = cartItems.querySelector(`[data-id="${id}"]`);
-                        const itemCounter = item.querySelector('h3');
-                        itemCounter.innerText = `x${cartData.products.find(product => product.id === id).quantity - 1}`;
-                        addToTotal(total-products[id - 1].price);
-                        removeFromCart(id).then(
-                            () => {
-                                cartQuantity--;
-                                shoppingCartCount();
-                            });
-                    } else {
-                        const cartItems = document.querySelector('.cart-items');
-                        const item = cartItems.querySelector(`[data-id="${id}"]`);
-                        cartItems.removeChild(item);
-                        addToTotal(total-products[id - 1].price);
-                        deleteFromCart(id).then(
-                            () => {
-                                cartQuantity--;
-                                shoppingCartCount();
-                            });
-                    }
-                });
                 cartItem.appendChild(image);
                 cartItem.appendChild(counter);
                 cartItem.appendChild(title);
                 cartItem.appendChild(price);
-                cartItem.appendChild(removeButton);
                 cartItems.appendChild(cartItem);
-                cartQuantity++;
-                shoppingCartCount();
-                addToCart(id).then(
-                    () => {
-                        shoppingCartCount();
-                    }
-                );
             }
+            cartQuantity++;
+            shoppingCartCount();
+            addToCart(id).then(
+                () => {
+                    shoppingCartCount();
+                }
+            );
             addToTotal(total+products[id - 1].price);
             button.innerText = 'Added to cart';
             setTimeout(() => {
                 popUp.style.display = 'none';
                 button.innerText = 'Add to cart';
+                button.style.pointerEvents = 'all';
             }, 2000);
         });
     });
@@ -328,7 +319,7 @@ window.addEventListener('scroll', () => {
     }
 }, {passive: true});
 
-export async function addToCart(productID) {
+export async function addToCart(productID, quantity = 1) {
     await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${API_CART_ID}`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -337,13 +328,12 @@ export async function addToCart(productID) {
             products: [
                 {
                     id: productID,
-                    quantity: 1
+                    quantity: quantity
                 }]
         })
     }).then(res => res.json())
 }
-
-export async function removeFromCart(productID) {
+export async function removeFromCart(productID, quantity = -1) {
     await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${API_CART_ID}`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -352,7 +342,7 @@ export async function removeFromCart(productID) {
             products: [
                 {
                     id: productID,
-                    quantity: -1
+                    quantity: quantity
                 }]
         })
     })
@@ -390,6 +380,7 @@ function createItemInCart(product) {
     cartItem.classList.add('cart-item');
 
     const counter = document.createElement('h3')
+    counter.classList.add('cart-item-counter');
     counter.innerText = `x${product.quantity}`;
 
     const title = document.createElement('h3');
@@ -405,37 +396,10 @@ function createItemInCart(product) {
     price.innerText = `$${product.price}`;
     price.classList.add('cart-item-price');
 
-    const removeButton = document.createElement('button');
-    removeButton.innerText = 'X';
-    removeButton.classList.add('cart-item-remove');
-    removeButton.addEventListener('click', () => {
-        if (product.quantity > 1) {
-            const item = cartItems.querySelector(`[data-id="${product.id}"]`);
-            const itemCounter = item.querySelector('h3');
-            itemCounter.innerText = `x${product.quantity - 1}`;
-            removeFromCart(product.id).then(
-                () => {
-                    addToTotal(total-product.price);
-                    cartQuantity--;
-                    shoppingCartCount();
-                });
-        } else {
-            const item = cartItems.querySelector(`[data-id="${product.id}"]`);
-            cartItems.removeChild(item);
-            deleteFromCart(product.id).then(
-                () => {
-                    addToTotal(total-product.price);
-                    cartQuantity--;
-                    shoppingCartCount();
-                }
-            );
-        }
-    });
     cartItem.appendChild(image);
     cartItem.appendChild(counter);
     cartItem.appendChild(title);
     cartItem.appendChild(price);
-    cartItem.appendChild(removeButton);
     cartItems.appendChild(cartItem);
 }
 
@@ -448,7 +412,6 @@ export function displayItems(filter) {
         return;
     }
     const filteredItemsByCategory = products.filter(product => product.category.toLowerCase().startsWith(filter.toLowerCase()));
-    console.log(filteredItemsByCategory)
     if (filteredItemsByCategory.length !== 0) {
         for (const product of products){
             const productToDisplay = document.querySelector(`[data-id="${product.id}"]`);

@@ -3,6 +3,7 @@
   --star-color: #fff;
   --star-background: #fc0;
 }
+
 html {
   scroll-behavior: smooth;
   font-size: 62.5%;
@@ -271,6 +272,7 @@ ul.top-nav li.icon {
   font-size: 2rem;
   font-family: sans-serif;
   line-height: 1;
+
   &::before {
     content: '★★★★★';
     letter-spacing: 3px;
@@ -431,12 +433,12 @@ ul.top-nav li.icon {
 }
 
 @keyframes spinner {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .filter-bar {

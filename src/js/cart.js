@@ -3,6 +3,8 @@ import {addToCart, removeFromCart, deleteFromCart} from "./app";
 
 let total = 0;
 const cartItems = document.querySelector('.cart-page-items');
+let numberOfClicksAdd = 0;
+let numberOfClicksRemove = 0;
 
 export async function initCart() {
     const API_CART_ID = '64c3aa50d27ba';
@@ -14,6 +16,7 @@ export async function initCart() {
     createItems(cartData.products);
     addToTotal(cartData.total);
 }
+
 function createItems(cartData) {
     for (const product of cartData) {
         createItem(product);
@@ -44,38 +47,52 @@ function createItem(product) {
     const removeButton = document.createElement('button');
     removeButton.innerText = 'X';
     removeButton.classList.add('cart-item-edit-quantity');
-    removeButton.addEventListener('click', () => {
-        if (product.quantity > 1) {
-            const item = cartItems.querySelector(`[data-id="${product.id}"]`);
-            const itemCounter = item.querySelector('h3');
-            itemCounter.innerText = `x${product.quantity - 1}`;
-            removeFromCart(product.id).then(
-                () => {
-                    addToTotal(total-product.price);
-                });
+    const removeButtonClickHandler = () => {
+        const item = cartItems.querySelector(`[data-id="${product.id}"]`);
+        if (numberOfClicksRemove >= product.quantity) {
+            deleteFromCart(product.id).then(() => {
+                addToTotal(total - product.price * product.quantity);
+                cartItems.removeChild(item);
+            });
         } else {
-            const item = cartItems.querySelector(`[data-id="${product.id}"]`);
-            cartItems.removeChild(item);
-            deleteFromCart(product.id).then(
-                () => {
-                    addToTotal(total-product.price);
-                }
-            );
+            removeFromCart(product.id, -numberOfClicksRemove).then(() => {
+                const itemCounter = item.querySelector('h3');
+                itemCounter.innerText = `x${product.quantity - numberOfClicksRemove}`;
+                addToTotal(total - product.price * product.quantity);
+            });
         }
+        numberOfClicksRemove = 0;
+    };
+
+    const debouncedRemoveButtonClickHandler = debounce(removeButtonClickHandler);
+
+    removeButton.addEventListener('click', () => {
+        numberOfClicksRemove++;
+        debouncedRemoveButtonClickHandler(); // Call the debounced version of removeButtonClickHandler
     });
+
+
     const addButton = document.createElement('button');
     addButton.innerText = '+';
     addButton.classList.add('cart-item-edit-quantity');
-    addButton.addEventListener('click', () => {
+
+    const clickEventHandlerAdd = () => {
         const item = cartItems.querySelector(`[data-id="${product.id}"]`);
         const itemCounter = item.querySelector('h3');
-        itemCounter.innerText = `x${product.quantity + 1}`;
-        addToCart(product.id).then(
-            () => {
-                addToTotal(total+product.price);
-            }
-        );
+        addToCart(product.id, numberOfClicksAdd).then(() => {
+            itemCounter.innerText = `x${product.quantity + numberOfClicksAdd}`;
+            addToTotal(total + product.price * numberOfClicksAdd);
+            numberOfClicksAdd = 0;
+        });
+    }
+
+    const debouncedClickEventHandlerAdd = debounce(clickEventHandlerAdd, 1000);
+
+    addButton.addEventListener('click', () => {
+        numberOfClicksAdd++;
+        debouncedClickEventHandlerAdd();
     });
+
     cartItem.appendChild(image);
     cartItem.appendChild(counter);
     cartItem.appendChild(title);
@@ -83,6 +100,16 @@ function createItem(product) {
     cartItem.appendChild(removeButton);
     cartItem.appendChild(addButton);
     cartItems.appendChild(cartItem);
+}
+
+function debounce(func, timeout = 1000) {
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            func.apply(this, args);
+        }, timeout);
+    };
 }
 
 await initCart();
