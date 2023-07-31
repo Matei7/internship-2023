@@ -1,10 +1,13 @@
-import {getItemById} from "./product_api";
+import {getItemById} from "../product_page/product_api";
 import {getCart, addToCartAPI, removeFromCartAPI, updateProductAPI} from "./cart_api";
-import {loadItems} from "./main_products_script";
+import {loadItems} from "../main_products_script";
+import {debounce} from "../utils";
 
 let cart = await getCart();
-
+let removeBtnIsPressed=false;
+let value=0;
 export async function loadCart(_cart=cart) {
+
 
     for (let cartItem of _cart.products) {
         let cartItemHTML = findItemInCartHTML(cartItem.id);
@@ -44,12 +47,15 @@ async function removeItemFromCart(productId) {
     const cartItemNode = document.querySelector(`.cart-item[product_id="${productId}"]`);
     const cartItemCount = cartItemNode.querySelector('.cart-item-count');
     const count = parseInt(cartItemCount.innerText.split('x')[1]);
-    if (count > 1) {
-        cart = (await updateProductAPI(productId, -1))['data'];
-        await updateCountForItem(productId, -1);
+    console.log(count, value);
+    if (count + value > 1) {
+        cart = (await updateProductAPI(productId, value))['data'];
+        await updateCountForItem(productId, value);
+        console.log('fetched');
     } else {
         cartItemNode.remove();
         cart = (await removeFromCartAPI(productId))['data'];
+        console.log('fetched');
     }
     await updateCartTotalPrice();
     await updateCartCount();
@@ -90,10 +96,21 @@ function addNodeElementToCart(jsonItem) {
     });
 
     cartItemNode.querySelector('.remove-from-cart-btn').addEventListener('click', async (event) => {
-        await removeItemFromCart(jsonItem.id);
+        // await removeItemFromCart(jsonItem.id);
+        value-=1;
+        debounceRemoveProduct(jsonItem.id);
     });
     cartContainer.appendChild(cartItemNode);
 }
+
+const debounceRemoveProduct = debounce(async (productId)=>{
+    if (!removeBtnIsPressed){
+        removeBtnIsPressed=true;
+        await removeItemFromCart(productId);
+        value=0;
+        removeBtnIsPressed=false;
+    }
+});
 export async function updateHeaderCartNumbers(_cart=cart){
     await updateCartTotalPrice(_cart);
     await updateCartCount(_cart);
@@ -110,7 +127,7 @@ async function updateCartTotalPrice(_cart=cart){
     totalPriceNode.style.display = 'block';
 
     let totalPrice = cart.total;
-    totalPriceNode.innerHTML = `<p>Total: <s>$${totalPrice}</s> $${cart.discountTotal.toFixed(2)}</p>`;
+    totalPriceNode.innerHTML = `<p>Total: <s>$${totalPrice}</s> $${cart["discountTotal"].toFixed(2)}</p>`;
 }
 
 export async function addToCart(productId) {

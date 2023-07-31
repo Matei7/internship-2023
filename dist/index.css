@@ -36,6 +36,13 @@ body {
     min-width: 100%;
     background-color: #e8e8e8;
     box-shadow: 1px 2px 10px 1px rgba(0, 0, 0, 0.5); }
+  #app nav {
+    position: relative; }
+  #app h1 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 2rem;
+    margin: 1rem; }
   #app #cart {
     display: flex;
     align-items: center;
@@ -64,8 +71,6 @@ body {
     white-space: nowrap;
     max-height: 70vh;
     overflow-x: hidden; }
-  #app nav {
-    position: relative; }
   #app .cart-item-thumbnail-container img {
     height: 6rem;
     width: 6rem;
@@ -119,13 +124,56 @@ body {
     border-radius: 30px; }
     #app .remove-from-cart-btn:hover {
       transform: scale(1.1); }
-  #app h1 {
-    font-family: 'Roboto', sans-serif;
-    font-weight: 500;
-    font-size: 2rem;
-    margin: 1rem; }
+  #app main {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row; }
+  #app .filter-section {
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 2rem 1rem;
+    max-height: 30rem;
+    width: 6.5rem;
+    position: fixed;
+    z-index: 8;
+    border-radius: 40px;
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+    box-shadow: 0 0 15px 3px rgba(0, 0, 0, 0.5);
+    overflow-x: hidden;
+    justify-content: center;
+    overflow-y: auto;
+    white-space: nowrap; }
+    #app .filter-section:first-child {
+      margin-top: 3rem; }
+  #app .filter-section p {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    font-family: 'Nunito', sans-serif;
+    padding-top: 0;
+    font-weight: bold; }
+  #app .filter-btn {
+    margin-top: 1rem;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 30px;
+    text-align: center;
+    color: white;
+    background-color: #3a3a3a;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    overflow-x: clip; }
+    #app .filter-btn:hover, #app .filter-btn:focus {
+      background-color: white;
+      color: #3a3a3a;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transform: scale(1.1); }
   #app .shop-items {
     margin-top: 10rem;
+    margin-left: calc(8rem + 20px);
+    margin-right: calc(8rem + 20px);
     display: flex;
     flex-wrap: wrap;
     min-height: 70vh;
@@ -222,7 +270,7 @@ body {
   max-width: 500px;
   min-height: 40rem;
   position: relative;
-  margin: 0 auto; }
+  margin: 10rem auto; }
 
 .hidden {
   visibility: hidden; }
@@ -307,11 +355,17 @@ p {
 #app {
   position: relative; }
 
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center; }
+
 .main-content {
   height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center; }
+  align-items: center;
+  align-content: center; }
 
 .main-content .main-container {
   width: 75vw;

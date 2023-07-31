@@ -1,6 +1,7 @@
-export async function getItems(api='https://dummyjson.com/products?limit=10&skip=10'){
+export async function getItems(api='https://dummyjson.com/products/?limit=10&skip=10'){
     const response=await fetch(api);
     const items=await response.json();
+    console.log(items.products);
     return items.products;
 }
 export async function getItemById(id,api='https://dummyjson.com/products'){

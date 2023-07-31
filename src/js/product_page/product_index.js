@@ -1,4 +1,5 @@
-import {getItemById} from "../product_api";
+import {getItemById} from "./product_api.js";
+import {handleCartHoverEvent, loadCart} from "../cart/cart_script.js";
 
 const sampleItem =
     {
@@ -73,7 +74,7 @@ function prevImage() {
 function loadProduct(jsonItem) {
     const imagesContainer = document.querySelector(".images");
     imagesContainer.innerHTML = "";
-
+    const discountPrice=(jsonItem.price*(1-jsonItem.discountPercentage/100)).toFixed(2);
     for (const url of jsonItem.images) {
         const img = document.createElement("img");
         img.src = url;
@@ -85,7 +86,7 @@ function loadProduct(jsonItem) {
     document.querySelector(".info").innerHTML = `
     <div class="main-info">
         <h1>${jsonItem.title}</h1>
-        <p>Price: $${jsonItem.price}</p>
+        <p>Price: $${discountPrice}</p>
     </div>
     <div class="item-section-2">
         <p>Rating: ${jsonItem.rating}</p>
@@ -106,17 +107,15 @@ async function getJsonProduct(){
     const jsonItem = await getItemById(itemId);
     return jsonItem;
 }
-document.addEventListener("DOMContentLoaded", () => {
 
-    setTimeout(() => {
+    setTimeout( () => {
         const jsonItem = getJsonProduct();
-        getJsonProduct().then((jsonItem) => {
+        getJsonProduct().then(async (jsonItem) => {
             loadProduct(jsonItem);
             showCurrentImage(currentImageIndex);
+            await loadCart();
+            handleCartHoverEvent();
         });
-
-        //loadProduct(jsonItem);
-
     }, 1000);
 
 
@@ -133,6 +132,4 @@ document.addEventListener("DOMContentLoaded", () => {
             prevImage();
     });
 
-
-});
 

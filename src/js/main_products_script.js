@@ -1,6 +1,11 @@
-import {addToCart, handleCartHoverEvent} from "./cart_script.js";
-import {getItems} from "./product_api.js";
+import {addToCart, handleCartHoverEvent} from "./cart/cart_script.js";
+import {getItems} from "./product_page/product_api.js";
+import {getAllAvailableCategories, getAllItems, getProductsForCategory} from "./utils.js";
+import {getNewCart} from "./cart/cart_api";
+// const newCart=await getNewCart();
+// console.log(newCart);
 
+const allItems=(await getAllItems())['products'];
 function getHtmlNodeItem(jsonItem){
 
     if (!jsonItem.currentImageIndex)
@@ -35,6 +40,7 @@ function getHtmlNodeItem(jsonItem){
 
     return itemNode;
 }
+
 function showNotification(message){
     const notification=document.getElementById('notification');
     const notificationParent=document.getElementsByClassName('notification-container')[0];
@@ -65,31 +71,84 @@ function handleButtonEvents(){
         }
     }
     const loadMoreButton=document.querySelector('.load-more-btn');
-    loadMoreButton.addEventListener('click',loadItems);
+    if (loadMoreButton.getAttribute('event-set')==='false'){
+        loadMoreButton.setAttribute('event-set','true');
+        loadMoreButton.addEventListener('click',async ()=>{
+            await loadItems(true);
+        });
+    }
+
 
     document.querySelector('#cart').addEventListener('click',()=>{
         window.open('cart_page.html','_blank');
     });
 }
-
-export async function loadItems(){
+async function appendNodesAndAttachSelfPageListeners(items,container){
+    for (const item of items) {
+        const itemNode = getHtmlNodeItem(item);
+        const thumbnailContainer = itemNode.getElementsByClassName('item_thumbnail_container')[0];
+        thumbnailContainer.addEventListener('click', () => {
+            const url = `product.html?id=${item.id}`;
+            window.open(url, '_blank');
+        });
+        container.appendChild(itemNode);
+    }
+}
+let selectedCategory='';
+export async function loadItems(loadMorePressed=false){
 
     const shopContainer=document.getElementsByClassName('shop-items')[0];
-    const items=await getItems();
-    for (const item of items){
-        const itemNode=getHtmlNodeItem(item);
-        const thumbnailContainer=itemNode.getElementsByClassName('item_thumbnail_container')[0];
-        thumbnailContainer.addEventListener('click',()=>{
-            const url=`product.html?id=${item.id}`;
-            window.open(url,'_blank');
-        });
-        shopContainer.appendChild(itemNode);
 
+    if (localStorage.getItem('loadedItems') === null){
+        console.log('Loaded items');
+        localStorage.setItem('loadedItems', JSON.stringify(await getItems()));
     }
-    // for (let index=0; index<30; index++){
-    //     shopContainer.appendChild(getHtmlNodeItem(sampleItem))
-    // }
+    if (!loadMorePressed){
+        let items=localStorage.getItem('loadedItems');
+        items=JSON.parse(items);
+        await appendNodesAndAttachSelfPageListeners(items,shopContainer);
+    }
+    else{
 
+        // const newItems=selectedCategory!='' ? (await getProductsForCategory(selectedCategory))['products'] : await getItems();
+        const fitleredItems=allItems.filter((item)=>item.category===selectedCategory);
+        const newItems=selectedCategory!='' ? fitleredItems : await getItems();
+        console.log(newItems.length);
+        await appendNodesAndAttachSelfPageListeners(newItems,shopContainer);
+    }
+
+
+    handleButtonEvents();
+    await loadFilterSection();
+
+}
+
+
+export async function loadFilterSection(){
+    const filterSectionWrapper=document.querySelector('.filter-section');
+   filterSectionWrapper.innerHTML='<p>Categories:</p>';
+    const categories=await getAllAvailableCategories();
+    for (const category of categories){
+        const categoryNode=document.createElement('button');
+        categoryNode.setAttribute('title',category);
+        categoryNode.classList.add('filter-btn');
+        categoryNode.innerHTML=category;
+        filterSectionWrapper.appendChild(categoryNode);
+        categoryNode.addEventListener('click',async ()=>{
+            await loadShopPageForCategory(category);
+            selectedCategory=category;
+        });
+    }
+}
+
+export async function loadShopPageForCategory(category){
+
+    // const items=(await getProductsForCategory(category))['products'];
+    const items=allItems.filter((item)=>item.category===category);
+    console.log(items);
+    const shopContainer=document.getElementsByClassName('shop-items')[0];
+    shopContainer.innerHTML='';
+    await appendNodesAndAttachSelfPageListeners(items,shopContainer);
     handleButtonEvents();
 }
 
