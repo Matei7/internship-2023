@@ -29,7 +29,7 @@ export async function getItemById(id, api = 'https://dummyjson.com/products') {
  */
 export async function getProductsForCategory(category) {
     console.log('fetched');
-    return await fetch(`https://dummyjson.com/products/category/${category}?limit=5&skip=3`, {
+    return await fetch(`https://dummyjson.com/products/category/${category}?limit=3&skip=2`, {
         method: 'GET',
         headers: {'Content-Type': 'application/json'},
     })

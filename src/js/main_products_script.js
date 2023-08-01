@@ -2,8 +2,9 @@ import {addToCart, handleCartHoverEvent} from "./cart/cart_script.js";
 import {getItems ,getProductsForCategory,getAllAvailableCategories, getAllItems} from "./product_page/product_api.js";
 import {getNewCart} from "./cart/cart_api";
 
-let selectedCategory='';
+let selectedCategory='fragrances';
 let allItems=[];
+let loadedItemsOnPage=[];
 
 /**
  * Loads all items from the server and stores them in the local storage
@@ -77,9 +78,9 @@ function handleButtonEvents(){
     for (const btn of buttons){
         if (btn.getAttribute('event-set')==='false') {
             btn.setAttribute('event-set','true');
-            btn.addEventListener('click', (event) => {
+            btn.addEventListener('click', async (event) => {
                 const productId = event.target.getAttribute("product-id");
-                addToCart(productId);
+                await addToCart(productId);
                 showNotification("Added to cart");
                 btn.innerHTML = 'Added to cart';
                 btn.style.backgroundColor = '#d0ffd3';
@@ -114,7 +115,10 @@ function handleButtonEvents(){
  * @returns {Promise<void>}
  */
 async function appendNodesAndAttachSelfPageListeners(items,container){
+
     for (const item of items) {
+        if (loadedItemsOnPage.includes(item.id))
+            continue;
         const itemNode = getHtmlNodeItem(item);
         const thumbnailContainer = itemNode.getElementsByClassName('item_thumbnail_container')[0];
         thumbnailContainer.addEventListener('click', () => {
@@ -122,6 +126,7 @@ async function appendNodesAndAttachSelfPageListeners(items,container){
             window.open(url, '_blank');
         });
         container.appendChild(itemNode);
+        loadedItemsOnPage.push(item.id);
     }
 }
 
@@ -139,17 +144,26 @@ export async function loadItems(loadMorePressed=false){
         console.log('Loaded items');
         localStorage.setItem('loadedItems', JSON.stringify(await getItems()));
     }
+
+
     if (!loadMorePressed){
         let items=localStorage.getItem('loadedItems');
         items=JSON.parse(items);
+
         await appendNodesAndAttachSelfPageListeners(items,shopContainer);
     }
     else{
 
         // const newItems=selectedCategory!='' ? (await getProductsForCategory(selectedCategory))['products'] : await getItems();
         const filteredItems=allItems.filter((item)=>item.category===selectedCategory);
-        const newItems=selectedCategory!='' ? filteredItems : await getItems();
-        console.log(newItems.length);
+        const randomItems=[];
+        for (let i=0;i<3;i++){
+            const randomIndex=Math.floor(Math.random()*filteredItems.length);
+            randomItems.push(filteredItems[randomIndex]);
+            filteredItems.splice(randomIndex,1);
+        }
+        console.log(randomItems.length);
+        const newItems=selectedCategory!='' ? randomItems : await getItems();
         await appendNodesAndAttachSelfPageListeners(newItems,shopContainer);
     }
 
@@ -194,11 +208,19 @@ export async function loadFilterSection(){
 export async function loadShopPageForCategory(category){
 
     // const items=(await getProductsForCategory(category))['products'];
-    const items=allItems.filter((item)=>item.category===category);
+    let items=allItems.filter((item)=>item.category===category);
     console.log(items);
     const shopContainer=document.getElementsByClassName('shop-items')[0];
     shopContainer.innerHTML='';
-    await appendNodesAndAttachSelfPageListeners(items,shopContainer);
+    loadedItemsOnPage=[];
+    //load random items on page
+    const randomItems=[];
+    for (let i=0;i<3;i++){
+        const randomIndex=Math.floor(Math.random()*items.length);
+        randomItems.push(items[randomIndex]);
+        items.splice(randomIndex,1);
+    }
+    await appendNodesAndAttachSelfPageListeners(randomItems,shopContainer);
     handleButtonEvents();
 }
 
