@@ -185,7 +185,7 @@ function setLoaderState()
     console.log(numFetchesInProgress);
     console.log(document.getElementsByClassName('loader')[0]);
     if(numFetchesInProgress === 0)
-        document.getElementsByClassName('loader')[0].classList.add("hidden_attribute");
+        document.getElementsByClassName('loader')[0].classList.add("hidden-attribute");
     else
-        document.getElementsByClassName('loader')[0].classList.remove("hidden_attribute");
+        document.getElementsByClassName('loader')[0].classList.remove("hidden-attribute");
 }

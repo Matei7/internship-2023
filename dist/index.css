@@ -262,6 +262,19 @@ h1 {
 
 .load-more-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   margin: 50px 0; }
+
+#load-more-button {
+  margin: 0 auto;
+  width: 100px; }
+
+.loader {
+  display: block;
+  margin: 0 auto;
+  width: 5%; }
+
+.hidden-attribute {
+  visibility: hidden; }
 

@@ -1,11 +1,11 @@
 let selectedItem;
 let numberOfItemsLoaded = 0;
-const numberOfItemsPerPage = 3;
+const numberOfItemsPerPage = 4;
 const cartID = require('../../cart_id.json').token;
 
 const cartURL = `http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`;
 const cartCounter = document.getElementById('cart-counter');
-let productFilteringCriterium = "";
+let productFilteringCriterium = "all";
 let categorySelectionRadio;
 
 
@@ -13,8 +13,8 @@ export async function init() {
     await setupNewItems(numberOfItemsLoaded, numberOfItemsPerPage);
     setupLoadButton();
     await setupUI();
-    //setupCartUI();
-    //await loadCartUIContent();
+    setupCartUI();
+    await loadCartUIContent();
     handleFilterCriteriaChange();
 }
 
@@ -37,7 +37,7 @@ async function addShopProducts(numberOfItemsLoaded, numberOfItemsPerPage) {
 
         fetchResult.products.forEach(x => alreadyStoredItems.push(x));
         itemsNotYetAdded = fetchResult.products;
-        skippedItemsCount = fetchResult.newSkippedItemsCount;
+        skippedItemsCount = fetchResult.products.length;
         sessionStorage.setItem('store-products', JSON.stringify(alreadyStoredItems));
     }
     else {
@@ -48,8 +48,10 @@ async function addShopProducts(numberOfItemsLoaded, numberOfItemsPerPage) {
             }
     }
 
-
     addItemsToPage(itemsNotYetAdded);
+
+    document.getElementById('products-list-loader').classList.add('hidden-attribute');
+    document.getElementById('load-more-button').classList.remove('hidden-attribute');
     return skippedItemsCount;
 }
 
@@ -76,9 +78,11 @@ function getProductHTML(productObject)
 
     let thumbnailsHTML = '';
 
+    thumbnailsHTML += `<img class="item-thumbnail" src="${productThumbnail}" alt="thumbnail image" loading="lazy"/>\n`;
+
     for(const imageURL of productObject["images"])
     {
-        //TODO: avoid inline styling
+
         thumbnailsHTML += `<img class="item-thumbnail" src="${imageURL}" alt="thumbnail image" loading="lazy" style="display: none"/>\n`;
     }
 
@@ -112,7 +116,7 @@ function getProductHTML(productObject)
         addEventListener('keydown',keyboardSelectGalleryImage);
     });
 
-    productHTML.querySelector('.thumbnails-container').lastElementChild.removeAttribute('style');
+    //productHTML.querySelector('.thumbnails-container').lastElementChild.removeAttribute('style');
 
     let navButtons = productHTML.querySelectorAll('.nav-arrows button');
 
@@ -328,27 +332,28 @@ function createCartHTMLForItem(item)
 function setupLoadButton(){
     const loadButton = document.getElementById('load-more-button');
     loadButton.addEventListener('click', async () => {
-        if(productFilteringCriterium.length === 0)
+
+        debugger;
+        document.getElementById('products-list-loader').classList.remove('hidden-attribute');
+        document.getElementById('load-more-button').classList.add('hidden-attribute');
+
+        if(productFilteringCriterium === "all")
             await setupNewItems(numberOfItemsLoaded, numberOfItemsPerPage);
         else
             await setupNewItemsFiltered();
     });
 }
 
-
 async function setupUI() {
     await setupProductCategoriesList();
 
-    return; //TODO remove when you have authorization for the internal API
-    /*document.getElementById('load-checkout-button').addEventListener('click', () => {
+    document.getElementById('load-checkout-button').addEventListener('click', () => {
         window.location = `checkout.html?cart-id=${cartID}`;
     });
 
     let numberOfElementsInCart = (await loadCartData(cartURL, false)).totalProducts;
     document.getElementById('cart-counter').innerText = numberOfElementsInCart;
-    */
 }
-
 
 async function loadCartUIContent(cartEvent) {
     let cartData = await loadCartData(cartURL, true);
@@ -385,8 +390,6 @@ async function loadCartData(cartURL, fullRefresh = false) {
 
     let endTime = performance.now();
     let timeElapsed = endTime - startTime;
-
-
 
     const stringObjData = JSON.stringify(cartData);
 
@@ -429,6 +432,7 @@ function handleFilterCriteriaChange()
     const categorySelectionRadio = document.getElementsByName('category-selection');
     categorySelectionRadio.forEach(checkbox => checkbox.addEventListener('change', setupNewItemsFiltered));
 }
+
 async function setupNewItemsFiltered(event= null)
 {
     if(event !== null) {
@@ -443,6 +447,9 @@ async function setupNewItemsFiltered(event= null)
     let newlyAddedItemsCount = await loadShopProductsFiltered(numberOfItemsLoaded, numberOfItemsPerPage, productFilteringCriterium);
     numberOfItemsLoaded += newlyAddedItemsCount;
     setupAddToCartButtons();
+
+    document.getElementById('products-list-loader').classList.add('hidden-attribute');
+    document.getElementById('load-more-button').classList.remove('hidden-attribute');
 }
 async function loadShopProductsFiltered(numberOfItemsLoaded, numberOfItemsPerPage, filteredCategory) {
 
