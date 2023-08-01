@@ -7,9 +7,12 @@ let currentBatchOfProducts = 1
 // variable to keep track of filters
 let checked = false
 
+// variable to keep track of current loaded products
+let currentProducts = []
+
 export async function init() {
 	// fetch products and generate cards
-	await generateCards(await fetchProducts())
+	await generateCards()
 
 	// fetch categories
 	let categoriesResponse = await fetchCategories()
@@ -79,13 +82,16 @@ async function checkBoxEvent() {
 	currentBatchOfProducts = 1
 	let items = document.getElementById('items');
 	items.innerHTML = "";
-	await generateCards(await fetchProducts())
+	await generateCards()
 	addListenersForImg()
 	addButtons()
 	await initCart()
 }
 
-function filterProducts(products, filters) {
+function filterProducts(products, filters = undefined) {
+	if (filters === undefined)
+		return products
+
 	// go through each filter and apply it
 	let resultProducts = new Set()
 	for (let filter of filters) {
@@ -102,14 +108,16 @@ function getFilters() {
 		if (checkBox.checked)
 			filters.push(checkBox.id)
 	}
-	return filters
+	if (filters.length > 0)
+		return filters
+	return undefined
 }
 
 // event for when a user presses show more button
 async function showMore() {
 	// increase batch of products variable and generate card for the next batch
 	currentBatchOfProducts++
-	await generateCards(await fetchProducts())
+	await generateCards()
 	// reset listeners and reinitialize cart
 	addListenersForImg()
 	addButtons()
@@ -118,36 +126,27 @@ async function showMore() {
 
 // Add event listeners for thumbnails
 function addListenersForImg() {
-	for (let img of document.getElementsByClassName("item-image"))
+	for (let img of document.getElementsByClassName("item-image")) {
 		img.addEventListener("click", () => {
 			location.href = `product.html?id=${img.id}`
 		})
+		img.addEventListener("error", failedLoadEvent)
+	}
+}
+
+// event for when the image fails to load
+function failedLoadEvent(event) {
+	event.target.src = "../../public/images/img-placeholder.png"
 }
 
 // Generate and add cards to html
-async function generateCards(products) {
+async function generateCards() {
 	let cards = []
-	// when generating cards, we filter the products first if we have any filters selected
-	let filters = getFilters()
-	let filteredProducts = []
-
-	if (filters.length > 0) {
-		// search for products that belong to that filter
-		filteredProducts = filterProducts(products, filters)
-
-		// go through batches of products until we find the first batch that belongs to requested category
-		while (filteredProducts.length === 0 && currentBatchOfProducts <= 11) {
-			filteredProducts = filterProducts(products, filters)
-			products = await fetchProducts()
-			currentBatchOfProducts++
-		}
-	}
-	// we don't have any filter
-	else filteredProducts = products
-	console.log(filteredProducts)
 
 	// go through all filtered products and generate cards
-	for (const product of filteredProducts) {
+	await fetchProducts()
+
+	for (const product of currentProducts.splice(1, currentBatchOfProducts * 10)) {
 		let price = `<h2 class="price">$${product.price}</h2>`;
 		if (product.discountPercentage > 0.0) {
 			let newPrice = Math.floor((100.0 - product.discountPercentage) * product.price / 100)
@@ -175,7 +174,7 @@ async function generateCards(products) {
 
 	// add the cards in HTML
 	let items = document.getElementById('items');
-	items.innerHTML += cards.join("\n");
+	items.innerHTML = cards.join("\n");
 }
 
 // generate categories in HTML
@@ -210,32 +209,20 @@ async function fetchProducts() {
 	const localProducts = localStorage.getItem("products")
 
 	if (localProducts !== null) {
-		// products exist in the local storage, we need to check if the requested products exist
+		// products exist in the local storage
+		// if they are filtered, we filter them before fetching
 		let products = JSON.parse(localProducts)
-		if (products.length >= currentBatchOfProducts * 10) {
-			// the requested products already exist
-			return products.slice(currentBatchOfProducts * 10 - 10, currentBatchOfProducts * 10)
-		}
-		else {
-			// the requested products does not exist
-			const newProducts = await fetch(`https://dummyjson.com/products?limit=10&skip=${currentBatchOfProducts * 10}`)
-				.then(res => {
-					return res.json()
-				})
-
-			// update local storage
-			localStorage.setItem("products", JSON.stringify([...products, ...newProducts.products]))
-			return newProducts.products
-		}
+		currentProducts = filterProducts(products, getFilters())
+		return;
 	}
 
 	// we do not have anything stored locally
-	const products = await fetch(`https://dummyjson.com/products?limit=10&skip=${currentBatchOfProducts*10}`)
+	const products = await fetch(`https://dummyjson.com/products?limit=100`)
 		.then(res => {
 			return res.json()
 		})
 	localStorage.setItem("products", JSON.stringify(products.products))
-	return products.products
+	currentProducts = filterProducts(products.products)
 }
 
 // Fetch categories from API
