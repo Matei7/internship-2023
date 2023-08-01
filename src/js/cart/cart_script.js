@@ -3,10 +3,20 @@ import {getCart, addToCartAPI, removeFromCartAPI, updateProductAPI} from "./cart
 import {loadItems} from "../main_products_script";
 import {debounce} from "../utils";
 
-let cart = await getCart();
+let cart=null;
 let removeBtnIsPressed=false;
 let value=0;
 
+async function saveCartToLocalStorage(){
+    if (localStorage.getItem('cart') === null){
+        cart=await getCart();
+        localStorage.setItem('cart',JSON.stringify(cart));
+    }
+    else{
+        cart=JSON.parse(localStorage.getItem('cart'));
+    }
+}
+await saveCartToLocalStorage();
 /**
  * Loads the cart section
  * @param _cart - json object
@@ -29,6 +39,7 @@ export async function loadCart(_cart=cart) {
     }
     await updateCartTotalPrice();
     await updateCartCount();
+    // saveCartToLocalStorage();
 
 
 }
@@ -73,6 +84,8 @@ async function removeItemFromCart(productId) {
     }
     await updateCartTotalPrice();
     await updateCartCount();
+    localStorage.setItem('cart',JSON.stringify(cart));
+    await saveCartToLocalStorage();
     value=0;
 
 }
@@ -171,6 +184,7 @@ async function updateCartTotalPrice(_cart=cart){
  */
 export async function addToCart(productId) {
     cart = (await addToCartAPI(productId, 1))['data']; //update cart
+    localStorage.setItem('cart',JSON.stringify(cart));
     await loadCart();
 }
 

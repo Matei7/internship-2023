@@ -124,7 +124,11 @@ function addEventListeners() {
         else if (event.key === "ArrowLeft")
             prevImage();
     });
+    document.querySelector('#cart').addEventListener('click',()=>{
+        window.open('cart_page.html','_blank');
+    });
 }
+
 
 setTimeout(() => {
     getJsonProduct().then(async (jsonItem) => {

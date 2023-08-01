@@ -91,7 +91,8 @@ body {
     overflow-y: auto;
     white-space: nowrap;
     max-height: 70vh;
-    overflow-x: hidden
+    overflow-x: hidden;
+    box-shadow: 1px 2px 10px 1px rgba(0,0,0,0.5);
 
 
   }

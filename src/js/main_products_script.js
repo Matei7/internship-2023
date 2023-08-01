@@ -3,8 +3,18 @@ import {getItems ,getProductsForCategory,getAllAvailableCategories, getAllItems}
 import {getNewCart} from "./cart/cart_api";
 
 let selectedCategory='';
-const allItems=(await getAllItems())['products'];
+let allItems=[];
 
+/**
+ * Loads all items from the server and stores them in the local storage
+ * @type {*[]}
+ */
+async function loadAllItems(){
+    if (localStorage.getItem('allItems')===null){
+        localStorage.setItem('allItems',JSON.stringify((await getAllItems())['products']));
+    }
+    allItems=JSON.parse(localStorage.getItem('allItems'));
+}
 /**
  * Returns a HTML node for a product item
  * @param jsonItem
@@ -124,6 +134,7 @@ export async function loadItems(loadMorePressed=false){
 
     const shopContainer=document.getElementsByClassName('shop-items')[0];
 
+    loadAllItems();
     if (localStorage.getItem('loadedItems') === null){
         console.log('Loaded items');
         localStorage.setItem('loadedItems', JSON.stringify(await getItems()));
@@ -156,7 +167,12 @@ export async function loadItems(loadMorePressed=false){
 export async function loadFilterSection(){
     const filterSectionWrapper=document.querySelector('.filter-section');
    filterSectionWrapper.innerHTML='<p>Categories:</p>';
-    const categories=await getAllAvailableCategories();
+    let categories=[];
+    if (localStorage.getItem('allCategories')===null){
+        localStorage.setItem('allCategories',JSON.stringify(await getAllAvailableCategories()));
+    }
+    categories=JSON.parse(localStorage.getItem('allCategories'));
+
     for (const category of categories){
         const categoryButtonNode=document.createElement('button');
         categoryButtonNode.setAttribute('title',category);
