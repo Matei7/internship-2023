@@ -1,12 +1,25 @@
 import {getCart, getCartProductForId, removeFromCartAPI, updateProductAPI} from "./cart_api";
 import {debounce} from "../utils";
 
-// Initialize cart
-let cart = await getCart();
+let cart=null;
 
 let value = 0;
 let isPressedOnce = false;
 
+
+async function saveCartToLocalStorage(){
+    localStorage.setItem('cart',JSON.stringify(cart));
+    await getCartFromLocalStorage();
+}
+async function getCartFromLocalStorage(){
+    if (localStorage.getItem('cart') === null){
+        cart=await getCart();
+        localStorage.setItem('cart',JSON.stringify(cart));
+    }
+    else{
+        cart=JSON.parse(localStorage.getItem('cart'));
+    }
+}
 
 /**
  * Loads the cart page
@@ -54,7 +67,9 @@ function loadCartPage() {
     <div class="total-price">Total: $${cart["discountTotal"].toFixed(2)}</div>`;
     document.querySelector(".checkout-button").insertAdjacentElement("beforebegin", total);
 }
-
+function getCardProductFromId(productId) {
+    return cart.find((product) => product.id === productId);
+}
 /**
  * Updates the price of a product on the frontend
  * @param cartProductItem
@@ -64,7 +79,8 @@ async function updateProduct(cartProductItem) {
 
     const productId = Number(cartProductItem.getAttribute("product-id"));
     const newPriceNode = cartProductItem.querySelector(`.cartpage-product-price[product-id="${productId}"]`);
-    const updatedProduct = await getCartProductForId(productId);
+    // const updatedProduct = await getCartProductForId(productId);
+    const updatedProduct =  getCardProductFromId(productId);
     newPriceNode.innerHTML = `$${updatedProduct["discountedPrice"].toFixed(2)}`;
     value = 0;
 }
@@ -103,9 +119,11 @@ async function updateCountForProduct(productId) {
         const product = document.querySelector(`.cartpage-product[product-id="${productId}"]`);
         product.remove();
         cart = (await removeFromCartAPI(productId))['data'];
+        await saveCartToLocalStorage();
         updateCartpageTotalPrice();
     } else {
         cart = (await updateProductAPI(productId, value))['data'];
+        await saveCartToLocalStorage();
         quantityNode.innerHTML = String(Number(quantityNode.innerHTML) + value);
         const cartProductItem = document.querySelector(`.cartpage-product[product-id="${productId}"]`);
         await updateProduct(cartProductItem);
@@ -138,8 +156,9 @@ async function handleCheckoutButton() {
     });
 }
 
-//load the cart page
-loadCartPage();
+getCartFromLocalStorage().then(()=>{
+    loadCartPage();
+});
 //attach the click event listener for the checkout button
 await handleCheckoutButton();
 
