@@ -19,7 +19,7 @@ body{
 
 .giga-header{
     position: fixed;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.90);
     height: 12vh;
     align-items: center;
     width: 110%;
@@ -303,6 +303,39 @@ body{
 
 .preview-exit:hover {
     background-color: rgba(126, 126, 126, 0.2);
+}
+
+.preview-left-pic{
+    position: absolute;
+    /*background-color: rgba(152, 152, 152, 0.4);*/
+    height: 80%;
+    bottom: 10%;
+    width: 5%;
+    left: 5%;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.preview-right-pic{
+    position: absolute;
+    /*background-color: rgba(152, 152, 152, 0.4);*/
+    height: 80%;
+    bottom: 10%;
+    width: 5%;
+    left: 40%;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.preview-left-pic:hover, .preview-right-pic:hover{
+    background-color: rgba(253, 253, 253, 0.7);
+    cursor: pointer;
 }
 
 #cart-popup{

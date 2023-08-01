@@ -153,6 +153,8 @@ function displayPreview(theId) {
     // let itemToHover = document.getElementById(theId.id);
     let previewPanel = document.getElementById("product-preview");
     let backgroundCover = document.getElementById("background-cover");
+    // let headerTitle = document.getElementsByClassName("giga-header")[0];
+    // headerTitle.style.backgroundColor = "rgba(255, 255, 255, 0.95)";
     previewPanel.style.visibility = "visible";
     backgroundCover.style.visibility = "visible";
 
@@ -195,11 +197,31 @@ function displayPreview(theId) {
         });
 }
 
+function leftPic(){
+    console.log("left-pic");
+}
+
+function rightPic(){
+    console.log("right-pic");
+}
+
+document.addEventListener("keydown", function(event){
+    if (event.key === "ArrowLeft"){
+        leftPic();
+    }
+    if (event.key === "ArrowRight"){
+        rightPic();
+    }
+});
+
 function closePreview(){
     let previewPanel = document.getElementById("product-preview");
     let backgroundCover = document.getElementById("background-cover");
+    // let headerTitle = document.getElementsByClassName("giga-header")[0];
+    // headerTitle.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
     previewPanel.style.visibility = "hidden";
     backgroundCover.style.visibility = "hidden";
+
 }
 
 function addElementToCart(elementID){
