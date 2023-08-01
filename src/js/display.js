@@ -1,21 +1,14 @@
 async function addToCart(element){
-    console.log(element.parentElement.id);
+    addElementToCart(element.parentElement.id);
     element.innerHTML = "🛒 Added!";
     element.classList.remove("item-add-to-car");
     element.classList.add("item-added-to-cart");
     let popup = document.getElementById("cart-popup");
     popup.style.visibility = "visible";
-    popup.style.opacity = 1;
+    popup.style.opacity = "1";
     setTimeout(() => {
         showCartAgain(element);
     }, 1000);
-}
-
-function addToCartExtern(element){
-    thisId = element.id;
-    console.log(document.getElementsByClassName("preview-title")[0].innerHTML);
-    itemElement = document.getElementById(thisId);
-    addToCart(itemElement);
 }
 
 function showCartAgain(element){
@@ -23,8 +16,8 @@ function showCartAgain(element){
     element.classList.remove("item-added-to-cart");
     element.classList.add("item-add-to-car");
     let popup = document.getElementById("cart-popup");
-    popup.style.opacity = 1;
-    var fadeEffect = setInterval(function () {
+    popup.style.opacity = "1";
+    let fadeEffect = setInterval(function () {
         if (popup.style.opacity > 0.4) {
             popup.style.opacity -= 0.2;
         } else {
@@ -34,7 +27,41 @@ function showCartAgain(element){
     }, 100);
 }
 
-let lastID = 1000;
+async function addToCartExtern(){
+    let previewPanel = document.getElementById("product-preview");
+
+    let thisId = previewPanel.getAttribute("idshowing");
+    let itemElement = document.getElementById(thisId);
+    addElementToCart(itemElement.id);
+    let buttonElement = document.getElementsByClassName("preview-add-to-cart")[0];
+    buttonElement.innerHTML = "🛒 Added!";
+    buttonElement.classList.remove("preview-add-to-cart");
+    buttonElement.classList.add("preview-added-to-cart");
+    let popup = document.getElementById("cart-popup");
+    popup.style.visibility = "visible";
+    popup.style.opacity = "1";
+    setTimeout(() => {
+        showCartAgainExtern(buttonElement);
+    }, 1000);
+
+}
+
+function showCartAgainExtern(element){
+    element.innerHTML = "🛒 ADD!";
+    element.classList.remove("preview-added-to-cart");
+    element.classList.add("preview-add-to-cart");
+    let popup = document.getElementById("cart-popup");
+    popup.style.opacity = "1";
+    let fadeEffect = setInterval(function () {
+        if (popup.style.opacity > 0.4) {
+            popup.style.opacity -= 0.2;
+        } else {
+            clearInterval(fadeEffect);
+            popup.style.visibility = "hidden";
+        }
+    }, 100);
+}
+
 let allItems = [];
 
 function addAnItem(itemData){
@@ -48,10 +75,7 @@ function addAnItem(itemData){
     newItemCategory.innerHTML=itemData.category;
 
     const newItemIMG = document.createElement("img");
-    let picURL = "https://picsum.photos/30";
-    picURL += String(Math.floor(Math.random() * 9));
-    picURL += "/40";
-    picURL += String(Math.floor(Math.random() * 9));
+
     newItemIMG.src=itemData.thumbnail;
     newItemIMG.alt="Product for sale.";
     newItemIMG.classList.add("item-image");
@@ -126,6 +150,8 @@ function displayPreview(theId) {
     previewPanel.style.visibility = "visible";
     backgroundCover.style.visibility = "visible";
 
+    previewPanel.setAttribute("idshowing", String(theId.id));
+
     let previewTitle = document.getElementsByClassName("preview-title")[0];
     let previewDescription = document.getElementsByClassName("preview-description")[0];
     let previewPrice = document.getElementsByClassName("preview-price")[0];
@@ -161,4 +187,8 @@ function displayPreview(theId) {
         .catch(error => {
             console.error('Error fetching data:', error);
         });
+}
+
+function addElementToCart(elementID){
+    console.log(elementID);
 }
