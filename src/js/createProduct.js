@@ -88,7 +88,38 @@ export function createCard(product) {
     card.appendChild(addToCartButton);
 
     addArrowsListener(card);
-    initiateMapGallery(product.id, product.images.length-2);
+    initiateMapGallery(product.id, product.images.length);
 
     return card;
+}
+
+
+export function createCartCard(product){
+    let cartList = document.getElementsByClassName("cart-window-list");
+    const itemBox = document.createElement("div");
+    itemBox.classList.add("item-box");
+    itemBox.setAttribute("data-id", product.id);
+    const itemImage = document.createElement("img");
+    itemImage.classList.add("item-box__image");
+    itemImage.src = product.thumbnail;
+    itemImage.alt = product.title;
+    const itemTitle = document.createElement("p");
+    itemTitle.classList.add("item-box-title");
+    itemTitle.textContent = product.title;
+    const itemPrice = document.createElement("p");
+    itemPrice.classList.add("item-box-price");
+    itemPrice.textContent = `$${(product.price - (product.price * product.discountPercentage) / 100).toFixed(2)}`;
+    const itemQuantity = document.createElement("p");
+    itemQuantity.classList.add("item-box-number");
+    itemQuantity.textContent = product.quantity;
+    const itemTotalPrice = document.createElement("p");
+    itemTotalPrice.classList.add("item-box-total");
+
+    itemTotalPrice.textContent = `$${(product.quantity * (product.price - (product.price * product.discountPercentage) / 100)).toFixed(2)}`;
+    itemBox.appendChild(itemImage);
+    itemBox.appendChild(itemTitle);
+    itemBox.appendChild(itemPrice);
+    itemBox.appendChild(itemQuantity);
+    itemBox.appendChild(itemTotalPrice);
+    cartList[0].appendChild(itemBox);
 }

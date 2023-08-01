@@ -28,6 +28,7 @@ export function addDocumentListener(){
         }
     });
 }
+
 function arrowClicked(card, direction) {
     if (direction === -1) {
         console.log("left arrow clicked");

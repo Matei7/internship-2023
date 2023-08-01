@@ -13,12 +13,6 @@ function fetchCart() {
             'Content-Type': 'application/json',
         }
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Request failed with status ${response.status}`);
-            }
-            return response.json();
-        })
         .then(data => {
             return data.products;
         })
@@ -72,7 +66,6 @@ async function modifyQuantity(productId, operation) {
         decreaseQuantityRequest(productId, changedQuantityForProduct);
     }
 }
-
 
 function plusMinusBtnListener(card) {
     const plusBtn = card.querySelector(".plus");
@@ -213,8 +206,6 @@ function generalListenerOnPage() {
             })
         }
     );
-
-
     const titleShop = document.getElementById("meta-shop");
     titleShop.addEventListener("click", () => {
         window.location.href = "index.html";

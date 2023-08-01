@@ -1,4 +1,4 @@
-import {createCard} from "./createProduct.js";
+import {createCard,createCartCard} from "./createProduct.js";
 import {addDocumentListener} from "./galleryFunctions";
 
 let totalProductsInPage=0;
@@ -7,7 +7,6 @@ let mainContainer = document.querySelector(".product-grid");
 const idCart="64c77ddd8e88f";
 const productsLocalStorage = "productsStorage"
 let isFetching=false;//pentru scroll infinit
-let cartLocalStorage = "cartStorage";
 let categories=[];
 let scrollAllProductsFilter=true;//sa nu se dea scroll decat daca sunt pe all products
 
@@ -19,7 +18,6 @@ function saveProductsInLocalStorage(products){
     }
     else{
         localStorage.setItem(productsLocalStorage, JSON.stringify(products));
-
     }
 }
 
@@ -41,9 +39,7 @@ function saveCategoryFilters(category){
             scrollAllProductsFilter=false;
             document.querySelectorAll(".filtered-out").forEach(card => {
                 card.classList.remove("filtered-out");
-
             });
-            console.log("filter");
             const cards = document.querySelectorAll(".product-grid__product-card");
             let counter=0;
             cards.forEach(card => {
@@ -62,6 +58,9 @@ function saveCategoryFilters(category){
     }
 }
 
+export function getTotalProductsInPage(){
+    return totalProductsInPage;
+}
 
 async function loadProductsInPage() {
     const productsFromStorage = getProductsFromLocalStorage();
@@ -101,12 +100,8 @@ async function loadProductsInPage() {
                 throw error;
             });
     }
-
 }
 
-export function getTotalProductsInPage(){
-    return totalProductsInPage;
-}
 export function fetchCartProducts() {
     return fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
         method: 'GET',
@@ -140,7 +135,7 @@ async function getHowManyProductsInCart() {
                 }
                  console.log(totalProductsInCart);
                 console.log(cart);
-                 cart.textContent = `Cart: ${totalProductsInCart} Products`;//intrebare? imi face intarziere si nu pe loc update
+                 cart.textContent = `Cart: ${totalProductsInCart} Products`;
             }
         });
 }
@@ -150,7 +145,6 @@ async function getHowManyProductsInCart() {
 async function updateCartItemsContainer() {
     await fetchCartProducts()
         .then(productsFromCart => {
-            const cart = document.getElementById("cart");
             for (const product of productsFromCart) {
                 if (document.querySelector(`.item-box[data-id="${product.id}"]`) != null) {
                     const itemBox = document.querySelector(`.item-box[data-id="${product.id}"]`);
@@ -159,33 +153,7 @@ async function updateCartItemsContainer() {
                     itemQuantity.textContent = product.quantity;
                     itemTotalPrice.textContent = `$${(product.quantity * (product.price - (product.price * product.discountPercentage) / 100)).toFixed(2)}`;
                 } else {
-                    let cartList = document.getElementsByClassName("cart-window-list");
-                    const itemBox = document.createElement("div");
-                    itemBox.classList.add("item-box");
-                    itemBox.setAttribute("data-id", product.id);
-                    const itemImage = document.createElement("img");
-                    itemImage.classList.add("item-box__image");
-                    itemImage.src = product.thumbnail;
-                    itemImage.alt = product.title;
-                    const itemTitle = document.createElement("p");
-                    itemTitle.classList.add("item-box-title");
-                    itemTitle.textContent = product.title;
-                    const itemPrice = document.createElement("p");
-                    itemPrice.classList.add("item-box-price");
-                    itemPrice.textContent = `$${(product.price - (product.price * product.discountPercentage) / 100).toFixed(2)}`;
-                    const itemQuantity = document.createElement("p");
-                    itemQuantity.classList.add("item-box-number");
-                    itemQuantity.textContent = product.quantity;
-                    const itemTotalPrice = document.createElement("p");
-                    itemTotalPrice.classList.add("item-box-total");
-
-                    itemTotalPrice.textContent = `$${(product.quantity * (product.price - (product.price * product.discountPercentage) / 100)).toFixed(2)}`;
-                    itemBox.appendChild(itemImage);
-                    itemBox.appendChild(itemTitle);
-                    itemBox.appendChild(itemPrice);
-                    itemBox.appendChild(itemQuantity);
-                    itemBox.appendChild(itemTotalPrice);
-                    cartList[0].appendChild(itemBox);
+                    createCartCard(product);
                 }
             }
         })
@@ -241,19 +209,7 @@ export  function addAddToCardBtnListener(product) {
     });
 }
 
-
-
-export function init() {
-    getHowManyProductsInCart();
-    loadProductsInPage();
-	addDocumentListener();
-    window.onscroll = function (ev) {
-            console.log(scrollAllProductsFilter);
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && scrollAllProductsFilter===true) {
-                loadProductsInPage();
-            }
-        };
-
+function addCartListener() {
     const cartButton = document.getElementById("cart");
     cartButton.addEventListener("mouseover", function () {
         const cartWindowList= document.querySelector(".cart-window-list");
@@ -282,6 +238,19 @@ export function init() {
     cartButton.addEventListener("click", function () {
         window.location.href = "checkoutPage.html";
     });
+}
+
+export function init() {
+    getHowManyProductsInCart();
+    loadProductsInPage();
+	addDocumentListener();
+    addCartListener();
+    window.onscroll = function (ev) {
+            console.log(scrollAllProductsFilter);
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && scrollAllProductsFilter===true) {
+                loadProductsInPage();
+            }
+        };
 
     const allProductsFilter=document.querySelector(".all-products-filter");
     allProductsFilter.addEventListener("click", function () {
@@ -293,7 +262,6 @@ export function init() {
             }
         });
     });
-
 }
 
 
