@@ -1,39 +1,28 @@
 import {getItemById} from "./product_api.js";
 import {handleCartHoverEvent, loadCart} from "../cart/cart_script.js";
 
-const sampleItem =
-    {
-        "id": 1,
-        "title": "iPhone 9",
-        "description": "An apple mobile which is nothing like apple",
-        "price": 549,
-        "discountPercentage": 12.96,
-        "rating": 4.69,
-        "stock": 94,
-        "brand": "Apple",
-        "category": "smartphones",
-        "thumbnail": "https://i.dummyjson.com/data/products/1/thumbnail.jpg",
-        "images": [
-            "https://i.dummyjson.com/data/products/1/1.jpg",
-            "https://i.dummyjson.com/data/products/1/2.jpg",
-            "https://i.dummyjson.com/data/products/1/3.jpg",
-            "https://i.dummyjson.com/data/products/1/4.jpg",
-            "https://i.dummyjson.com/data/products/1/thumbnail.jpg"
-        ]
-    }
+let currentItem = {};
 let currentImageIndex = 0;
 
-function showCurrentImage(index){
-    const imagesContainer=document.querySelector(".images");
-    const images=imagesContainer.querySelectorAll("img");
+/**
+ * Shows the current image based on the index
+ * @param index
+ */
+function showCurrentImage(index) {
+    const imagesContainer = document.querySelector(".images");
+    const images = imagesContainer.querySelectorAll("img");
 
-    for (let i=0; i<images.length; i++){
-        if (i===index)
+    for (let i = 0; i < images.length; i++) {
+        if (i === index)
             images[i].classList.remove("hidden");
         else
             images[i].classList.add("hidden");
     }
 }
+
+/**
+ * Shows the next image
+ */
 function nextImage() {
 
     currentImageIndex++;
@@ -41,17 +30,20 @@ function nextImage() {
     const width = imagesContainer.clientWidth;
     const translateX = currentImageIndex * width;
 
-    if (currentImageIndex >= sampleItem.images.length) {
+    if (currentImageIndex >= currentItem.images.length) {
         currentImageIndex = -1;
         imagesContainer.style.transform = `translateX(0)`;
-        showCurrentImage(currentImageIndex+1);
-    } else{
+        showCurrentImage(currentImageIndex + 1);
+    } else {
         imagesContainer.style.transform = `translateX(-${translateX}px)`;
         showCurrentImage(currentImageIndex);
     }
 
 }
 
+/**
+ * Shows the previous image
+ */
 function prevImage() {
 
     const imagesContainer = document.querySelector(".images");
@@ -59,7 +51,7 @@ function prevImage() {
     currentImageIndex--;
 
     if (currentImageIndex < 0) {
-        currentImageIndex = sampleItem.images.length - 1;
+        currentImageIndex = currentItem.images.length - 1;
         imagesContainer.style.transform = `translateX(-${currentImageIndex * width}px)`;
         showCurrentImage(currentImageIndex);
     } else {
@@ -71,10 +63,14 @@ function prevImage() {
 
 }
 
+/**
+ * Loads the product based on the jsonItem
+ * @param jsonItem
+ */
 function loadProduct(jsonItem) {
     const imagesContainer = document.querySelector(".images");
     imagesContainer.innerHTML = "";
-    const discountPrice=(jsonItem.price*(1-jsonItem.discountPercentage/100)).toFixed(2);
+    const discountPrice = (jsonItem.price * (1 - jsonItem.discountPercentage / 100)).toFixed(2);
     for (const url of jsonItem.images) {
         const img = document.createElement("img");
         img.src = url;
@@ -102,34 +98,44 @@ function loadProduct(jsonItem) {
 
     `;
 }
-async function getJsonProduct(){
+
+/**
+ * Gets the jsonItem from the api based on the id
+ * @returns {Promise<*>}
+ */
+async function getJsonProduct() {
     const itemId = Number(new URLSearchParams(window.location.search).get("id"));
     const jsonItem = await getItemById(itemId);
     return jsonItem;
 }
 
-    setTimeout( () => {
-        const jsonItem = getJsonProduct();
-        getJsonProduct().then(async (jsonItem) => {
-            loadProduct(jsonItem);
-            showCurrentImage(currentImageIndex);
-            await loadCart();
-            handleCartHoverEvent();
-        });
-    }, 1000);
 
-
+/**
+ * Adds event listeners to the arrows
+ */
+function addEventListeners() {
     const leftArrow = document.querySelector(".left-arrow");
     const rightArrow = document.querySelector(".right-arrow");
     rightArrow.addEventListener("click", nextImage);
     leftArrow.addEventListener("click", prevImage);
-
-
     document.addEventListener("keydown", (event) => {
         if (event.key === "ArrowRight")
             nextImage();
         else if (event.key === "ArrowLeft")
             prevImage();
     });
+}
+
+setTimeout(() => {
+    getJsonProduct().then(async (jsonItem) => {
+        loadProduct(jsonItem);
+        currentItem = jsonItem;
+        showCurrentImage(currentImageIndex);
+        await loadCart();
+        handleCartHoverEvent();
+    });
+}, 1000);
+
+addEventListeners();
 
 

@@ -1,11 +1,15 @@
 import {addToCart, handleCartHoverEvent} from "./cart/cart_script.js";
-import {getItems} from "./product_page/product_api.js";
-import {getAllAvailableCategories, getAllItems, getProductsForCategory} from "./utils.js";
+import {getItems ,getProductsForCategory,getAllAvailableCategories, getAllItems} from "./product_page/product_api.js";
 import {getNewCart} from "./cart/cart_api";
-// const newCart=await getNewCart();
-// console.log(newCart);
 
+let selectedCategory='';
 const allItems=(await getAllItems())['products'];
+
+/**
+ * Returns a HTML node for a product item
+ * @param jsonItem
+ * @returns {HTMLDivElement}
+ */
 function getHtmlNodeItem(jsonItem){
 
     if (!jsonItem.currentImageIndex)
@@ -41,6 +45,10 @@ function getHtmlNodeItem(jsonItem){
     return itemNode;
 }
 
+/**
+ * Shows a notification for 5 seconds
+ * @param message
+ */
 function showNotification(message){
     const notification=document.getElementById('notification');
     const notificationParent=document.getElementsByClassName('notification-container')[0];
@@ -50,6 +58,10 @@ function showNotification(message){
         notificationParent.style.visibility='hidden';
     },5000);
 }
+
+/**
+ * Attaches events to the buttons on the main page
+ */
 function handleButtonEvents(){
     const buttons=document.getElementsByClassName('add_to_cart_btn');
     for (const btn of buttons){
@@ -83,6 +95,14 @@ function handleButtonEvents(){
         window.open('cart_page.html','_blank');
     });
 }
+
+
+/**
+ * Appends nodes to the container and attaches listeners to the nodes so that they open the product page
+ * @param items
+ * @param container
+ * @returns {Promise<void>}
+ */
 async function appendNodesAndAttachSelfPageListeners(items,container){
     for (const item of items) {
         const itemNode = getHtmlNodeItem(item);
@@ -94,7 +114,12 @@ async function appendNodesAndAttachSelfPageListeners(items,container){
         container.appendChild(itemNode);
     }
 }
-let selectedCategory='';
+
+/**
+ * Loads items from the server and appends them to the shop page
+ * @param loadMorePressed
+ * @returns {Promise<void>}
+ */
 export async function loadItems(loadMorePressed=false){
 
     const shopContainer=document.getElementsByClassName('shop-items')[0];
@@ -111,8 +136,8 @@ export async function loadItems(loadMorePressed=false){
     else{
 
         // const newItems=selectedCategory!='' ? (await getProductsForCategory(selectedCategory))['products'] : await getItems();
-        const fitleredItems=allItems.filter((item)=>item.category===selectedCategory);
-        const newItems=selectedCategory!='' ? fitleredItems : await getItems();
+        const filteredItems=allItems.filter((item)=>item.category===selectedCategory);
+        const newItems=selectedCategory!='' ? filteredItems : await getItems();
         console.log(newItems.length);
         await appendNodesAndAttachSelfPageListeners(newItems,shopContainer);
     }
@@ -124,23 +149,32 @@ export async function loadItems(loadMorePressed=false){
 }
 
 
+/**
+ * Loads the filter section
+ * @returns {Promise<void>}
+ */
 export async function loadFilterSection(){
     const filterSectionWrapper=document.querySelector('.filter-section');
    filterSectionWrapper.innerHTML='<p>Categories:</p>';
     const categories=await getAllAvailableCategories();
     for (const category of categories){
-        const categoryNode=document.createElement('button');
-        categoryNode.setAttribute('title',category);
-        categoryNode.classList.add('filter-btn');
-        categoryNode.innerHTML=category;
-        filterSectionWrapper.appendChild(categoryNode);
-        categoryNode.addEventListener('click',async ()=>{
+        const categoryButtonNode=document.createElement('button');
+        categoryButtonNode.setAttribute('title',category);
+        categoryButtonNode.classList.add('filter-btn');
+        categoryButtonNode.innerHTML=category;
+        filterSectionWrapper.appendChild(categoryButtonNode);
+        categoryButtonNode.addEventListener('click',async ()=>{
             await loadShopPageForCategory(category);
             selectedCategory=category;
         });
     }
 }
 
+/**
+ * Loads the shop page in order to list products for a specific category
+ * @param category
+ * @returns {Promise<void>}
+ */
 export async function loadShopPageForCategory(category){
 
     // const items=(await getProductsForCategory(category))['products'];

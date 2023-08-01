@@ -6,6 +6,12 @@ import {debounce} from "../utils";
 let cart = await getCart();
 let removeBtnIsPressed=false;
 let value=0;
+
+/**
+ * Loads the cart section
+ * @param _cart - json object
+ * @returns {Promise<void>}
+ */
 export async function loadCart(_cart=cart) {
 
 
@@ -27,6 +33,9 @@ export async function loadCart(_cart=cart) {
 
 }
 
+/**
+ * Attaches hover event to the cart icon
+ */
 export function handleCartHoverEvent() {
     const cartNode = document.getElementById('cart');
     const cartItemsNode = document.querySelector('#cart-items');
@@ -43,12 +52,17 @@ export function handleCartHoverEvent() {
     });
 }
 
+/**
+ * Removes an item from the cart
+ * @param productId
+ * @returns {Promise<void>}
+ */
 async function removeItemFromCart(productId) {
     const cartItemNode = document.querySelector(`.cart-item[product_id="${productId}"]`);
     const cartItemCount = cartItemNode.querySelector('.cart-item-count');
     const count = parseInt(cartItemCount.innerText.split('x')[1]);
     console.log(count, value);
-    if (count + value > 1) {
+    if (count + value >= 1) {
         cart = (await updateProductAPI(productId, value))['data'];
         await updateCountForItem(productId, value);
         console.log('fetched');
@@ -59,14 +73,24 @@ async function removeItemFromCart(productId) {
     }
     await updateCartTotalPrice();
     await updateCartCount();
+    value=0;
 
 }
 
+/**
+ * Finds an item in the cart based on the product id
+ * @param productId
+ * @returns {Element}
+ */
 function findItemInCartHTML(productId) {
     return document.querySelector(`.cart-item[product_id="${productId}"]`);
 
 }
 
+/**
+ * Adds a node element to the cart
+ * @param jsonItem
+ */
 function addNodeElementToCart(jsonItem) {
     const cartContainer = document.querySelector('.cart-products');
     const cartItemNode = document.createElement('div');
@@ -96,7 +120,6 @@ function addNodeElementToCart(jsonItem) {
     });
 
     cartItemNode.querySelector('.remove-from-cart-btn').addEventListener('click', async (event) => {
-        // await removeItemFromCart(jsonItem.id);
         value-=1;
         debounceRemoveProduct(jsonItem.id);
     });
@@ -107,14 +130,25 @@ const debounceRemoveProduct = debounce(async (productId)=>{
     if (!removeBtnIsPressed){
         removeBtnIsPressed=true;
         await removeItemFromCart(productId);
-        value=0;
         removeBtnIsPressed=false;
     }
 });
+
+/**
+ * Updates the cart total price and count
+ * @param _cart
+ * @returns {Promise<void>}
+ */
 export async function updateHeaderCartNumbers(_cart=cart){
     await updateCartTotalPrice(_cart);
     await updateCartCount(_cart);
 }
+
+/**
+ * Updates the cart total price
+ * @param _cart
+ * @returns {Promise<void>}
+ */
 async function updateCartTotalPrice(_cart=cart){
     const totalPriceNode = document.querySelector('.cart-total');
     const cartItemsNode = document.querySelector('.cart-products');
@@ -130,11 +164,21 @@ async function updateCartTotalPrice(_cart=cart){
     totalPriceNode.innerHTML = `<p>Total: <s>$${totalPrice}</s> $${cart["discountTotal"].toFixed(2)}</p>`;
 }
 
+/**
+ * Adds an item to the cart
+ * @param productId
+ * @returns {Promise<void>}
+ */
 export async function addToCart(productId) {
     cart = (await addToCartAPI(productId, 1))['data']; //update cart
     await loadCart();
 }
 
+/**
+ * Updates the cart count
+ * @param _cart
+ * @returns {Promise<void>}
+ */
 async function updateCartCount(_cart=cart) {
     let count = 0;
     for (const cartItem of _cart.products) {
@@ -146,6 +190,11 @@ async function updateCartCount(_cart=cart) {
 
 }
 
+/**
+ * Updates the count for an item in the cart
+ * @param productId
+ * @param value
+ */
 function updateCountForItem(productId, value) {
     const cartItemNode = document.querySelector(`.cart-item-count[product_id="${productId}"]`);
     const count = parseInt(cartItemNode.innerText.split('x')[1]);

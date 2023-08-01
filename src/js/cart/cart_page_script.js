@@ -4,10 +4,13 @@ import {debounce} from "../utils";
 // Initialize cart
 let cart = await getCart();
 
-let value=0;
-let isPressedOnce=false;
+let value = 0;
+let isPressedOnce = false;
 
-// Load cart page
+
+/**
+ * Loads the cart page
+ */
 function loadCartPage() {
     const cartProductsContainer = document.querySelector(".cartpage-products");
     for (const cartProduct of cart.products) {
@@ -33,12 +36,12 @@ function loadCartPage() {
         //Add the click event listeners for the buttons that change the quantity of the product
         //Update the cart on the fronted aswell as on the backend
         lowerButtonForCurrentProduct.addEventListener("click", async (event) => {
-            value-=1;
+            value -= 1;
             debounceUpdateProduct(cartProduct.id);
 
         });
         higherButtonForCurrentProduct.addEventListener("click", async (event) => {
-            value+=1;
+            value += 1;
             debounceUpdateProduct(cartProduct.id);
 
         });
@@ -52,29 +55,46 @@ function loadCartPage() {
     document.querySelector(".checkout-button").insertAdjacentElement("beforebegin", total);
 }
 
+/**
+ * Updates the price of a product on the frontend
+ * @param cartProductItem
+ * @returns {Promise<void>}
+ */
 async function updateProduct(cartProductItem) {
 
     const productId = Number(cartProductItem.getAttribute("product-id"));
     const newPriceNode = cartProductItem.querySelector(`.cartpage-product-price[product-id="${productId}"]`);
     const updatedProduct = await getCartProductForId(productId);
     newPriceNode.innerHTML = `$${updatedProduct["discountedPrice"].toFixed(2)}`;
-    value=0;
+    value = 0;
 }
 
-const debounceUpdateProduct = debounce(async (productId)=>{
-    if (!isPressedOnce){
-        isPressedOnce=true;
+/**
+ * Debounces the update of the product
+ * @type {(function(...[*]): void)|*}
+ */
+const debounceUpdateProduct = debounce(async (productId) => {
+    if (!isPressedOnce) {
+        isPressedOnce = true;
         await updateCountForProduct(productId);
-        isPressedOnce=false;
+        isPressedOnce = false;
     }
 });
 
+
+/**
+ * Updates the total price of the cart
+ */
 function updateCartpageTotalPrice() {
     document.querySelector(".total-price").innerHTML = `Total: $${cart["discountTotal"].toFixed(2)}`;
 }
 
 
-//Updates the count for a product on the backend, calls functions that do it on the frontend aswell
+/**
+ * Updates the count of a product
+ * @param productId
+ * @returns {Promise<void>}
+ */
 async function updateCountForProduct(productId) {
     console.log('updateCountForProduct');
     const quantityNode = document.querySelector(`.quantity[product-id="${productId}"]`);
@@ -85,19 +105,19 @@ async function updateCountForProduct(productId) {
         cart = (await removeFromCartAPI(productId))['data'];
         updateCartpageTotalPrice();
     } else {
-        cart=(await updateProductAPI(productId, value))['data'];
+        cart = (await updateProductAPI(productId, value))['data'];
         quantityNode.innerHTML = String(Number(quantityNode.innerHTML) + value);
-        const cartProductItem=document.querySelector(`.cartpage-product[product-id="${productId}"]`);
+        const cartProductItem = document.querySelector(`.cartpage-product[product-id="${productId}"]`);
         await updateProduct(cartProductItem);
         updateCartpageTotalPrice();
     }
 
-
-
-
 }
 
-//Removes all the items from the cart
+/**
+ * Removes all the items from the cart
+ * @returns {Promise<void>}
+ */
 async function removeAllItemsFromCart() {
     const cartProducts = document.querySelectorAll(".cartpage-product");
     for (const cartProduct of cartProducts) {
