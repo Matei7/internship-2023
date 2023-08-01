@@ -57,29 +57,43 @@ function createCartItem(product) {
     const cartItemRemoveButton = document.createElement('button');
     cartItemRemoveButton.innerText = '-';
     cartItemRemoveButton.classList.add('cart-item-edit-quantity');
-    const handleRemoveButtonClick = () => {
-        const cartItem = cartItems.querySelector(`[data-id="${product.id}"]`);
-        if (numberOfClicksRemove >= product.quantity) {
-            fetchDeleteProductFromCart(product.id).then(() => {
-                updateCartTotal(cartTotal - product.price * product.quantity);
-                cartItems.removeChild(cartItem);
-                localStorage.removeItem('cart');
-            });
-        } else {
-            cartItemCounter.innerText = `x${product.quantity - numberOfClicksRemove}`;
-            fetchRemoveProductFromCart(product.id, -numberOfClicksRemove).then(() => {
-                updateCartTotal(cartTotal - product.price * product.quantity);
+    const handleEditQuantityButtonsClick = () => {
+        const difference = numberOfClicksAdd - numberOfClicksRemove;
+        if (difference === 0) {
+
+        }
+        else if (difference > 0) {
+            cartItemCounter.innerText = `x${product.quantity + difference}`;
+            fetchAddProductToCart(product.id, difference).then(() => {
+                updateCartTotal(cartTotal + product.price * difference);
                 localStorage.removeItem('cart');
             });
         }
+        else if (difference < 0) {
+            const cartItem = cartItems.querySelector(`[data-id="${product.id}"]`);
+            if (product.quantity + difference <= 0) {
+                fetchDeleteProductFromCart(product.id).then(() => {
+                    updateCartTotal(cartTotal - product.price * product.quantity);
+                    cartItems.removeChild(cartItem);
+                    localStorage.removeItem('cart');
+                });
+            } else {
+                cartItemCounter.innerText = `x${product.quantity + difference}`;
+                fetchRemoveProductFromCart(product.id, difference).then(() => {
+                    updateCartTotal(cartTotal - product.price * product.quantity);
+                    localStorage.removeItem('cart');
+                });
+            }
+        }
         numberOfClicksRemove = 0;
+        numberOfClicksAdd = 0;
     };
 
-    const debouncedRemoveButtonClickHandler = debounce(handleRemoveButtonClick);
+    const debounceHandleEditQuantityButtonsClick = debounce(handleEditQuantityButtonsClick);
 
     cartItemRemoveButton.addEventListener('click', () => {
         numberOfClicksRemove++;
-        debouncedRemoveButtonClickHandler(); // Call the debounced version of removeButtonClickHandler
+        debounceHandleEditQuantityButtonsClick(); // Call the debounced version of removeButtonClickHandler
     });
 
 
@@ -87,20 +101,9 @@ function createCartItem(product) {
     cartItemAddButton.innerText = '+';
     cartItemAddButton.classList.add('cart-item-edit-quantity');
 
-    const handleAddButtonClick = () => {
-        cartItemCounter.innerText = `x${product.quantity + numberOfClicksAdd}`;
-        fetchAddProductToCart(product.id, numberOfClicksAdd).then(() => {
-            updateCartTotal(cartTotal + product.price * numberOfClicksAdd);
-            numberOfClicksAdd = 0;
-            localStorage.removeItem('cart');
-        });
-    }
-
-    const debouncedClickEventHandlerAdd = debounce(handleAddButtonClick, 1000);
-
     cartItemAddButton.addEventListener('click', () => {
         numberOfClicksAdd++;
-        debouncedClickEventHandlerAdd();
+        debounceHandleEditQuantityButtonsClick();
     });
 
     cartItem.appendChild(cartItemImage);
