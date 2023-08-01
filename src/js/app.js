@@ -1,17 +1,17 @@
-import {createCard,createCartCard} from "./createProduct.js";
+import {createCard, createCartCard} from "./createProduct.js";
 import {addDocumentListener} from "./galleryFunctions";
 
-let totalProductsInPage=0;
+let totalProductsInPage = 0;
 let mainContainer = document.querySelector(".product-grid");
-const idCart="64c77ddd8e88f";
+const idCart = "64c77ddd8e88f";
 const productsLocalStorage = "productsStorage"
-let isFetching=false;//pentru scroll infinit
-let categories=[];
-let scrollAllProductsFilter=true;//sa nu se dea scroll decat daca sunt pe all products
+let isFetching = false;//pentru scroll infinit
+let categories = [];
+let scrollAllProductsFilter = true;//sa nu se dea scroll decat daca sunt pe all products
 const cartLocalStorage = "cartStorage";
 
 
-function getProductsCartFromLocalStorage() {
+export function getProductsCartFromLocalStorage() {
     const cachedProducts = localStorage.getItem(cartLocalStorage);
     if (cachedProducts) {
         return JSON.parse(cachedProducts);
@@ -19,24 +19,22 @@ function getProductsCartFromLocalStorage() {
     return null;
 }
 
-function saveProductsCartInLocalStorage(products) {
-    let cartFromStorage=getProductsCartFromLocalStorage();
-    if(getProductsCartFromLocalStorage()!=null){
+export function saveProductsCartInLocalStorage(products) {
+    let cartFromStorage = getProductsCartFromLocalStorage();
+    if (getProductsCartFromLocalStorage() != null) {
         localStorage.setItem(cartLocalStorage, JSON.stringify(products));
-    }
-    else{
+    } else {
         localStorage.setItem(cartLocalStorage, JSON.stringify(products));
     }
 
 }
 
-function saveProductsInLocalStorage(products){
+function saveProductsInLocalStorage(products) {
     let productsFromStorage = getProductsFromLocalStorage();
-    if(productsFromStorage!=null){
+    if (productsFromStorage != null) {
         productsFromStorage = [...productsFromStorage, ...products];
         localStorage.setItem(productsLocalStorage, JSON.stringify(productsFromStorage));
-    }
-    else{
+    } else {
         localStorage.setItem(productsLocalStorage, JSON.stringify(products));
     }
 }
@@ -49,19 +47,19 @@ function getProductsFromLocalStorage() {
     return null;
 }
 
-function saveCategoryFilters(category){
-    if(!categories.includes(category)){
+function saveCategoryFilters(category) {
+    if (!categories.includes(category)) {
         categories.push(category);
         const categorySection = document.querySelector(".category-filter");
         const categoryElement = document.createElement("p");
         categoryElement.innerText = category;
         categoryElement.addEventListener("click", function () {
-            scrollAllProductsFilter=false;
+            scrollAllProductsFilter = false;
             document.querySelectorAll(".filtered-out").forEach(card => {
                 card.classList.remove("filtered-out");
             });
             const cards = document.querySelectorAll(".product-grid__product-card");
-            let counter=0;
+            let counter = 0;
             cards.forEach(card => {
                 if (counter < totalProductsInPage) {
                     const categoryElement = card.querySelector(".category");
@@ -78,13 +76,13 @@ function saveCategoryFilters(category){
     }
 }
 
-export function getTotalProductsInPage(){
+export function getTotalProductsInPage() {
     return totalProductsInPage;
 }
 
 async function loadProductsInPage() {
     const productsFromStorage = getProductsFromLocalStorage();
-    if (productsFromStorage && productsFromStorage.length >= totalProductsInPage+9) {
+    if (productsFromStorage && productsFromStorage.length >= totalProductsInPage + 9) {
         for (let i = totalProductsInPage; i < totalProductsInPage + 9; i++) {
             const cardElement = createCard(productsFromStorage[i]);
             addAddToCardBtnListener(cardElement);
@@ -94,8 +92,8 @@ async function loadProductsInPage() {
         totalProductsInPage += 9;
         return;
     }
-    if(!isFetching){
-        isFetching=true;
+    if (!isFetching) {
+        isFetching = true;
         await fetch(`https://dummyjson.com/products?limit=9&skip=${totalProductsInPage}&select=title,price,description,discountPercentage,rating,stock,brand,category,thumbnail,images`)
             .then(response => {
                 if (!response.ok) {
@@ -113,7 +111,7 @@ async function loadProductsInPage() {
                     mainContainer.appendChild(cardElement);
                 });
                 totalProductsInPage += 9;
-                isFetching=false;
+                isFetching = false;
             })
             .catch(error => {
                 console.error("Error loading products:", error);
@@ -122,7 +120,7 @@ async function loadProductsInPage() {
     }
 }
 
-export async  function fetchCartProducts() {
+export async function fetchCartProducts() {
     await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
         method: 'GET',
         headers: {
@@ -159,7 +157,7 @@ function getHowManyProductsInCart() {
     }
 }
 
-async function updateCartItemsContainer() {
+function updateCartItemsContainer() {
     const productsFromCart = getProductsCartFromLocalStorage();
     if (productsFromCart) {
         for (const product of productsFromCart) {
@@ -173,7 +171,6 @@ async function updateCartItemsContainer() {
                 createCartCard(product);
             }
         }
-        //getHowManyProductsInCart();
     }
 
 }
@@ -190,8 +187,9 @@ async function addProductInCartRequest(cardElement) {
     const productId = Number(cardElement.dataset.id);
     await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json',
-            },
+        headers: {
+            'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
             products: [
                 {
@@ -208,14 +206,15 @@ async function addProductInCartRequest(cardElement) {
             return response.json();
         })
         //.then(getHowManyProductsInCart);
-        .then(data=>{
-            const products=data?.data.products;
-            saveProductsCartInLocalStorage(products);})
-        .then(updateCartItemsContainer())
-        .then(getHowManyProductsInCart);
+        .then(data => {
+            const products = data?.data.products;
+            saveProductsCartInLocalStorage(products);
+        })
+    updateCartItemsContainer();
+    getHowManyProductsInCart();
 }
 
-export  function addAddToCardBtnListener(product) {
+export function addAddToCardBtnListener(product) {
     let btnAddToCart = product.querySelector(".product-grid__product-card__add-to-cart-button");
     btnAddToCart.addEventListener("click", function () {
         const initialColor = btnAddToCart.style.backgroundColor;
@@ -238,19 +237,18 @@ export  function addAddToCardBtnListener(product) {
 function addCartListener() {
     const cartButton = document.getElementById("cart");
     cartButton.addEventListener("mouseover", function () {
-        const cartWindowList= document.querySelector(".cart-window-list");
+        const cartWindowList = document.querySelector(".cart-window-list");
         const cartWindow = document.querySelector(".cart-window");
         cartWindow.classList.add("show")
         cartWindow.setAttribute("style", "display:block")
-        if(cartWindowList.children.length===0){
-            const emptyCart=document.createElement("p");
+        if (cartWindowList.children.length === 0) {
+            const emptyCart = document.createElement("p");
             emptyCart.classList.add("empty-cart");
-            emptyCart.textContent="YOUR CART IS EMPTY";
+            emptyCart.textContent = "YOUR CART IS EMPTY";
             cartWindowList.appendChild(emptyCart);
-        }
-        else{
-            const emptyCart=document.querySelector(".empty-cart");
-            if(emptyCart!=null){
+        } else {
+            const emptyCart = document.querySelector(".empty-cart");
+            if (emptyCart != null) {
                 cartWindowList.removeChild(emptyCart);
             }
         }
@@ -266,26 +264,26 @@ function addCartListener() {
     });
 }
 
-export async  function init() {
+export async function init() {
     await fetchCartProducts();
     getHowManyProductsInCart();
     updateCartItemsContainer();
     loadProductsInPage();
-	addDocumentListener();
+    addDocumentListener();
     addCartListener();
     window.onscroll = function (ev) {
-            console.log(scrollAllProductsFilter);
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && scrollAllProductsFilter===true) {
-                loadProductsInPage();
-            }
-        };
+        console.log(scrollAllProductsFilter);
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && scrollAllProductsFilter === true) {
+            loadProductsInPage();
+        }
+    };
 
-    const allProductsFilter=document.querySelector(".all-products-filter");
+    const allProductsFilter = document.querySelector(".all-products-filter");
     allProductsFilter.addEventListener("click", function () {
-        scrollAllProductsFilter=true;
-        const cards=document.querySelectorAll(".product-grid__product-card");
-        cards.forEach(card=>{
-            if(card.classList.contains("filtered-out")){
+        scrollAllProductsFilter = true;
+        const cards = document.querySelectorAll(".product-grid__product-card");
+        cards.forEach(card => {
+            if (card.classList.contains("filtered-out")) {
                 card.classList.remove("filtered-out");
             }
         });

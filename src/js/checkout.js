@@ -2,7 +2,6 @@ let checkoutWindow = document.querySelector(".checkout-window__grid");
 let totalText = document.querySelector(".checkout-window-total");
 let productsArrayAfterUpdateAProduct = [];
 const idCart = "64c77ddd8e88f";
-
 let changedQuantityForProduct = 0;
 
 
@@ -13,6 +12,12 @@ function fetchCart() {
             'Content-Type': 'application/json',
         }
     })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Request failed with status ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             return data.products;
         })
@@ -189,6 +194,7 @@ async function showCheckoutProducts() {
         });
 }
 
+
 function generalListenerOnPage() {
     const buyButton = document.querySelector(".checkout-window__button");
     buyButton.addEventListener("click", async () => {
@@ -198,12 +204,14 @@ function generalListenerOnPage() {
                 cart.style.display = "none";
             }, 3000);
             alert("Thank you for your order! Have a nice day!");
+            localStorage.clear();
             await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                 }
             })
+
         }
     );
     const titleShop = document.getElementById("meta-shop");
