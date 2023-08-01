@@ -271,17 +271,6 @@ body{
     display: inline-block;
     position: relative;
     font-size: 1vw;
-    color: #ddd;
-}
-
-.star:after {
-    content: "\f005";
-    position: absolute;
-    font-size: 1vw;
-    left: 0;
-    top: 0;
-    width: 100%;
-    overflow: hidden;
     color: #f80;
 }
 

@@ -141,13 +141,21 @@ function displayPreview(theId) {
 
     let backID = String(theId.id).slice(4);
     let myItem;
-    console.log(backID);
+    let itemRating;
     fetch('https://dummyjson.com/product/' + String(backID))
         .then(response => response.json())
         .then(data => {
             myItem = data;
-            console.log(myItem);
             previewDescription.innerHTML = myItem.description;
+            itemRating = parseInt(myItem.rating);
+            for (i=1; i<=5; i++){
+                let myStar = document.getElementById("star-"+String(i));
+                if (itemRating >= parseInt(String(myStar.id).slice(5,6))){
+                    myStar.style.color = "#f80";
+                } else {
+                    myStar.style.color = "#ddd";
+                }
+            }
         })
         .catch(error => {
             console.error('Error fetching data:', error);
