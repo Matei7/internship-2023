@@ -11,6 +11,12 @@ async function addToCart(element){
     }, 1000);
 }
 
+function addToCartExtern(element){
+    thisId = element.id;
+    itemElement = document.getElementById(thisId);
+    addToCart(itemElement);
+}
+
 function showCartAgain(element){
     element.innerHTML = "🛒 ADD!";
     element.classList.remove("item-added-to-cart");
@@ -54,8 +60,6 @@ function addAnItem(itemData){
     const newItemTitle = document.createElement("div");
     newItemTitle.classList.add("item-title");
     newItemTitle.innerHTML=itemData.title;
-    newItemTitle.setAttribute("onmouseover", "hoverItemOn(" + String(newId)+ ")");
-    newItemTitle.setAttribute("onmouseout", "hoverItemOff(" + String(newId)+ ")");
 
     const newItemPrice = document.createElement("div");
     newItemPrice.classList.add("item-price");
@@ -98,14 +102,17 @@ importItems();
 
 function hoverItemOn(theId){
     itemToHover = document.getElementById(theId.id);
-    itemToHover.style.border = "3px solid #6667AB";
-    itemToHover.style.cursor = "pointer";
+    itemToHover.style.border = "3px solid #FFFFFF";
     itemToHover.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
+    insidePic = itemToHover.getElementsByTagName('img')[0];
+    insidePic.style.filter = "opacity(100%)";
+    insidePic.style.cursor = "pointer";
 }
 
 function hoverItemOff(theId){
     itemToHover = document.getElementById(theId.id);
     itemToHover.style.border = "3px solid transparent";
     itemToHover.style.backgroundColor = "rgba(255, 255, 255, 0.7)";
-    itemToHover.style.cursor = "default";
+    insidePic = itemToHover.getElementsByTagName('img')[0];
+    insidePic.style.filter = "opacity(95%)";
 }
