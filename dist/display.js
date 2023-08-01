@@ -118,12 +118,38 @@ function hoverItemOff(theId){
     insidePic.style.filter = "opacity(95%)";
 }
 
-function displayPreview(theId){
+function displayPreview(theId) {
     itemToHover = document.getElementById(theId.id);
     previewPanel = document.getElementById("product-preview");
     backgroundCover = document.getElementById("background-cover");
-    console.log(previewPanel);
-    console.log(backgroundCover);
     previewPanel.style.visibility = "visible";
     backgroundCover.style.visibility = "visible";
+
+    let previewTitle = document.getElementsByClassName("preview-title")[0];
+    let previewDescription = document.getElementsByClassName("preview-description")[0];
+    let previewPrice = document.getElementsByClassName("preview-price")[0];
+    let previewRating = document.getElementsByClassName("preview-rating")[0];
+    let previewImage = document.getElementsByClassName("preview-image")[0];
+
+    let itemTitle = theId.getElementsByTagName("div")[1].innerHTML;
+    let itemPrice = theId.getElementsByTagName("div")[2].innerHTML;
+    let itemImage = theId.getElementsByTagName("img")[0].src;
+
+    previewTitle.innerHTML = itemTitle;
+    previewPrice.innerHTML = itemPrice;
+    previewImage.src = itemImage;
+
+    let backID = String(theId.id).slice(4);
+    let myItem;
+    console.log(backID);
+    fetch('https://dummyjson.com/product/' + String(backID))
+        .then(response => response.json())
+        .then(data => {
+            myItem = data;
+            console.log(myItem);
+            previewDescription.innerHTML = myItem.description;
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
 }
