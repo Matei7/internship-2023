@@ -38,6 +38,7 @@ function createItem(product) {
     cartItem.classList.add('cart-item');
 
     const counter = document.createElement('h3')
+    counter.classList.add('cart-item-counter');
     counter.innerText = `x${product.quantity}`;
 
     const title = document.createElement('h3');
@@ -54,7 +55,7 @@ function createItem(product) {
     price.classList.add('cart-item-price');
 
     const removeButton = document.createElement('button');
-    removeButton.innerText = 'X';
+    removeButton.innerText = '-';
     removeButton.classList.add('cart-item-edit-quantity');
     const removeButtonClickHandler = () => {
         const item = cartItems.querySelector(`[data-id="${product.id}"]`);
@@ -106,10 +107,10 @@ function createItem(product) {
     });
 
     cartItem.appendChild(image);
-    cartItem.appendChild(counter);
     cartItem.appendChild(title);
     cartItem.appendChild(price);
     cartItem.appendChild(removeButton);
+    cartItem.appendChild(counter);
     cartItem.appendChild(addButton);
     cartItems.appendChild(cartItem);
 }
