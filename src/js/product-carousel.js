@@ -1,13 +1,17 @@
 import * as events from "events";
+import {initCart} from "./cart";
+import {popUp} from "./app";
 
 let currentInd = 1;
 let isMouseHover = false;
 let defaultLength = 4
+const queryParams = new URLSearchParams(window.location.search)
+let product = await fetchProduct(queryParams.get("id"))
 
+// initialize carousel for product
 async function initCarousel() {
     // fetch product and add images to carousel
-    const queryParams = new URLSearchParams(window.location.search)
-    generateCarouselImages(await fetchProduct(queryParams.get("id")))
+    generateCarouselImages(product)
 
     // add all necessary event listeners
     addListenersForKeys()
@@ -16,8 +20,35 @@ async function initCarousel() {
 
     // set current image
     setImage(currentInd)
+
+    // set product information
+    setInformation()
 }
 
+// set product information in HTML elements
+function setInformation() {
+    // Title
+    document.getElementById("product-title").innerText = product.title
+
+    // Category
+    document.getElementById("product-category").innerText = product.category
+
+    // Description
+    document.getElementById("product-description").innerText = product.description
+
+    // Rating
+    document.getElementById("product-rating").innerText = product.rating
+
+    // Price
+    document.getElementById("product-price").innerText = "$" + product.price
+
+    // Add to Cart
+    document.getElementById("information").innerHTML +=
+        `<button class="buy-btn" id="btn-${product.id}">Add to cart</button>`
+    document.getElementById(`btn-${product.id}`).addEventListener("click", popUp)
+}
+
+// generate HTML element for the product image and event listeners
 function generateCarouselImages(product) {
     defaultLength = product.images.length
     let id = 1
@@ -87,4 +118,5 @@ async function fetchProduct(id) {
         .then(res => res.json())
 }
 
-initCarousel()
+await initCarousel()
+await initCart()

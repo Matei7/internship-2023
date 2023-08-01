@@ -11,6 +11,10 @@ export async function init() {
 	// fetch products and generate cards
 	await generateCards(await fetchProducts())
 
+	// fetch categories
+	let categoriesResponse = await fetchCategories()
+	generateCategories(categoriesResponse)
+
 	// add event listeners for every button
 	addButtons()
 
@@ -25,7 +29,7 @@ export async function init() {
 }
 
 // Generate pop up when clicking "Add to cart button"
-function popUp(event) {
+export function popUp(event) {
 	let popUpElement = document.getElementById("popUp")
 
 	// set style for clicked button
@@ -123,7 +127,6 @@ function addListenersForImg() {
 // Generate and add cards to html
 async function generateCards(products) {
 	let cards = []
-
 	// when generating cards, we filter the products first if we have any filters selected
 	let filters = getFilters()
 	let filteredProducts = []
@@ -133,7 +136,7 @@ async function generateCards(products) {
 		filteredProducts = filterProducts(products, filters)
 
 		// go through batches of products until we find the first batch that belongs to requested category
-		while (filteredProducts.length === 0 && currentBatchOfProducts < 10) {
+		while (filteredProducts.length === 0 && currentBatchOfProducts <= 11) {
 			filteredProducts = filterProducts(products, filters)
 			products = await fetchProducts()
 			currentBatchOfProducts++
@@ -141,6 +144,7 @@ async function generateCards(products) {
 	}
 	// we don't have any filter
 	else filteredProducts = products
+	console.log(filteredProducts)
 
 	// go through all filtered products and generate cards
 	for (const product of filteredProducts) {
@@ -172,6 +176,32 @@ async function generateCards(products) {
 	// add the cards in HTML
 	let items = document.getElementById('items');
 	items.innerHTML += cards.join("\n");
+}
+
+// generate categories in HTML
+function generateCategories(categories) {
+	// get HTML element for categories
+	let categoriesHTML = document.getElementById("filter-categories")
+
+	// go through each category and add it in HTML
+	for (let category of categories) {
+		categoriesHTML.innerHTML +=
+			`<div class="filter-row">
+				<label for="${category}">${capitalizeCategory(category)}</label>
+				<input class="filter-checkbox" type="checkbox" id="${category}">
+			</div>`
+	}
+}
+
+// capitalize categories function (just to look better)
+function capitalizeCategory(category) {
+	let words = category.split("-")
+	let newWords = []
+
+	for (let word of words)
+		newWords.push(word.charAt(0).toUpperCase() + word.slice(1))
+
+	return newWords.join(" ")
 }
 
 // Fetch products from the API
@@ -206,4 +236,10 @@ async function fetchProducts() {
 		})
 	localStorage.setItem("products", JSON.stringify(products.products))
 	return products.products
+}
+
+// Fetch categories from API
+async function fetchCategories() {
+	return await fetch('https://dummyjson.com/products/categories')
+		.then(res => res.json())
 }

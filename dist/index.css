@@ -13,6 +13,12 @@ html {
   --def_background: white;
   --def_lower_background: lightgray; }
 
+@keyframes imgTransition {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+
 /* header */
 .container {
   /* spacing */
@@ -181,6 +187,7 @@ main {
   opacity: 1;
   /* positioning */
   position: fixed;
+  z-index: 999;
   left: 50%;
   text-align: center; }
 
@@ -213,9 +220,12 @@ main {
   height: max-content; }
 
 .carousel-img {
+  /* styling */
   object-fit: cover;
   width: 900px;
-  height: 600px; }
+  height: 600px;
+  border-radius: var(--def_border_radius);
+  animation: imgTransition 0.3s ease-in-out; }
 
 .carousel-btn {
   /* positioning */
@@ -230,7 +240,38 @@ main {
     background-color: lightgray; }
 
 #btn-right {
-  left: calc(100% - 50px); }
+  left: calc(100% - 54px);
+  z-index: 1000; }
+
+#btn-left {
+  left: 4px;
+  z-index: 1000; }
+
+.product-information {
+  /* styling */
+  border-radius: var(--def_border_radius);
+  background-color: lightgray;
+  width: 20%;
+  /* positioning */
+  padding: var(--def_padding);
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column; }
+
+#product-header {
+  display: flex;
+  flex-direction: column; }
+
+#product-title {
+  margin-bottom: 0.2rem; }
+
+#product-category {
+  /* styling */
+  padding: 0.2rem;
+  border-radius: var(--def_border_radius);
+  background-color: black;
+  color: lightgray;
+  width: max-content; }
 
 /* cart */
 .cartHidden {
@@ -244,7 +285,7 @@ main {
   /* styling */
   opacity: 1;
   width: 300px;
-  height: max-content;
+  max-height: 500px;
   background-color: lightgray;
   border-radius: var(--def_border_radius);
   padding: var(--def_padding);
@@ -252,7 +293,8 @@ main {
   left: calc(100% - 350px);
   position: fixed;
   display: flex;
-  flex-direction: column; }
+  flex-direction: column;
+  overflow: scroll; }
 
 .cart-product {
   /* styling */
@@ -330,6 +372,18 @@ main {
   border-radius: var(--def_border_radius);
   padding: var(--def_padding);
   background-color: lightgray; }
+
+.filter-box-form {
+  /* positioning */
+  display: flex;
+  flex-direction: column;
+  gap: 10px; }
+
+.filter-row {
+  /* positioning */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; }
 
 /* footer */
 

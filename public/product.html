@@ -13,9 +13,29 @@
 <body>
 <!-- HEADER START -->
 
-<header></header>
+<header id="header">
+    <div class="container">
+        <h3>Razvan's Shop</h3>
+        <nav>
+            <ul>
+                <li><a id="cart-btn"><i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                    <span id="cart-nr"></span></a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
 
 <!-- HEADER END -->
+<!-- CART START -->
+
+<div id="cart" class="cartHidden"></div>
+
+<!-- CART END -->
+<!-- POPUP START -->
+
+<div id="popUp" class="popUpHidden">Product added to cart</div>
+
+<!-- POPUP END -->
 <!-- PRODUCT SECTION START -->
 
 <section class="product-container">
@@ -25,7 +45,15 @@
         <button id="btn-right" class="carousel-btn"><i class="fa fa-arrow-right" aria-hidden="true"></i>
         </button>
     </div>
-    <div class="product-information"></div>
+    <div class="product-information" id="information">
+        <div id="product-header">
+            <h1 id="product-title"></h1>
+            <p id="product-category"></p>
+        </div>
+        <p id="product-description"></p>
+        <p><i class="fa fa-star" aria-hidden="true"></i><span id="product-rating"></span></p>
+        <p id="product-price"></p>
+    </div>
 </section>
 
 <!-- PRODUCT SECTION END -->

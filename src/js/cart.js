@@ -31,8 +31,20 @@ function generateCartListener() {
             cartHTML.classList.replace("cartHidden", "cartVisible")
     })
 
+    // event listener for when the user holds the mouse over the mini-cart
+    document.getElementById("cart").addEventListener("mouseover", () => {
+        let cartHTML = document.getElementById("cart")
+        cartHTML.classList.replace("cartHidden", "cartVisible")
+    })
+
     // event listener for when the user moves the mouse from the cart icon
     document.getElementById("cart-btn").addEventListener("mouseleave", () => {
+        let cartHTML = document.getElementById("cart")
+        cartHTML.classList.replace("cartVisible", "cartHidden")
+    })
+
+    // event listener for when the user moves the mouse from the mini-cart
+    document.getElementById("cart").addEventListener("mouseleave", () => {
         let cartHTML = document.getElementById("cart")
         cartHTML.classList.replace("cartVisible", "cartHidden")
     })
@@ -78,9 +90,9 @@ function displayProducts() {
                     <img src="${cart["products"][id].thumbnail}" class="cart-product-img">
                     &nbsp<p>${cart["products"][id].title}</p>
                 </div>
-                <p>x${cart["products"][id].quantity}<br><small>$${cart["products"][id].price}</small></p>
+                <p>x${cart["products"][id].quantity}<br><small>$${Math.floor((100.0 - cart["products"][id].discountPercentage) / 100 * cart["products"][id].price)}</small></p>
             </div>`
-        totalPrice = cart.total
+        totalPrice = Math.floor(cart.discountTotal)
     }
     document.getElementById("cart").innerHTML = newCartHtml
     document.getElementById("cart").innerHTML +=

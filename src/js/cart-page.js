@@ -11,7 +11,7 @@ function productTemplate(product) {
         <div class="cart-page-product">
             <img src="${product.thumbnail}" class="cart-product-img" />
             <p>${product.title}</p>
-            <p>$${product.price}</p>
+            <p>$${Math.floor(product.discountedPrice)}</p>
             <div class="cart-page-quantity">
                 <button id="minus-${product.id}" class="q-btn"><i class="fa fa-minus" aria-hidden="true"></i>
 </button>
@@ -83,7 +83,7 @@ async function updateProducts(modified) {
     for (let product of cart.products) {
         document.getElementById("products").innerHTML += productTemplate(product)
     }
-    document.getElementById("cart-page-price").innerText = `$${cart.total}`
+    document.getElementById("cart-page-price").innerText = `$${Math.floor(cart.discountTotal)}`
 }
 
 // generates listener for the buy button
