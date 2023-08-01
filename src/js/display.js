@@ -13,6 +13,7 @@ async function addToCart(element){
 
 function addToCartExtern(element){
     thisId = element.id;
+    console.log(document.getElementsByClassName("preview-title")[0].innerHTML);
     itemElement = document.getElementById(thisId);
     addToCart(itemElement);
 }

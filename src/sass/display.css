@@ -3,7 +3,7 @@
 }
 
 body{
-    background-image: url("../public/images/dark-texture.jpg");
+    background-image: url("../../public/images/dark-texture.jpg");
     display: flex;
     margin: 20px;
     padding: 0;
@@ -14,7 +14,7 @@ body{
 
 @font-face{
     font-family: "Inter";
-    src: url("../public/fonts/Inter-VariableFont_slnt,wght.ttf")
+    src: url("../../public/fonts/Inter-VariableFont_slnt,wght.ttf")
 }
 
 .giga-header{
