@@ -1,4 +1,7 @@
 async function addToCart(element){
+    if (element.innerHTML === "🛒 Added!"){
+        return;
+    }
     addElementToCart(element.parentElement.id);
     element.innerHTML = "🛒 Added!";
     element.classList.remove("item-add-to-car");
@@ -32,8 +35,11 @@ async function addToCartExtern(){
 
     let thisId = previewPanel.getAttribute("idshowing");
     let itemElement = document.getElementById(thisId);
+    let buttonElement = document.getElementById("previewbtn");
+    if (buttonElement.innerHTML === "🛒 Added!"){
+        return;
+    }
     addElementToCart(itemElement.id);
-    let buttonElement = document.getElementsByClassName("preview-add-to-cart")[0];
     buttonElement.innerHTML = "🛒 Added!";
     buttonElement.classList.remove("preview-add-to-cart");
     buttonElement.classList.add("preview-added-to-cart");
@@ -118,7 +124,7 @@ function importItems() {
 }
 
 function displayItems(items){
-    for (i=0; i<items.products.length; i++){
+    for (let i=0; i<items.products.length; i++){
         let currentItem = items.products[i];
         addAnItem(currentItem);
     }
@@ -127,26 +133,26 @@ function displayItems(items){
 importItems();
 
 function hoverItemOn(theId){
-    itemToHover = document.getElementById(theId.id);
+    let itemToHover = document.getElementById(theId.id);
     itemToHover.style.border = "3px solid #FFFFFF";
     itemToHover.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
-    insidePic = itemToHover.getElementsByTagName('img')[0];
+    let insidePic = itemToHover.getElementsByTagName('img')[0];
     insidePic.style.filter = "opacity(100%)";
     insidePic.style.cursor = "pointer";
 }
 
 function hoverItemOff(theId){
-    itemToHover = document.getElementById(theId.id);
+    let itemToHover = document.getElementById(theId.id);
     itemToHover.style.border = "3px solid transparent";
     itemToHover.style.backgroundColor = "rgba(255, 255, 255, 0.7)";
-    insidePic = itemToHover.getElementsByTagName('img')[0];
+    let insidePic = itemToHover.getElementsByTagName('img')[0];
     insidePic.style.filter = "opacity(95%)";
 }
 
 function displayPreview(theId) {
-    itemToHover = document.getElementById(theId.id);
-    previewPanel = document.getElementById("product-preview");
-    backgroundCover = document.getElementById("background-cover");
+    // let itemToHover = document.getElementById(theId.id);
+    let previewPanel = document.getElementById("product-preview");
+    let backgroundCover = document.getElementById("background-cover");
     previewPanel.style.visibility = "visible";
     backgroundCover.style.visibility = "visible";
 
@@ -155,7 +161,7 @@ function displayPreview(theId) {
     let previewTitle = document.getElementsByClassName("preview-title")[0];
     let previewDescription = document.getElementsByClassName("preview-description")[0];
     let previewPrice = document.getElementsByClassName("preview-price")[0];
-    let previewRating = document.getElementsByClassName("preview-rating")[0];
+    // let previewRating = document.getElementsByClassName("preview-rating")[0];
     let previewImage = document.getElementsByClassName("preview-image")[0];
 
     let itemTitle = theId.getElementsByTagName("div")[1].innerHTML;
@@ -175,7 +181,7 @@ function displayPreview(theId) {
             myItem = data;
             previewDescription.innerHTML = myItem.description;
             itemRating = parseInt(myItem.rating);
-            for (i=1; i<=5; i++){
+            for (let i=1; i<=5; i++){
                 let myStar = document.getElementById("star-"+String(i));
                 if (itemRating >= parseInt(String(myStar.id).slice(5,6))){
                     myStar.style.color = "#f80";
