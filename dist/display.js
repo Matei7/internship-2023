@@ -5,6 +5,7 @@ async function addToCart(element){
     element.classList.add("item-added-to-cart");
     let popup = document.getElementById("cart-popup");
     popup.style.visibility = "visible";
+    popup.style.opacity = 1;
     setTimeout(() => {
         showCartAgain(element);
     }, 1000);
@@ -15,7 +16,15 @@ function showCartAgain(element){
     element.classList.remove("item-added-to-cart");
     element.classList.add("item-add-to-car");
     let popup = document.getElementById("cart-popup");
-    popup.style.visibility = "hidden";
+    popup.style.opacity = 1;
+    var fadeEffect = setInterval(function () {
+        if (popup.style.opacity > 0.4) {
+            popup.style.opacity -= 0.2;
+        } else {
+            clearInterval(fadeEffect);
+            popup.style.visibility = "hidden";
+        }
+    }, 100);
 }
 
 let lastID = 1000;
@@ -24,7 +33,7 @@ let allItems = [];
 function addAnItem(itemData){
     const itemToAdd = document.createElement("div");
     itemToAdd.classList.add("shop-item");
-    itemToAdd.id = itemData.id;
+    itemToAdd.id = "item" + String(itemData.id);
 
     const newItemCategory = document.createElement("div");
     newItemCategory.classList.add("item-category");
@@ -62,7 +71,7 @@ function addAnItem(itemData){
 }
 
 function importItems() {
-    fetch('https://dummyjson.com/products')
+    fetch('https://dummyjson.com/products?limit=100')
         .then(response => response.json())
         .then(data => {
             allItems = data;
