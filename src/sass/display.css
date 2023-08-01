@@ -136,6 +136,8 @@ body{
 
 .item-price{
     text-align: right;
+    color: green;
+    font-weight: bold;
 }
 
 .item-add-to-cart{
@@ -228,6 +230,7 @@ body{
     left: 50%;
     bottom: 42%;
     width: 20%;
+    color: green;
     height: 10%;
     font-size: 2rem;
     display: flex;

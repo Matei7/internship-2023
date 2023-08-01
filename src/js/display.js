@@ -172,7 +172,7 @@ function displayPreview(theId) {
 
     previewTitle.innerHTML = itemTitle;
     previewPrice.innerHTML = itemPrice;
-    previewImage.src = itemImage;
+    // previewImage.src = itemImage;
 
     let backID = String(theId.id).slice(4);
     let myItem;
@@ -191,6 +191,7 @@ function displayPreview(theId) {
                     myStar.style.color = "#ddd";
                 }
             }
+            previewImage.src = myItem.images[0];
         })
         .catch(error => {
             console.error('Error fetching data:', error);
@@ -198,11 +199,49 @@ function displayPreview(theId) {
 }
 
 function leftPic(){
-    console.log("left-pic");
+    let picList = [];
+    let previewPanel = document.getElementById("product-preview");
+    let thisId = previewPanel.getAttribute("idshowing");
+    thisId = thisId.slice(4);
+    fetch('https://dummyjson.com/product/' + String(thisId))
+        .then(response => response.json())
+        .then(data => {
+            myItem = data;
+            picList = myItem.images;
+            let previewImage = document.getElementsByClassName("preview-image")[0];
+            for (i = 1; i < picList.length; i++){
+                if(previewImage.src == picList[i]){
+                    previewImage.src = picList[i-1];
+                    return;
+                }
+            }
+            if (previewImage.src == picList[0]){
+                previewImage.src = picList[picList.length - 1];
+            }
+        })
 }
 
 function rightPic(){
-    console.log("right-pic");
+    let picList = [];
+    let previewPanel = document.getElementById("product-preview");
+    let thisId = previewPanel.getAttribute("idshowing");
+    thisId = thisId.slice(4);
+    fetch('https://dummyjson.com/product/' + String(thisId))
+        .then(response => response.json())
+        .then(data => {
+            myItem = data;
+            picList = myItem.images;
+            let previewImage = document.getElementsByClassName("preview-image")[0];
+            for (i = 0; i < picList.length - 1; i++){
+                if(previewImage.src == picList[i]){
+                    previewImage.src = picList[i+1];
+                    return;
+                }
+            }
+            if (previewImage.src == picList[picList.length - 1]){
+                previewImage.src = picList[0];
+            }
+        })
 }
 
 document.addEventListener("keydown", function(event){
