@@ -1,41 +1,11 @@
 let checkoutWindow = document.querySelector(".checkout-window__grid");
 let totalText = document.querySelector(".checkout-window-total");
-
 let productsArrayAfterUpdateAProduct = [];
+const idCart = "64c77ddd8e88f";
 
-const idCart="64c77ddd8e88f";
+let changedQuantityForProduct = 0;
 
-async function updateTotalText() {
-    try {
-        const total = productsArrayAfterUpdateAProduct.reduce((acc, product) => acc + product.total, 0);
-        }
-     catch (error) {
-        console.error('Error updating total text:', error);
-    }
-}
 
-function fetchCartsTotalPrice() {
-    return fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Request failed with status ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            const total = data.products.reduce((acc, product) => acc + product.total, 0);
-            return total;
-        })
-        .catch(error => {
-            console.error('Error fetching cart products:', error);
-            return 0; // În caz de eroare, returnăm 0 pentru total
-        });
-}
 function fetchCart() {
     return fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
         method: 'GET',
@@ -58,14 +28,12 @@ function fetchCart() {
         });
 }
 
-
-
-function createItemBoxCheckout(product){
+function createItemBoxCheckout(product) {
     let boxItem = document.createElement("div");
     boxItem.classList.add("checkout-window__grid__box-item");
     boxItem.setAttribute("data-id", product.id);
-    const price=(product.price - (product.price * product.discountPercentage) / 100).toFixed(2);
-    let hmtlPart= `
+    const price = (product.price - (product.price * product.discountPercentage) / 100).toFixed(2);
+    let hmtlPart = `
         <img src=${product.thumbnail} alt="Product Image" class="box-item__image">
         <p class="box-item__title">${product.title}</p>
         <p class="box-item__price">${price}</p>
@@ -80,120 +48,179 @@ function createItemBoxCheckout(product){
     return boxItem;
 }
 
-function plusMinusBtnListener(card){
+function debounce(func, timeout = 700) {
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        changedQuantityForProduct++;
+        timer = setTimeout(() => {
+            func.apply(this, args);
+        }, timeout);
+    };
+}
+
+const changes = debounce(async (productId, operation) => {
+    await modifyQuantity(productId, operation);
+    changedQuantityForProduct = 0;
+})
+
+
+async function modifyQuantity(productId, operation) {
+    if (operation === "increase") {
+        increaseQuantityRequest(productId, changedQuantityForProduct);
+    } else {
+        decreaseQuantityRequest(productId, changedQuantityForProduct);
+    }
+}
+
+
+function plusMinusBtnListener(card) {
     const plusBtn = card.querySelector(".plus");
     const minusBtn = card.querySelector(".minus");
     const quantity = card.querySelector(".input-text.qty.text");
     plusBtn.addEventListener("click", () => {
-        quantity.value++;
-        increaseQuantityRequest(card);
-        updateQuantityProducts(card);
+        changes(card.dataset.id, "increase");
     });
-    minusBtn.addEventListener("click", () => {
-            quantity.value--;
-            decreaseQuantityRequest(card);
-            updateQuantityProducts(card);
+
+    minusBtn.addEventListener("click", function () {
+        changes(card.dataset.id, "decrease");
     });
 }
 
-function increaseQuantityRequest(cardElement) {
-    const productId = Number(cardElement.dataset.id);
-    fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            products: [
-                {
-                    id: productId,
-                    quantity: 1,
-                }
-            ]
-        })
-    })
-        .then(res => res.json())
-        .then(console.log);
 
-}
-
-function decreaseQuantityRequest(cardElement) {
-    const productId = Number(cardElement.dataset.id);
-    console.log("aicea1");
-    if(cardElement.querySelector(".input-text.qty.text").value<1){
-        console.log("aicea2");
-        fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}?products[]=${productId}`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json',
-            }
-        })
-            .then(res => res.json())
-            .then(console.log)
-           .then(checkoutWindow.removeChild(cardElement));
-    }
-    fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            products: [
-                {
-                    id: productId,
-                    quantity: -1,
-                }
-            ]
-        })
-    })
-        .then(res => res.json())
-        .then(console.log);
-}
-
-function updateQuantityProducts(){
-    fetchCart()
-        .then(productsFromCart => {
-            for (const product of productsFromCart) {
-                console.log(product);
-                const itemBox = document.querySelector(`.checkout-window__grid__box-item[data-id="${product.id}"]`);
-                const itemQuantity = itemBox.querySelector(".input-text.qty.text");
-                const itemTotalPrice = itemBox.querySelector(".box-item__total-price");
-                itemQuantity.textContent = product.quantity;
-                const price=product.price - (product.price * product.discountPercentage) / 100;
-                itemTotalPrice.textContent = `${(product.quantity * price).toFixed(2)}`;
-
-            }
-            productsArrayAfterUpdateAProduct = productsFromCart;
-             updateTotalText();
+async function increaseQuantityRequest(productId, quantity = 1) {
+    try {
+        await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                products: [
+                    {
+                        id: productId,
+                        quantity: quantity
+                    }
+                ]
             })
-        .catch(error => {
-            console.error('Error show cart items:', error);
         });
+        const productToUpdate = productsArrayAfterUpdateAProduct.find(product => product.id === Number(productId));
+        if (productToUpdate) {
+            productToUpdate.quantity += quantity;
+        }
+        updateQuantityProducts();
+    } catch (error) {
+        console.error('Error increasing product quantity:', error);
+    }
 }
 
 
-function showCheckoutProducts(){
+async function decreaseQuantityRequest(productId, quantity = 1) {
+    const productToUpdate = productsArrayAfterUpdateAProduct.find(product => product.id === Number(productId));
+    if (productToUpdate && productToUpdate.quantity + (-1) * quantity < 1) {
+        try {
+            await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}?products[]=${productId}`, {
+                method: 'DELETE',
+                headers: {'Content-Type': 'application/json'},
+            });
+            productsArrayAfterUpdateAProduct = productsArrayAfterUpdateAProduct.filter(product => product.id !== Number(productId));
+            updateQuantityProducts();
+            checkoutWindow.removeChild(document.querySelector(`.checkout-window__grid__box-item[data-id="${productId}"]`));
+        } catch (error) {
+            console.error('Error deleting product:', error);
+        }
+    } else {
+        try {
+            await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    products: [
+                        {
+                            id: productId,
+                            quantity: -1 * quantity,
+                        }
+                    ]
+                })
+            });
+            const productToUpdate = productsArrayAfterUpdateAProduct.find(product => product.id === Number(productId));
+            if (productToUpdate) {
+                productToUpdate.quantity -= quantity;
+            }
+            updateQuantityProducts();
+        } catch (error) {
+            console.error('Error updating product quantity:', error);
+        }
+    }
+}
+
+async function updateQuantityProducts() {
+    try {
+        const total = productsArrayAfterUpdateAProduct.reduce((acc, product) => {
+            const price = product.price - (product.price * product.discountPercentage) / 100;
+            const totalPrice = product.quantity * price;
+            return acc + totalPrice;
+        }, 0);
+        productsArrayAfterUpdateAProduct.forEach(product => {
+            const itemBox = document.querySelector(`.checkout-window__grid__box-item[data-id="${product.id}"]`);
+            const itemQuantity = itemBox.querySelector(".input-text.qty.text");
+            const itemTotalPrice = itemBox.querySelector(".box-item__total-price");
+            itemQuantity.value = product.quantity;
+            const price = product.price - (product.price * product.discountPercentage) / 100;
+            itemTotalPrice.textContent = `${(product.quantity * price).toFixed(2)}`
+        });
+        totalText.innerText = total.toFixed(2);
+    } catch (error) {
+        console.error('Error updating quantity products:', error);
+    }
+}
+
+
+async function showCheckoutProducts() {
     fetchCart()
         .then(productsFromCart => {
             for (const product of productsFromCart) {
-                console.log(product);
-                let card=createItemBoxCheckout(product);
+                let card = createItemBoxCheckout(product);
                 checkoutWindow.appendChild(card);
                 plusMinusBtnListener(card);
-                fetchCartsTotalPrice().then(total => {
-                    totalText.textContent = total.toFixed(2);
-                });
             }
+            productsArrayAfterUpdateAProduct = productsFromCart;
+            const total = productsArrayAfterUpdateAProduct.reduce((acc, product) => {
+                const price = product.price - (product.price * product.discountPercentage) / 100;
+                return acc + product.quantity * price;
+            }, 0);
+            totalText.textContent = total.toFixed(2);
         })
         .catch(error => {
             console.error('Error show cart items:', error);
         });
 }
 
-const buyButton=document.querySelector(".checkout-window__button");
-buyButton.addEventListener("click", ()=>{
-    window.location.href = "index.html";
-});
+function generalListenerOnPage() {
+    const buyButton = document.querySelector(".checkout-window__button");
+    buyButton.addEventListener("click", async () => {
+        const cart = document.querySelector(".checkout-section");
+        setTimeout(
+            function () {
+                cart.style.display = "none";
+            }, 3000);
+            alert("Thank you for your order! Have a nice day!");
+            await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+        }
+    );
 
-const titleShop=document.getElementById("meta-shop");
-titleShop.addEventListener("click", ()=>{
-    window.location.href = "index.html";
-});
+
+    const titleShop = document.getElementById("meta-shop");
+    titleShop.addEventListener("click", () => {
+        window.location.href = "index.html";
+    });
+}
+
+
 showCheckoutProducts();
+generalListenerOnPage();

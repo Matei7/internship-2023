@@ -5,30 +5,104 @@ let totalProductsInPage=0;
 let totalProductsInCart;
 let mainContainer = document.querySelector(".product-grid");
 const idCart="64c77ddd8e88f";
+const productsLocalStorage = "productsStorage"
+let isFetching=false;//pentru scroll infinit
+let cartLocalStorage = "cartStorage";
+let categories=[];
+let scrollAllProductsFilter=true;//sa nu se dea scroll decat daca sunt pe all products
 
-// function setCookie(name, value, days) {
-//     const expirationDate = new Date();
-//     expirationDate.setTime(expirationDate.getTime() + (days * 24 * 60 * 60 * 1000));
-//     const expires = "expires=" + expirationDate.toUTCString();
-//     document.cookie = name + "=" + value + ";" + expires + ";path=/";
-// }
-//
-// // obține conținutul unui cookie
-// function getCookie(name) {
-//     const cookieName = name + "=";
-//     const decodedCookie = decodeURIComponent(document.cookie);
-//     const cookieArray = decodedCookie.split(';');
-//     for (let i = 0; i < cookieArray.length; i++) {
-//         let cookie = cookieArray[i];
-//         while (cookie.charAt(0) === ' ') {
-//             cookie = cookie.substring(1);
-//         }
-//         if (cookie.indexOf(cookieName) === 0) {
-//             return cookie.substring(cookieName.length, cookie.length);
-//         }
-//     }
-//     return null;
-// }
+function saveProductsInLocalStorage(products){
+    let productsFromStorage = getProductsFromLocalStorage();
+    if(productsFromStorage!=null){
+        productsFromStorage = [...productsFromStorage, ...products];
+        localStorage.setItem(productsLocalStorage, JSON.stringify(productsFromStorage));
+    }
+    else{
+        localStorage.setItem(productsLocalStorage, JSON.stringify(products));
+
+    }
+}
+
+function getProductsFromLocalStorage() {
+    const cachedProducts = localStorage.getItem(productsLocalStorage);
+    if (cachedProducts) {
+        return JSON.parse(cachedProducts);
+    }
+    return null;
+}
+
+function saveCategoryFilters(category){
+    if(!categories.includes(category)){
+        categories.push(category);
+        const categorySection = document.querySelector(".category-filter");
+        const categoryElement = document.createElement("p");
+        categoryElement.innerText = category;
+        categoryElement.addEventListener("click", function () {
+            scrollAllProductsFilter=false;
+            document.querySelectorAll(".filtered-out").forEach(card => {
+                card.classList.remove("filtered-out");
+
+            });
+            console.log("filter");
+            const cards = document.querySelectorAll(".product-grid__product-card");
+            let counter=0;
+            cards.forEach(card => {
+                if (counter < totalProductsInPage) {
+                    const categoryElement = card.querySelector(".category");
+                    const categoryText = categoryElement.textContent.trim().split(":")[1].trim()
+                    console.log(categoryText);
+                    if (categoryText !== category) {
+                        card.classList.add("filtered-out");
+                    }
+                }
+                counter++;
+            });
+        });
+        categorySection.appendChild(categoryElement);
+    }
+}
+
+
+async function loadProductsInPage() {
+    const productsFromStorage = getProductsFromLocalStorage();
+    if (productsFromStorage && productsFromStorage.length >= totalProductsInPage+9) {
+        for (let i = totalProductsInPage; i < totalProductsInPage + 9; i++) {
+            const cardElement = createCard(productsFromStorage[i]);
+            addAddToCardBtnListener(cardElement);
+            mainContainer.appendChild(cardElement);
+            saveCategoryFilters(cardElement.querySelector(".category").textContent.trim().split(":")[1].trim());
+        }
+        totalProductsInPage += 9;
+        return;
+    }
+    if(!isFetching){
+        isFetching=true;
+        await fetch(`https://dummyjson.com/products?limit=9&skip=${totalProductsInPage}&select=title,price,description,discountPercentage,rating,stock,brand,category,thumbnail,images`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Request failed with status ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const productsDummy = data.products;
+                saveProductsInLocalStorage(productsDummy);
+                productsDummy.forEach(product => {
+                    saveCategoryFilters(product.category);
+                    const cardElement = createCard(product);
+                    addAddToCardBtnListener(cardElement);
+                    mainContainer.appendChild(cardElement);
+                });
+                totalProductsInPage += 9;
+                isFetching=false;
+            })
+            .catch(error => {
+                console.error("Error loading products:", error);
+                throw error;
+            });
+    }
+
+}
 
 export function getTotalProductsInPage(){
     return totalProductsInPage;
@@ -55,8 +129,8 @@ export function fetchCartProducts() {
         });
 }
 
-function getHowManyProductsInCart() {
-    fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`)
+async function getHowManyProductsInCart() {
+    await fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`)
         .then(response => response.json())
         .then(data => {
             totalProductsInCart = data.totalQuantity;
@@ -65,39 +139,16 @@ function getHowManyProductsInCart() {
                     updateCartItemsContainer();
                 }
                  console.log(totalProductsInCart);
-                cart.textContent = `Cart: ${totalProductsInCart} Products`;//intrebare? imi face intarziere si nu pe loc update
+                console.log(cart);
+                 cart.textContent = `Cart: ${totalProductsInCart} Products`;//intrebare? imi face intarziere si nu pe loc update
             }
         });
 }
 
-function loadProductsInPage() {
-    fetch(`https://dummyjson.com/products?limit=9&skip=${totalProductsInPage}&select=title,price,description,discountPercentage,rating,stock,brand,category,thumbnail,images`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Request failed with status ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            const productsDummy = data.products;
-            productsDummy.forEach(product => {
-                const cardElement = createCard(product);
-                addAddToCardBtnListener(cardElement);
-                mainContainer.appendChild(cardElement);
-            });
-            totalProductsInPage += 9;
-        })
-        .catch(error => {
-            console.error("Error loading products:", error);
-            throw error;
-        });
-}
 
 
-
-
-function updateCartItemsContainer() {
-    fetchCartProducts()
+async function updateCartItemsContainer() {
+    await fetchCartProducts()
         .then(productsFromCart => {
             const cart = document.getElementById("cart");
             for (const product of productsFromCart) {
@@ -167,9 +218,7 @@ function addProductInCartRequest(cardElement) {
         })
     })
         .then(res => res.json())
-        .then(console.log);
-
-    getHowManyProductsInCart();
+        .then(getHowManyProductsInCart);
 }
 
 export  function addAddToCardBtnListener(product) {
@@ -188,25 +237,42 @@ export  function addAddToCardBtnListener(product) {
             btnAddToCart.style.scale = "1";
             const bodyElement = document.querySelector("body");
             bodyElement.removeChild(bodyElement.lastChild);
-        }, 3000);
+        }, 2000);
     });
 }
+
 
 
 export function init() {
     getHowManyProductsInCart();
     loadProductsInPage();
 	addDocumentListener();
-    window.onscroll = function(ev) {
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-            loadProductsInPage();
-        }
-    };
+    window.onscroll = function (ev) {
+            console.log(scrollAllProductsFilter);
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && scrollAllProductsFilter===true) {
+                loadProductsInPage();
+            }
+        };
+
     const cartButton = document.getElementById("cart");
     cartButton.addEventListener("mouseover", function () {
+        const cartWindowList= document.querySelector(".cart-window-list");
         const cartWindow = document.querySelector(".cart-window");
-        cartWindow.setAttribute("style", "display:block")
         cartWindow.classList.add("show")
+        cartWindow.setAttribute("style", "display:block")
+        if(cartWindowList.children.length===0){
+            const emptyCart=document.createElement("p");
+            emptyCart.classList.add("empty-cart");
+            emptyCart.textContent="YOUR CART IS EMPTY";
+            cartWindowList.appendChild(emptyCart);
+        }
+        else{
+            const emptyCart=document.querySelector(".empty-cart");
+            if(emptyCart!=null){
+                cartWindowList.removeChild(emptyCart);
+            }
+        }
+
     });
     cartButton.addEventListener("mouseout", function () {
         const cartWindow = document.querySelector(".cart-window");
@@ -215,6 +281,17 @@ export function init() {
     });
     cartButton.addEventListener("click", function () {
         window.location.href = "checkoutPage.html";
+    });
+
+    const allProductsFilter=document.querySelector(".all-products-filter");
+    allProductsFilter.addEventListener("click", function () {
+        scrollAllProductsFilter=true;
+        const cards=document.querySelectorAll(".product-grid__product-card");
+        cards.forEach(card=>{
+            if(card.classList.contains("filtered-out")){
+                card.classList.remove("filtered-out");
+            }
+        });
     });
 
 }

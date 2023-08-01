@@ -61,13 +61,13 @@ export function createCard(product) {
     brand.classList.add("brand");
     brand.textContent = `Brand: ${product.brand}`;
     const category = document.createElement("div");
-    brand.classList.add("category");
+    category.classList.add("category");
     category.textContent = `Category: ${product.category}`;
     const stock = document.createElement("div");
-    brand.classList.add("stock");
+    stock.classList.add("stock");
     stock.textContent = `Stock: ${product.stock}`;
     const rating = document.createElement("div");
-    brand.classList.add("rating");
+    rating.classList.add("rating");
     rating.textContent = `Rating: ${product.rating}`;
 
     productDetails.appendChild(brand);
