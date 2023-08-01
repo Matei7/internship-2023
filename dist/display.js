@@ -56,6 +56,7 @@ function addAnItem(itemData){
     newItemIMG.classList.add("item-image");
     newItemIMG.setAttribute("onmouseover", "hoverItemOn(" + String(newId)+ ")");
     newItemIMG.setAttribute("onmouseout", "hoverItemOff(" + String(newId)+ ")");
+    newItemIMG.setAttribute("onclick", "displayPreview(" + String(newId)+ ")");
 
     const newItemTitle = document.createElement("div");
     newItemTitle.classList.add("item-title");
@@ -115,4 +116,14 @@ function hoverItemOff(theId){
     itemToHover.style.backgroundColor = "rgba(255, 255, 255, 0.7)";
     insidePic = itemToHover.getElementsByTagName('img')[0];
     insidePic.style.filter = "opacity(95%)";
+}
+
+function displayPreview(theId){
+    itemToHover = document.getElementById(theId.id);
+    previewPanel = document.getElementById("product-preview");
+    backgroundCover = document.getElementById("background-cover");
+    console.log(previewPanel);
+    console.log(backgroundCover);
+    previewPanel.style.visibility = "visible";
+    backgroundCover.style.visibility = "visible";
 }

@@ -125,7 +125,7 @@ body{
     min-height: 150px;
     object-fit: cover;
     max-width: 80%;
-    border: 1px solid;
+    border: 2px solid black;
     filter: opacity(95%);
 }
 
@@ -174,11 +174,11 @@ body{
     border-radius: 10px;
     width: 60%;
     height: 70%;
-    top: 50%;
+    top: 20%;
     left: 50%;
-    margin-top: -15%;
+    /*margin-top: -15%;*/
     margin-left: -30%;
-
+    visibility: hidden;
 }
 
 #background-cover{
@@ -187,7 +187,7 @@ body{
     height: 110vh;
     background-color: rgba(0, 0, 0, 0.9);
     margin: 10vh;
-    /*visibility: hidden;*/
+    visibility: hidden;
 }
 
 .preview-image{
@@ -200,7 +200,7 @@ body{
 }
 
 .preview-title{
-    background-color: coral;
+    /*background-color: coral;*/
     position: relative;
     font-weight: bold;
     left: 50%;
@@ -211,7 +211,7 @@ body{
 }
 
 .preview-description{
-    background-color: crimson;
+    /*background-color: crimson;*/
     position: relative;
     left: 50%;
     bottom: 70%;
@@ -219,40 +219,26 @@ body{
     height: 30%;
     text-align: justify;
     font-size: 0.8rem;
-    padding: 0.5% 0.5% 0.5% 0.5%;
-}
-
-.preview-rating{
-    background-color: darkblue;
-    position: relative;
-    left: 50%;
-    bottom: 40%;
-    width: 40%;
-    height: 5%;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .preview-price{
-    background-color: cornsilk;
+    /*background-color: cornsilk;*/
     position: relative;
     left: 50%;
-    bottom: 40%;
+    bottom: 35%;
     width: 20%;
     height: 10%;
     font-size: 2rem;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: left;
 }
 
 .preview-add-to-cart{
-    background-color: orangered;
+    background-color: rgba(26, 26, 26, 0.5);
     position: relative;
     width: 20%;
-    bottom: 50%;
+    bottom: 45%;
     height: 10%;
     left: 70%;
     font-size: 2rem;
@@ -263,17 +249,34 @@ body{
     justify-content: center;
 }
 
+.preview-add-to-cart:hover{
+    background-color: rgba(70, 70, 70, 0.5);
+}
+
+.preview-rating{
+    background-color: rgba(26, 26, 26, 0.5);
+    position: absolute;
+    left: 10%;
+    bottom: 10%;
+    width: 30%;
+    height: 5%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .star {
     display: inline-block;
     position: relative;
-    font-size: 1rem;
+    font-size: 1vw;
     color: #ddd;
 }
 
 .star:after {
     content: "\f005";
     position: absolute;
-    font-size: 1rem;
+    font-size: 1vw;
     left: 0;
     top: 0;
     width: 100%;
