@@ -1,0 +1,20 @@
+- folositi obiectul primit ca produs si adaugati-l pe pagina de shop(construitiva pagina astfel incat sa arate ok si pt mai multe produse)
+- pe produs adaugati un buton de 'Add to cart'
+- la click pe buton apare un pop-up notice(poate veni de sus/jos/stanga/dreapta, cum doriti) care anunta ca item-ul a fost adaugat in cart. o sa dispara dupa 5-10 secunde. -tot la click pe butonul 'Add to cart' se schimba culoare si textul butonului(in 'Added to Cart' sau ceva similar)
+- state-ul anterior o sa ramana pentru 5-10 secunde, dupa care butonul revine la culoarea si textul initial
+- adaugati imaginile din produs intr-o galerie
+- adaugati sageti/butoane de next/previous
+- la click pe previous se va afisa imaginea anterioara
+- la click pe next se afiseaza imaginea urmatoare
+- faceti galeria sa mearga in loop -> daca ajungi la ultima imagine si apesi pe next se afiseaza prima imagine din lista
+- aceelasi tip de navigare ca si pt butoane, doar ca facut din tastatura(cand se apasa sagetiile)
+- in header-ul paginii, adaugati un icon de cart si un counter(numarul care zice cate produse sunt in cos)
+- cand se da click pe add to cart se mareste numarul produselor din cos
+- la hover pe icon-ul de cart apare un dropdown/tooltip cu produsele adaugate in cart(similar cu ce e la emag)
+- daca sunt produse adaugate de mai multe ori apar doar odata in list si in dreptul lor apare de cate ori au fost adaugate
+- paginare la shop
+- add to cart cu requests
+- pagina comanda (lista produse, cantitate care se poate modifica) + fake buy
+- folositi cookie/local storage pt requestul de get(sau pentru orice date mai simtit nevoia)
+- filter pe produse(dupa categorie, fara requests)
+- faceti request-ul de add to cart doar o data(vedeti de cate ori s-a apasat butonul pe un produs si face requestul de update la final)

@@ -144,8 +144,34 @@ body{
     cursor:pointer;
 }
 
+.item-added-to-cart{
+    text-align: center;
+    background-color: #8f8f8f;
+    font-weight: normal;
+    border-radius: 6px;
+    width: 60%;
+    user-select: none;
+    margin: 0.3vh;
+    cursor: default;
+}
+
 .item-add-to-cart:hover{
     background-color: #7476ce;
+}
+
+.item-added-to-cart:hover{
+    background-color: #8f8f8f;
+}
+
+#cart-popup{
+    position: fixed;
+    top: 12%;
+    background-color: rgba(44, 183, 33, 0.75);
+    border-radius: 7px;
+    z-index: 999;
+    font-size: 2rem;
+    padding: 0.5% 5%;
+    visibility: hidden;
 }
 
 .giga-footer{

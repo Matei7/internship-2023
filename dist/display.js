@@ -1,5 +1,21 @@
-function addToCart(element){
+async function addToCart(element){
     console.log(element.parentElement.id);
+    element.innerHTML = "🛒 Added!";
+    element.classList.remove("item-add-to-car");
+    element.classList.add("item-added-to-cart");
+    let popup = document.getElementById("cart-popup");
+    popup.style.visibility = "visible";
+    setTimeout(() => {
+        showCartAgain(element);
+    }, 1000);
+}
+
+function showCartAgain(element){
+    element.innerHTML = "🛒 ADD!";
+    element.classList.remove("item-added-to-cart");
+    element.classList.add("item-add-to-car");
+    let popup = document.getElementById("cart-popup");
+    popup.style.visibility = "hidden";
 }
 
 let lastID = 1000;
