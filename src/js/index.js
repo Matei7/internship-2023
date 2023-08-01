@@ -1,11 +1,12 @@
 import '../sass/styles.scss';
-import {addToCartPopUp, getProducts, hoverCart, hoverItem, initCart, nextImageEvent, displayItems, filterBar} from "./app";
+import {buttonsClickAddToCartPopUp, getProducts, hoverCartEvent, hoverProductEvent, initCartProducts, nextImageInProductGalleryEvent, displayProductInPageByFilter, filterBar} from "./app";
 
 await getProducts();
-await initCart();
-addToCartPopUp();
-nextImageEvent();
-hoverItem();
-hoverCart();
+await initCartProducts();
+
+buttonsClickAddToCartPopUp();
+nextImageInProductGalleryEvent();
+hoverProductEvent();
+hoverCartEvent();
 filterBar();
-displayItems('');
+displayProductInPageByFilter('');

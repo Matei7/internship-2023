@@ -69,15 +69,11 @@ ul.top-nav li a:hover {
 .effect-1 a::before {
   margin-right: 1rem;
   content: '[';
-  -webkit-transform: translateX(2rem);
-  -moz-transform: translateX(2rem);
   transform: translateX(2rem); }
 
 .effect-1 a::after {
   margin-left: 10px;
   content: ']';
-  -webkit-transform: translateX(-2rem);
-  -moz-transform: translateX(-2rem);
   transform: translateX(-2rem); }
 
 .effect-1 a:hover::before,
@@ -85,8 +81,6 @@ ul.top-nav li a:hover {
 .effect-1 a:focus::before,
 .effect-1 a:focus::after {
   opacity: 1;
-  -webkit-transform: translateX(0px);
-  -moz-transform: translateX(0px);
   transform: translateX(0px); }
 
 ul.top-nav li.icon {
@@ -321,7 +315,7 @@ ul.top-nav li.icon {
   position: relative; }
 
 .cart-items {
-  display: flex;
+  display: none;
   position: absolute;
   flex-direction: column-reverse;
   right: 50%;
@@ -352,6 +346,9 @@ ul.top-nav li.icon {
   height: 5rem;
   width: 5rem;
   object-fit: cover; }
+
+.cart-item-title {
+  max-width: 2rem; }
 
 .cart-total {
   font-size: 1.6rem;
