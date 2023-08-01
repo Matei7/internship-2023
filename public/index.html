@@ -11,7 +11,6 @@
 	<header>
 		<h1>AlexT's Magnificent Shop</h1>
 		<div id="cart-wrapper">
-			<div>
 				<div class="cart-container">
 					<p id="cart-icon"><i class="fas fa-shopping-cart"></i></p>
 					<p id="cart-counter">0</p>
@@ -20,8 +19,7 @@
 
 					</div>
 				</div>
-			</div>
-			<button id="load-checkout-button">Go To Checkout</button>
+				<button id="load-checkout-button">Go To Checkout</button>
 		</div>
 	</header>
 	<div class="side-bar">
@@ -33,12 +31,13 @@
 		<div id="products-list">
 
 		</div>
+
+		<div class="load-more-container">
+			<button id="load-more-button">Load More</button>
+			<img id="products-list-loader" src="../public/images/loading_gif.gif" class="loader hidden_attribute" alt="loader"></img>
+		</div>
 	</section>
 
-	<div class="load-more-container">
-		<button id="load-more-button">Load More</button>
-		<img id="products-list-loader" src="../public/images/loading_gif.gif" class="loader hidden_attribute" alt="loader"></img>
-	</div>
 </div>
 <footer></footer>
 <script defer src="../dist/index.js" class="app-js"></script>

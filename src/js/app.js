@@ -8,7 +8,10 @@ const cartCounter = document.getElementById('cart-counter');
 let productFilteringCriterium = "all";
 let categorySelectionRadio;
 
-
+/**
+ * Initializes the state of the website.
+ * @returns {Promise<void>}
+ */
 export async function init() {
     await setupNewItems(numberOfItemsLoaded, numberOfItemsPerPage);
     setupLoadButton();
@@ -18,6 +21,10 @@ export async function init() {
     handleFilterCriteriaChange();
 }
 
+/**
+ * Adds a new page of unfiltered items from the API, keeping track of how many have already been loaded.
+ * @returns {Promise<void>}
+ */
 async function setupNewItems() {
     let addedItemsCount = await addShopProducts(numberOfItemsLoaded, numberOfItemsPerPage, productFilteringCriterium);
     setupAddToCartButtons();
@@ -25,6 +32,13 @@ async function setupNewItems() {
     numberOfItemsLoaded += addedItemsCount;
 }
 
+/**
+ * Retrieves the next page of items to be loaded on the website and adds them, while also handling caching to improve
+ * performance.
+ * @param numberOfItemsLoaded The number of items that have already been loaded onto the site.
+ * @param numberOfItemsPerPage The number of items that make up a page.
+ * @returns {Promise<number>}
+ */
 async function addShopProducts(numberOfItemsLoaded, numberOfItemsPerPage) {
     let sessionStorageData = sessionStorage.getItem('store-products');
 
@@ -55,6 +69,10 @@ async function addShopProducts(numberOfItemsLoaded, numberOfItemsPerPage) {
     return skippedItemsCount;
 }
 
+/**
+ * Takes an arrays of items and puts them on the page as HTML elements.
+ * @param itemsArray The array containing the items.
+ */
 function addItemsToPage(itemsArray)
 {
     const productsContainer = document.getElementById("products-list");
@@ -65,6 +83,11 @@ function addItemsToPage(itemsArray)
     }
 }
 
+/**
+ * Takes an object with all the information necessary for an item, and generates the corresponding HTML code for it.
+ * @param productObject The object the HTML will be generated for.
+ * @returns {HTMLDivElement} A div element representing the item on the site.
+ */
 function getProductHTML(productObject)
 {
     const productId = productObject["id"];
@@ -133,40 +156,33 @@ function getProductHTML(productObject)
     return productHTML;
 }
 
-async function getProductsPaginatedJSON(numberOfProductsSkipped, numberOfProductsToFetch, filterCategory = "") {
-    //const greaterBatch = [];
-
-    //while(greaterBatch.length < numberOfProductsToFetch) {
-        //let newBatch = [];
-        return fetch(`https://dummyjson.com/products?limit=${numberOfProductsToFetch}&skip=${numberOfProductsSkipped}`)
-            .then(async (res) => {
-                return await res.json();
-                }
-            )
-        /*console.log(newBatch);
-        for(const item of newBatch)
-        {
-            //console.log(item[])
-            if(item["category"] === filterCategory || filterCategory === "")
-                greaterBatch.push(item);
-        }
-        numberOfProductsSkipped += numberOfProductsToFetch;
-    }
-    console.log(numberOfProductsSkipped);
-    return {products: greaterBatch, numberOfProductsSkipped};*/
+/**
+ * Retrieves the next page of items requested by the site from an API.
+ * @param numberOfProductsSkipped The number of products that have already been processed from the API and can be ignored this time.
+ * @param numberOfProductsToFetch The number of products that make up a page and need to be fetched.
+ * @returns {Promise<any>} A promise that contains the json corresponding to the request for the items.
+ */
+async function getProductsPaginatedJSON(numberOfProductsSkipped, numberOfProductsToFetch) {
+    return fetch(`https://dummyjson.com/products?limit=${numberOfProductsToFetch}&skip=${numberOfProductsSkipped}`)
+        .then(async (res) => {
+            return await res.json();
+        });
 }
 
+/**
+ * Loads all the item categories that can appear.
+ * @returns {Promise<any>} A promise that contains the json corresponding to the request for the categories.
+ */
 function getProductsCategories()
 {
     return fetch('https://dummyjson.com/products/categories')
         .then(res => {return res.json();})
 }
 
-function getAllProductsJSON() {
-    return fetch('https://dummyjson.com/products')
-        .then(res => {return res.json();});
-}
-
+/**
+ * Goes through all the items' "Add to Cart" buttons in the page that have not been set up and gives them the proper
+ * functionality, after which it flags them as fully set up.
+ */
 function setupAddToCartButtons()
 {
     const addToCartButtons = document.getElementsByClassName("add-to-cart-button");
@@ -233,6 +249,11 @@ function setupAddToCartButtons()
     }
 }
 
+/**
+ * Creates a pop-up element with the given text.
+ * @param text The text that will be shown in the pop-up.
+ * @returns {HTMLDivElement}
+ */
 function createAddToCartPopup(text="The product has been added to your cart successfully!"){
     const newPopup = document.createElement('div');
     const popupContent = document.createElement('div');
@@ -243,6 +264,13 @@ function createAddToCartPopup(text="The product has been added to your cart succ
     return newPopup;
 }
 
+/**
+ * Selects the next image to be shown from an item's image carousel.
+ * @param currentCarousel The carousel in question.
+ * @param direction Which way we are iterating through the images. It can take 2 values:
+ * - 0: forward
+ * - 1: backward
+ */
 function selectGalleryImage(currentCarousel, direction)
 {
     let enabledImage = currentCarousel.querySelector("img:not([style*='display: none'])");
@@ -269,6 +297,13 @@ function selectGalleryImage(currentCarousel, direction)
     nextImage.style.setProperty('display', 'inline');
 }
 
+/**
+ * Reacts to a keyPress event on one of the loaded items. Goes to the next image in the image carousel. Detects the
+ * direction the carousel is iterated in based on the keycode pressed.
+ * Right Arrow Key - forward
+ * Left Arrow Key - backward
+ * @param keyEvent The key event handled.
+ */
 function keyboardSelectGalleryImage(keyEvent)
 {
     if(keyEvent.keyCode === 37)
@@ -282,6 +317,9 @@ function keyboardSelectGalleryImage(keyEvent)
     }
 }
 
+/**
+ * Sets up everything to do with the shopping cart's UI.
+ */
 function setupCartUI()
 {
     cartCounter.addEventListener('addedToCart', loadCartUIContent);
@@ -299,6 +337,12 @@ function setupCartUI()
     });
 }
 
+/**
+ * Takes an object with all the information necessary for an item, and generates the corresponding HTML code to display
+ * it in the shopping cart.
+ * @param item The object the HTML will be generated for.
+ * @returns {HTMLDivElement} A div element representing the item in the shopping cart panel.
+ */
 function createCartHTMLForItem(item)
 {
     const mainItemDiv = document.createElement('div');
@@ -315,7 +359,7 @@ function createCartHTMLForItem(item)
 
     const itemPrice = document.createElement('p');
     itemPrice.setAttribute('class', 'cart-item-price');
-    itemPrice.innerText = `${item['price']}`;
+    itemPrice.innerText = `$${item['price']}`;
 
     const itemAmount = document.createElement('p');
     itemAmount.setAttribute('class', 'cart-item-amount');
@@ -329,11 +373,12 @@ function createCartHTMLForItem(item)
     return mainItemDiv;
 }
 
+/**
+ * Gives functionality to the "Load More" button that is used to load more item pages at the user's request.
+ */
 function setupLoadButton(){
     const loadButton = document.getElementById('load-more-button');
     loadButton.addEventListener('click', async () => {
-
-        debugger;
         document.getElementById('products-list-loader').classList.remove('hidden-attribute');
         document.getElementById('load-more-button').classList.add('hidden-attribute');
 
@@ -344,6 +389,10 @@ function setupLoadButton(){
     });
 }
 
+/**
+ * Sets up the site's UI in general.
+ * @returns {Promise<void>}
+ */
 async function setupUI() {
     await setupProductCategoriesList();
 
@@ -355,7 +404,11 @@ async function setupUI() {
     document.getElementById('cart-counter').innerText = numberOfElementsInCart;
 }
 
-async function loadCartUIContent(cartEvent) {
+/**
+ * Loads the items present in the user's shopping cart and puts them on the shopping cart panel.
+ * @returns {Promise<void>}
+ */
+async function loadCartUIContent() {
     let cartData = await loadCartData(cartURL, true);
 
     let currentCount = cartData.totalProducts;
@@ -372,6 +425,13 @@ async function loadCartUIContent(cartEvent) {
     }
 }
 
+/**
+ * Fetches the contents of the user's shopping cart from the API that stores it,
+ * while using caching to improve performance.
+ * @param cartURL The URL to be queried for the cart data.
+ * @param fullRefresh A boolean value that specifies whether the cache should be invalidated and rebuilt.
+ * @returns {Promise<any>} A promise containing the cart data requested by the user.
+ */
 async function loadCartData(cartURL, fullRefresh = false) {
     let cartStringData = sessionStorage.getItem("cart-products");
 
@@ -397,6 +457,10 @@ async function loadCartData(cartURL, fullRefresh = false) {
     return cartData;
 }
 
+/**
+ * Fetches every possible item category from the API and puts it on a list on the site.
+ * @returns {Promise<void>}
+ */
 async function setupProductCategoriesList() {
     const productCategoriesList = document.getElementsByClassName('product-categories')[0];
 
@@ -409,6 +473,11 @@ async function setupProductCategoriesList() {
     }
 }
 
+/**
+ * Takes a string representing the name of a category and generates the required HTML code for displaying it on the site.
+ * @param category The category string.
+ * @returns {HTMLLIElement} A list element corresponding to the category param.
+ */
 function getHTMLForCategory(category)
 {
     const listItem = document.createElement('li');
@@ -427,12 +496,22 @@ function getHTMLForCategory(category)
     return listItem;
 }
 
+/**
+ *  Adds event listeners to every single item category radio button so that we can react to changes in the filtering
+ *  criteria.
+ */
 function handleFilterCriteriaChange()
 {
     const categorySelectionRadio = document.getElementsByName('category-selection');
     categorySelectionRadio.forEach(checkbox => checkbox.addEventListener('change', setupNewItemsFiltered));
 }
 
+/**
+ * Manages the addition of new items to the page with filters, as well as the other elements in the page that are involved.
+ * @param event The event that might trigger the addition. Will be a change event from the category radio buttons, or
+ * null, if the filtering criterium hasn't changed since the last call.
+ * @returns {Promise<void>}
+ */
 async function setupNewItemsFiltered(event= null)
 {
     if(event !== null) {
@@ -451,9 +530,15 @@ async function setupNewItemsFiltered(event= null)
     document.getElementById('products-list-loader').classList.add('hidden-attribute');
     document.getElementById('load-more-button').classList.remove('hidden-attribute');
 }
+
+/**
+ * Handles the fetching of new items to the site. It only returns the elements that respect the selected filter.
+ * @param numberOfItemsLoaded The number of items that have been processed already and can be skipped on this call.
+ * @param numberOfItemsPerPage The number of items that make up a page.
+ * @param filteredCategory The category of items that will be selected.
+ * @returns {Promise<number|*>}
+ */
 async function loadShopProductsFiltered(numberOfItemsLoaded, numberOfItemsPerPage, filteredCategory) {
-
-
     let itemsNotYetAdded = [];
     let skippedItemsCount = 0;
     let fetchResult = (await getProductsPaginatedFilteredJSON(numberOfItemsLoaded, numberOfItemsPerPage, filteredCategory));
@@ -461,11 +546,17 @@ async function loadShopProductsFiltered(numberOfItemsLoaded, numberOfItemsPerPag
     itemsNotYetAdded = fetchResult.products;
     skippedItemsCount = fetchResult.newSkippedItemsCount;
 
-
     addItemsToPage(itemsNotYetAdded);
     return skippedItemsCount;
 }
 
+/**
+ * Does the actual fetching of items from the API. Makes sure to only return a page of filtered items.
+ * @param numberOfItemsToSkip The number of items that have been processed already and can be skipped on this call.
+ * @param pageSize The number of items that make up a page.
+ * @param filterCategory The category of items that will be selected.
+ * @returns {Promise<{newSkippedItemsCount: number, products: *[]}>}
+ */
 async function getProductsPaginatedFilteredJSON(numberOfItemsToSkip, pageSize, filterCategory) {
     if(filterCategory === "all")
     {
