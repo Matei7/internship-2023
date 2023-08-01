@@ -78,16 +78,12 @@ ul.top-nav li a:hover {
 .effect-1 a::before {
   margin-right: 1rem;
   content: '[';
-  -webkit-transform: translateX(2rem);
-  -moz-transform: translateX(2rem);
   transform: translateX(2rem);
 }
 
 .effect-1 a::after {
   margin-left: 10px;
   content: ']';
-  -webkit-transform: translateX(-2rem);
-  -moz-transform: translateX(-2rem);
   transform: translateX(-2rem);
 }
 
@@ -96,8 +92,6 @@ ul.top-nav li a:hover {
 .effect-1 a:focus::before,
 .effect-1 a:focus::after {
   opacity: 1;
-  -webkit-transform: translateX(0px);
-  -moz-transform: translateX(0px);
   transform: translateX(0px);
 }
 
@@ -374,7 +368,7 @@ ul.top-nav li.icon {
 }
 
 .cart-items {
-  display: flex;
+  display: none;
   position: absolute;
   flex-direction: column-reverse;
   right: 50%;
