@@ -2,13 +2,33 @@ import {createCard,createCartCard} from "./createProduct.js";
 import {addDocumentListener} from "./galleryFunctions";
 
 let totalProductsInPage=0;
-let totalProductsInCart;
 let mainContainer = document.querySelector(".product-grid");
 const idCart="64c77ddd8e88f";
 const productsLocalStorage = "productsStorage"
 let isFetching=false;//pentru scroll infinit
 let categories=[];
 let scrollAllProductsFilter=true;//sa nu se dea scroll decat daca sunt pe all products
+const cartLocalStorage = "cartStorage";
+
+
+function getProductsCartFromLocalStorage() {
+    const cachedProducts = localStorage.getItem(cartLocalStorage);
+    if (cachedProducts) {
+        return JSON.parse(cachedProducts);
+    }
+    return null;
+}
+
+function saveProductsCartInLocalStorage(products) {
+    let cartFromStorage=getProductsCartFromLocalStorage();
+    if(getProductsCartFromLocalStorage()!=null){
+        localStorage.setItem(cartLocalStorage, JSON.stringify(products));
+    }
+    else{
+        localStorage.setItem(cartLocalStorage, JSON.stringify(products));
+    }
+
+}
 
 function saveProductsInLocalStorage(products){
     let productsFromStorage = getProductsFromLocalStorage();
@@ -102,8 +122,8 @@ async function loadProductsInPage() {
     }
 }
 
-export function fetchCartProducts() {
-    return fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
+export async  function fetchCartProducts() {
+    await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -116,6 +136,8 @@ export function fetchCartProducts() {
             return response.json();
         })
         .then(data => {
+            console.log(data.products);
+            saveProductsCartInLocalStorage(data.products);
             return data.products;
         })
         .catch(error => {
@@ -124,42 +146,36 @@ export function fetchCartProducts() {
         });
 }
 
-async function getHowManyProductsInCart() {
-    await fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`)
-        .then(response => response.json())
-        .then(data => {
-            totalProductsInCart = data.totalQuantity;
-            if (data.totalQuantity>0) {
-                for (const product of data.products) {
-                    updateCartItemsContainer();
-                }
-                 console.log(totalProductsInCart);
-                console.log(cart);
-                 cart.textContent = `Cart: ${totalProductsInCart} Products`;
-            }
-        });
+function getHowManyProductsInCart() {
+    let totalProductsInCart = 0;
+    const productsFromCart = getProductsCartFromLocalStorage();
+    if (productsFromCart) {
+        let cart = document.getElementById("cart");
+        for (const product of productsFromCart) {
+            totalProductsInCart += product.quantity;
+        }
+        console.log(totalProductsInCart);
+        cart.textContent = `Cart: ${totalProductsInCart} Products`;
+    }
 }
 
-
-
 async function updateCartItemsContainer() {
-    await fetchCartProducts()
-        .then(productsFromCart => {
-            for (const product of productsFromCart) {
-                if (document.querySelector(`.item-box[data-id="${product.id}"]`) != null) {
-                    const itemBox = document.querySelector(`.item-box[data-id="${product.id}"]`);
-                    const itemQuantity = itemBox.querySelector(".item-box-number");
-                    const itemTotalPrice = itemBox.querySelector(".item-box-total");
-                    itemQuantity.textContent = product.quantity;
-                    itemTotalPrice.textContent = `$${(product.quantity * (product.price - (product.price * product.discountPercentage) / 100)).toFixed(2)}`;
-                } else {
-                    createCartCard(product);
-                }
+    const productsFromCart = getProductsCartFromLocalStorage();
+    if (productsFromCart) {
+        for (const product of productsFromCart) {
+            if (document.querySelector(`.item-box[data-id="${product.id}"]`) != null) {
+                const itemBox = document.querySelector(`.item-box[data-id="${product.id}"]`);
+                const itemQuantity = itemBox.querySelector(".item-box-number");
+                const itemTotalPrice = itemBox.querySelector(".item-box-total");
+                itemQuantity.textContent = product.quantity;
+                itemTotalPrice.textContent = `$${(product.quantity * (product.price - (product.price * product.discountPercentage) / 100)).toFixed(2)}`;
+            } else {
+                createCartCard(product);
             }
-        })
-        .catch(error => {
-            console.error('Error updating cart items:', error);
-        });
+        }
+        //getHowManyProductsInCart();
+    }
+
 }
 
 function showPopUp() {
@@ -170,9 +186,9 @@ function showPopUp() {
     bodyElem.appendChild(popUp);
 }
 
-function addProductInCartRequest(cardElement) {
+async function addProductInCartRequest(cardElement) {
     const productId = Number(cardElement.dataset.id);
-    fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
+    await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json',
             },
@@ -185,7 +201,17 @@ function addProductInCartRequest(cardElement) {
             ]
         })
     })
-        .then(res => res.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Request failed with status ${response.status}`);
+            }
+            return response.json();
+        })
+        //.then(getHowManyProductsInCart);
+        .then(data=>{
+            const products=data?.data.products;
+            saveProductsCartInLocalStorage(products);})
+        .then(updateCartItemsContainer())
         .then(getHowManyProductsInCart);
 }
 
@@ -240,8 +266,10 @@ function addCartListener() {
     });
 }
 
-export function init() {
+export async  function init() {
+    await fetchCartProducts();
     getHowManyProductsInCart();
+    updateCartItemsContainer();
     loadProductsInPage();
 	addDocumentListener();
     addCartListener();
