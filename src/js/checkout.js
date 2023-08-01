@@ -172,7 +172,8 @@ async function setupUI() {
 
 }
 
-function debounce(func, timeout = 300){
+function debounce(func, timeout = 1000){
+
     let timer;
     return (...args) => {
         clearTimeout(timer);
