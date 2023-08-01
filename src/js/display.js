@@ -195,6 +195,13 @@ function displayPreview(theId) {
         });
 }
 
+function closePreview(){
+    let previewPanel = document.getElementById("product-preview");
+    let backgroundCover = document.getElementById("background-cover");
+    previewPanel.style.visibility = "hidden";
+    backgroundCover.style.visibility = "hidden";
+}
+
 function addElementToCart(elementID){
     console.log(elementID);
 }

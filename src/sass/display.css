@@ -290,6 +290,21 @@ body{
     color: #f80;
 }
 
+.preview-exit {
+    background-color: rgba(49, 49, 49, 0.2);
+    position: absolute;
+    user-select: none;
+    font-size: 2rem;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    padding: 1% 2% 1% 2%;
+}
+
+.preview-exit:hover {
+    background-color: rgba(126, 126, 126, 0.2);
+}
+
 #cart-popup{
     position: fixed;
     bottom: 5%;
