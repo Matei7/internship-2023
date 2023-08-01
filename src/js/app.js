@@ -9,10 +9,10 @@ const API_INTERNAL_CART_ID = '64c3aa50d27ba';
 const API_INTERNAL_CART_GET = `http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${API_INTERNAL_CART_ID}`;
 const cartProductsContainer = document.querySelector('.cart-items');
 
-function createProductsInPage(productsJSON) {
+function createProductsInPage(products) {
     const productsContainer = document.querySelector('.products');
 
-    for (const product of productsJSON.products) {
+    for (const product of products) {
 
         const productContainer = document.createElement('div');
         productContainer.classList.add('products-item');
@@ -100,24 +100,31 @@ function createProductsInPage(productsJSON) {
 export async function getProducts() {
     const API_GET_PRODUCTS_URL = `https://dummyjson.com/products?limit=${limitPagination}&skip=${skipPagination}&select=id,title,brand,category,description,price,stock,rating,discountPercentage,images`
 
-    try {
+    if (localStorage.getItem('products') === null) {
         const response = await fetch(API_GET_PRODUCTS_URL);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
         const responseJSON = await response.json();
-        createProductsInPage(responseJSON);
+        createProductsInPage(responseJSON.products);
         products = products.concat(responseJSON.products);
         skipPagination += limitPagination;
         console.log("Products fetched successfully from API!")
-
-    } catch (e) {
-        console.log("Error fetching products from API! Trying to fetch from localStorage...");
+    }
+    else {
         const allProducts = JSON.parse(localStorage.getItem('products'));
-        products = allProducts.slice(skipPagination, skipPagination + limitPagination)
-        createProductsInPage(products);
+        const currentProducts = allProducts.slice(skipPagination, skipPagination + limitPagination);
+        createProductsInPage(currentProducts);
+        products = products.concat(currentProducts);
         skipPagination += limitPagination;
-        console.log("Products fetched successfully from localStorage!");
+        console.log("Products fetched successfully from localStorage!")
+    }
+}
+
+export async function getAllProductsAndSaveToLocalStorage() {
+    if (localStorage.getItem('products') === null)
+    {
+        const API_GET_PRODUCTS_URL = `https://dummyjson.com/products?limit=100&skip=0&select=id,title,brand,category,description,price,stock,rating,discountPercentage,images`
+        const response = await fetch(API_GET_PRODUCTS_URL);
+        const responseJSON = await response.json();
+        localStorage.setItem('products', JSON.stringify(responseJSON.products));
     }
 }
 
@@ -317,24 +324,29 @@ const showLoader = () => {
     loader.style.opacity = '1';
 };
 
-window.addEventListener('scroll', () => {
-    const {
-        scrollTop,
-        scrollHeight,
-        clientHeight
-    } = document.documentElement;
-    if (scrollTop + clientHeight >= scrollHeight - 5 && products.length < 100) {
-        showLoader();
-        getProducts().then(() => {
-            hideLoader();
-            buttonsClickAddToCartPopUp();
-            nextImageInProductGalleryEvent();
-            hoverProductEvent();
-            const filter = document.querySelector('.filter-bar').value;
-            displayProductInPageByFilter(filter);
-        });
-    }
-}, {passive: true});
+export function handleWindowScrollEvent() {
+    window.addEventListener('scroll', () => {
+        if (skipPagination + limitPagination > 100) {
+            return;
+        }
+        const {
+            scrollTop,
+            scrollHeight,
+            clientHeight
+        } = document.documentElement;
+        if (scrollTop + clientHeight >= scrollHeight - 5) {
+            showLoader();
+            getProducts().then(() => {
+                hideLoader();
+                buttonsClickAddToCartPopUp();
+                nextImageInProductGalleryEvent();
+                hoverProductEvent();
+                const filter = document.querySelector('.filter-bar').value;
+                displayProductInPageByFilter(filter);
+            });
+        }
+    }, {passive: true});
+}
 
 export async function fetchAddProductToCart(productID, quantity = 1) {
     await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${API_INTERNAL_CART_ID}`, {
