@@ -98,7 +98,7 @@ body{
     align-items: center;
     padding: 1% 1% 1% 1%;
     border-radius: 5px;
-    /*border: 2px solid rgba(255, 255, 255, 0.5);*/
+    border: 3px solid transparent;
 }
 
 @media only screen and (max-width: 1100px){

@@ -33,7 +33,8 @@ let allItems = [];
 function addAnItem(itemData){
     const itemToAdd = document.createElement("div");
     itemToAdd.classList.add("shop-item");
-    itemToAdd.id = "item" + String(itemData.id);
+    let newId = "item" + String(itemData.id)
+    itemToAdd.id = newId;
 
     const newItemCategory = document.createElement("div");
     newItemCategory.classList.add("item-category");
@@ -47,10 +48,14 @@ function addAnItem(itemData){
     newItemIMG.src=itemData.thumbnail;
     newItemIMG.alt="Product for sale.";
     newItemIMG.classList.add("item-image");
+    newItemIMG.setAttribute("onmouseover", "hoverItemOn(" + String(newId)+ ")");
+    newItemIMG.setAttribute("onmouseout", "hoverItemOff(" + String(newId)+ ")");
 
     const newItemTitle = document.createElement("div");
     newItemTitle.classList.add("item-title");
     newItemTitle.innerHTML=itemData.title;
+    newItemTitle.setAttribute("onmouseover", "hoverItemOn(" + String(newId)+ ")");
+    newItemTitle.setAttribute("onmouseout", "hoverItemOff(" + String(newId)+ ")");
 
     const newItemPrice = document.createElement("div");
     newItemPrice.classList.add("item-price");
@@ -90,3 +95,17 @@ function displayItems(items){
 }
 
 importItems();
+
+function hoverItemOn(theId){
+    itemToHover = document.getElementById(theId.id);
+    itemToHover.style.border = "3px solid #6667AB";
+    itemToHover.style.cursor = "pointer";
+    itemToHover.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
+}
+
+function hoverItemOff(theId){
+    itemToHover = document.getElementById(theId.id);
+    itemToHover.style.border = "3px solid transparent";
+    itemToHover.style.backgroundColor = "rgba(255, 255, 255, 0.7)";
+    itemToHover.style.cursor = "default";
+}
