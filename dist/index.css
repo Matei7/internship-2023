@@ -323,7 +323,7 @@ ul.top-nav li.icon {
   margin-top: 1px;
   width: 40rem;
   padding: 1rem;
-  height: 50rem;
+  max-height: 50rem;
   flex-grow: 0;
   background-color: white;
   border: 1px solid black;
