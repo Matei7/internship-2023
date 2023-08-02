@@ -96,6 +96,8 @@
 }
 
 .cart-product-minus{
+    opacity: 0.5;
+    cursor = "default";
     bottom: 125%;
     left: 67%
 }
