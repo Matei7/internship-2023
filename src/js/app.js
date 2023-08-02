@@ -60,7 +60,7 @@ async function addShopProducts(numberOfItemsLoaded, numberOfItemsPerPage) {
 
     let itemsNotAdded = [];
     let skippedItemsCount = 0;
-    //if((alreadyStoredItems === []) || (numberOfItemsLoaded + numberOfItemsPerPage > alreadyStoredItems.length)) {
+    
     if((alreadyStoredItems === []) || (alreadyStoredItems.length <= numberOfItemsLoaded)) {
         let fetchResult = (await getProductsPaginatedJSON(numberOfItemsLoaded, numberOfItemsPerPage));
 
@@ -80,7 +80,9 @@ async function addShopProducts(numberOfItemsLoaded, numberOfItemsPerPage) {
     addItemsToPage(itemsNotAdded);
 
     document.getElementById('products-list-loader').classList.add('hidden-attribute');
-    document.getElementById('load-more-button').classList.remove('hidden-attribute');
+
+    if(skippedItemsCount !== 0)
+        document.getElementById('load-more-button').classList.remove('hidden-attribute');
     return skippedItemsCount;
 }
 
