@@ -33,6 +33,7 @@ async function deleteItem(item){
     console.log(sendDelete(itemID));
     const itemToDelete = document.getElementById("cartitem" + itemID);
     itemToDelete.remove();
+    computeTotal();
 }
 
 async function updateCart(){

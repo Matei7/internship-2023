@@ -3,6 +3,7 @@ async function addToCart(element){
         return;
     }
     addElementToCart(element.parentElement.id);
+    setCartNumber();
     element.innerHTML = "🛒 Added!";
     element.classList.remove("item-add-to-car");
     element.classList.add("item-added-to-cart");
@@ -40,6 +41,7 @@ async function addToCartExtern(){
         return;
     }
     addElementToCart(itemElement.id);
+    setCartNumber();
     buttonElement.innerHTML = "🛒 Added!";
     buttonElement.classList.remove("preview-add-to-cart");
     buttonElement.classList.add("preview-added-to-cart");
@@ -229,7 +231,7 @@ function rightPic(){
     fetch('https://dummyjson.com/product/' + String(thisId))
         .then(response => response.json())
         .then(data => {
-            myItem = data;
+            const myItem = data;
             picList = myItem.images;
             let previewImage = document.getElementsByClassName("preview-image")[0];
             for (i = 0; i < picList.length - 1; i++){
