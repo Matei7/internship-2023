@@ -5,7 +5,7 @@ const cartID = require('../../cart_id.json').token;
 
 const cartURL = `http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`;
 const cartCounter = document.getElementById('cart-counter');
-let productFilteringCriterium = "all";
+let productFilteringCriterion = "";
 let categorySelectionRadio;
 
 /**
@@ -22,11 +22,19 @@ export async function init() {
 }
 
 /**
+ * A function that checks whether any criteria have been selected for filtering and returns a boolean result accordingly.
+ */
+function noFilteringCriteriaSelected()
+{
+    return productFilteringCriterion === "";
+}
+
+/**
  * Adds a new page of unfiltered items from the API, keeping track of how many have already been loaded.
  * @returns {Promise<void>}
  */
 async function setupNewItems() {
-    let addedItemsCount = await addShopProducts(numberOfItemsLoaded, numberOfItemsPerPage, productFilteringCriterium);
+    let addedItemsCount = await addShopProducts(numberOfItemsLoaded, numberOfItemsPerPage, productFilteringCriterion);
     setupAddToCartButtons();
 
     numberOfItemsLoaded += addedItemsCount;
@@ -40,29 +48,36 @@ async function setupNewItems() {
  * @returns {Promise<number>}
  */
 async function addShopProducts(numberOfItemsLoaded, numberOfItemsPerPage) {
-    let sessionStorageData = sessionStorage.getItem('store-products');
+    let cacheName = 'store-products';
+    if(!noFilteringCriteriaSelected())
+    {
+        cacheName = `store-products/${productFilteringCriterion}`;
+    }
+
+    let sessionStorageData = sessionStorage.getItem(cacheName);
 
     let alreadyStoredItems = (sessionStorageData !== null) ? JSON.parse(sessionStorageData): [];
 
-    let itemsNotYetAdded = [];
+    let itemsNotAdded = [];
     let skippedItemsCount = 0;
-    if(alreadyStoredItems === [] || numberOfItemsLoaded + numberOfItemsPerPage > alreadyStoredItems.length) {
+    //if((alreadyStoredItems === []) || (numberOfItemsLoaded + numberOfItemsPerPage > alreadyStoredItems.length)) {
+    if((alreadyStoredItems === []) || (alreadyStoredItems.length <= numberOfItemsLoaded)) {
         let fetchResult = (await getProductsPaginatedJSON(numberOfItemsLoaded, numberOfItemsPerPage));
 
         fetchResult.products.forEach(x => alreadyStoredItems.push(x));
-        itemsNotYetAdded = fetchResult.products;
+        itemsNotAdded = fetchResult.products;
         skippedItemsCount = fetchResult.products.length;
-        sessionStorage.setItem('store-products', JSON.stringify(alreadyStoredItems));
+        sessionStorage.setItem(cacheName, JSON.stringify(alreadyStoredItems));
     }
     else {
-        for(let index = numberOfItemsLoaded; index < numberOfItemsLoaded + numberOfItemsPerPage; index++)
+        for(let index = numberOfItemsLoaded; index < Math.min(numberOfItemsLoaded + numberOfItemsPerPage, alreadyStoredItems.length); index++)
             {
                 skippedItemsCount++;
-                itemsNotYetAdded.push(alreadyStoredItems[index]);
+                itemsNotAdded.push(alreadyStoredItems[index]);
             }
     }
 
-    addItemsToPage(itemsNotYetAdded);
+    addItemsToPage(itemsNotAdded);
 
     document.getElementById('products-list-loader').classList.add('hidden-attribute');
     document.getElementById('load-more-button').classList.remove('hidden-attribute');
@@ -163,7 +178,13 @@ function getProductHTML(productObject)
  * @returns {Promise<any>} A promise that contains the json corresponding to the request for the items.
  */
 async function getProductsPaginatedJSON(numberOfProductsSkipped, numberOfProductsToFetch) {
-    return fetch(`https://dummyjson.com/products?limit=${numberOfProductsToFetch}&skip=${numberOfProductsSkipped}`)
+    let linkToFetch;
+    if(productFilteringCriterion === "")
+        linkToFetch = `https://dummyjson.com/products?limit=${numberOfProductsToFetch}&skip=${numberOfProductsSkipped}`;
+    else
+        linkToFetch = `https://dummyjson.com/products/category/${productFilteringCriterion}?limit=${numberOfProductsToFetch}&skip=${numberOfProductsSkipped}`;
+
+    return fetch(linkToFetch)
         .then(async (res) => {
             return await res.json();
         });
@@ -398,10 +419,7 @@ function setupLoadButton(){
         document.getElementById('products-list-loader').classList.remove('hidden-attribute');
         document.getElementById('load-more-button').classList.add('hidden-attribute');
 
-        if(productFilteringCriterium === "all")
-            await setupNewItems(numberOfItemsLoaded, numberOfItemsPerPage);
-        else
-            await setupNewItemsFiltered();
+        await setupNewItems(numberOfItemsLoaded, numberOfItemsPerPage);
     });
 }
 
@@ -522,88 +540,28 @@ function handleFilterCriteriaChange()
     categorySelectionRadioList.forEach(checkbox => checkbox.addEventListener('change', (event) =>{
         categorySelectionRadio = event.target;
         numberOfItemsLoaded = 0;
+        productFilteringCriterion = categorySelectionRadio.value;
 
         const productsContainer = document.getElementById("products-list");
         productsContainer.innerHTML = "";
-        setupNewItemsFiltered();
+        setupNewItems();
     }));
 }
 
 /**
  * Manages the addition of new items to the page with filters, as well as the other elements in the page that are involved.
  * @param event The event that might trigger the addition. Will be a change event from the category radio buttons, or
- * null, if the filtering criterium hasn't changed since the last call.
+ * null, if the filtering criterion hasn't changed since the last call.
  * @returns {Promise<void>}
  */
 async function setupNewItemsFiltered()
 {
-    productFilteringCriterium = categorySelectionRadio.value;
+    productFilteringCriterion = categorySelectionRadio.value;
 
-    let newlyAddedItemsCount = await loadShopProductsFiltered(numberOfItemsLoaded, numberOfItemsPerPage, productFilteringCriterium);
+    let newlyAddedItemsCount = await loadShopProductsFiltered(numberOfItemsLoaded, numberOfItemsPerPage, productFilteringCriterion);
     numberOfItemsLoaded += newlyAddedItemsCount;
     setupAddToCartButtons();
 
     document.getElementById('products-list-loader').classList.add('hidden-attribute');
     document.getElementById('load-more-button').classList.remove('hidden-attribute');
-}
-
-/**
- * Handles the fetching of new items to the site. It only returns the elements that respect the selected filter.
- * @param numberOfItemsLoaded The number of items that have been processed already and can be skipped on this call.
- * @param numberOfItemsPerPage The number of items that make up a page.
- * @param filteredCategory The category of items that will be selected.
- * @returns {Promise<number|*>}
- */
-async function loadShopProductsFiltered(numberOfItemsLoaded, numberOfItemsPerPage, filteredCategory) {
-    let itemsNotYetAdded = [];
-    let skippedItemsCount = 0;
-    let fetchResult = (await getProductsPaginatedFilteredJSON(numberOfItemsLoaded, numberOfItemsPerPage, filteredCategory));
-
-    itemsNotYetAdded = fetchResult.products;
-    skippedItemsCount = fetchResult.newSkippedItemsCount;
-
-    addItemsToPage(itemsNotYetAdded);
-    return skippedItemsCount;
-}
-
-/**
- * Does the actual fetching of items from the API. Makes sure to only return a page of filtered items.
- * @param numberOfItemsToSkip The number of items that have been processed already and can be skipped on this call.
- * @param pageSize The number of items that make up a page.
- * @param filterCategory The category of items that will be selected.
- * @returns {Promise<{newSkippedItemsCount: number, products: *[]}>}
- */
-async function getProductsPaginatedFilteredJSON(numberOfItemsToSkip, pageSize, filterCategory) {
-    if(filterCategory === "all")
-    {
-        productFilteringCriterium = "";
-        let newSkippedItemsCount = 0;
-        await setupNewItems();
-        return;
-    }
-
-    const newPage = [];
-    let newSkippedItemsCount = 0;
-    while (newPage.length < pageSize) {
-        let unfilteredPage;
-        unfilteredPage = await fetch(`https://dummyjson.com/products?limit=${pageSize}&skip=${numberOfItemsToSkip + newSkippedItemsCount}`)
-            .then(async (res) => {
-                    return await res.json();
-                }
-            )
-
-        if (unfilteredPage.products.length === 0)
-            return {products: newPage, newSkippedItemsCount};
-        for (const item of unfilteredPage.products) {
-            newSkippedItemsCount++;
-            //console.log(item[])
-            if (item["category"] === filterCategory)
-                newPage.push(item);
-            if (newPage.length === pageSize) {
-                break;
-            }
-        }
-    }
-
-    return {products: newPage, newSkippedItemsCount};
 }
