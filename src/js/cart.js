@@ -1,3 +1,5 @@
+let cartID = "64ca3b5518e75";
+
 function undone(){
     alert("The developer did not work on this functionality yet. However, if you really want to order this product, contact him at (0712) 345 678.")
 }
@@ -25,8 +27,30 @@ function decreaseQuantity(item){
     computeTotal();
 }
 
-function deleteItem(item){
-    console.log(item);
+async function deleteItem(item){
+    let itemID = String(item.id).slice(8);
+    console.log(itemID);
+    console.log(sendDelete(itemID));
+    const itemToDelete = document.getElementById("cartitem" + itemID);
+    itemToDelete.remove();
+}
+
+async function updateCart(){
+    const items = Array.from(document.getElementsByClassName('cart-product'));
+
+    items.forEach(item => {
+        item.remove();
+    });
+    addItemsInCart();
+}
+
+async function sendDelete(itemID){
+    return await fetch(`http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64ca3b5518e75?products[]=${itemID}`, {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json'},
+    }).then(response => response.json()).then((json) => {
+        return json;
+    });
 }
 
 function displayItemInCart(itemData){
@@ -34,6 +58,7 @@ function displayItemInCart(itemData){
     itemToAdd.classList.add('cart-product');
     let newId = "cartitem" + String(itemData.id)
     itemToAdd.id = newId;
+    // console.log(newId);
 
     if (updateDuplicate(newId)){
         return;
@@ -126,7 +151,7 @@ function computeTotal(){
     quantityItem.innerHTML = String(totalQuantity);
 }
 
-//64ca3b5518e75 mine
+//64ca3b5518e75
 
 async function addItemsInCart(){
     return await fetch('http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64ca3b5518e75')
