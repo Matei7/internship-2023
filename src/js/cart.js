@@ -126,8 +126,10 @@ function computeTotal(){
     quantityItem.innerHTML = String(totalQuantity);
 }
 
+//64ca3b5518e75 mine
+
 async function addItemsInCart(){
-    fetch('http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c38597d8f95')
+    return await fetch('http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64ca3b5518e75')
         .then(response => response.json())
         .then(data => {
             for (let i = 0; i < data.products.length; i++){

@@ -263,6 +263,22 @@ function closePreview(){
 
 }
 
-function addElementToCart(elementID){
-    console.log(elementID);
+async function addElementToCart(elementID){
+    let itemID = String(elementID).slice(4);
+
+    return await fetch('https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64ca3b5518e75', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            userId: 1,
+            products: [
+                {
+                    id: itemID,
+                    quantity: 1,
+                },
+            ]
+        })
+    })
+        .then(res => res.json())
+        .then(console.log);
 }
