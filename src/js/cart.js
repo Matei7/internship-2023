@@ -69,6 +69,7 @@ function displayItemInCart(itemData){
     newItemIMG.alt="Cart Product Picture";
     newItemIMG.classList.add("cart-product-pic");
     itemToAdd.append(newItemIMG);
+    newItemIMG.setAttribute("onerror", "loadfallback(this)");
 
     const newItemTitle = document.createElement("div");
     newItemTitle.classList.add("cart-product-title");
@@ -114,6 +115,10 @@ function displayItemInCart(itemData){
     itemToAdd.append(newItemHeart);
 
     document.getElementsByClassName("cart-items")[0].append(itemToAdd);
+}
+
+function loadfallback(image){
+    image.src="https://picsum.photos/200/300";
 }
 
 function updateDuplicate(itemID){
