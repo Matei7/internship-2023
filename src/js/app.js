@@ -143,7 +143,7 @@ function checkIfItemExistsInCartProducts(id) {
         return false;
     }
     for (const product of cartProducts.products) {
-        if (product.id === id) {
+        if (product.id == id) {
             return true;
         }
     }

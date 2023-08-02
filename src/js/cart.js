@@ -41,7 +41,7 @@ function createCartItem(product) {
 
     const cartItemCounter = document.createElement('h3')
     cartItemCounter.classList.add('cart-item-counter');
-    cartItemCounter.innerText = `x${product.quantity}`;
+    cartItemCounter.innerText = `${product.quantity}`;
 
     const cartItemTitle = document.createElement('h3');
     cartItemTitle.innerText = product.title;
@@ -62,18 +62,19 @@ function createCartItem(product) {
 
     const handleRemoveButtonClick = () => {
         const cartItem = cartItems.querySelector(`[data-id="${product.id}"]`);
+        let intCartItemsCounter = parseInt(cartItemCounter.textContent);
         if (numberOfClicksRemove[product.id] === numberOfClicksAdd[product.id]) {
 
         } else if (numberOfClicksRemove[product.id] > numberOfClicksAdd[product.id]) {
             const difference = numberOfClicksRemove[product.id] - numberOfClicksAdd[product.id];
             if (difference >= product.quantity) {
-                updateCartTotal(cartTotal - product.price * product.quantity);
+                updateCartTotal(cartTotal - product.price * intCartItemsCounter);
                 cartItems.removeChild(cartItem);
                 localStorage.removeItem('cart');
                 fetchDeleteProductFromCart(product.id).then(() => {
                 });
             } else {
-                cartItemCounter.innerText = `x${product.quantity - difference}`;
+                cartItemCounter.innerText = `${intCartItemsCounter - difference}`;
                 updateCartTotal(cartTotal - product.price * difference);
                 localStorage.removeItem('cart');
                 fetchRemoveProductFromCart(product.id, -difference).then(() => {
@@ -81,7 +82,7 @@ function createCartItem(product) {
             }
         } else {
             const difference = numberOfClicksAdd[product.id] - numberOfClicksRemove[product.id];
-            cartItemCounter.innerText = `x${product.quantity + difference}`;
+            cartItemCounter.innerText = `${intCartItemsCounter + difference}`;
             updateCartTotal(cartTotal + product.price * difference);
             localStorage.removeItem('cart');
             fetchAddProductToCart(product.id, difference).then(() => {
