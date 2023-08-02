@@ -3,7 +3,7 @@ let totalText = document.querySelector(".checkout-window-total");
 const ID_CART = "64c77ddd8e88f";
 let changedQuantityForProduct = 0;
 const cartLocalStorage = "cartStorage";
-let mapForDebounce={};//id:[op,op,op]
+let mapForDebounce={};//id:quantity
 
 
 function getProductsCartFromLocalStorage() {
@@ -66,84 +66,96 @@ function createItemBoxCheckout(product) {
     return boxItem;
 }
 
-function debounce(func, timeout = 700) {
+function debounce(func, timeout = 3000) {
     let timer;
     return (...args) => {
         clearTimeout(timer);
-        changedQuantityForProduct++;
         timer = setTimeout(() => {
             func.apply(this, args);
         }, timeout);
     };
 }
 
-
-const changes = debounce(async (productId, operation) => {
-    await modifyQuantity(productId, operation);
-    changedQuantityForProduct = 0;
-})
-
-
-async function modifyQuantity(productId, operation) {
-    if (operation === "increase") {
-        await increaseQuantityRequest(productId, changedQuantityForProduct);
-    } else {
-        await decreaseQuantityRequest(productId, changedQuantityForProduct);
-    }
-}
-
 function plusMinusBtnListener(card) {
     const plusBtn = card.querySelector(".plus");
     const minusBtn = card.querySelector(".minus");
     const quantity = card.querySelector(".input-text.qty.text");
+
     plusBtn.addEventListener("click", () => {
-        changes(card.dataset.id, "increase");
+        addToMapForDebounce(card.dataset.id, "increase");
+        debouncedChanges();
     });
-    minusBtn.addEventListener("click", function () {
-        changes(card.dataset.id, "decrease");
+
+    minusBtn.addEventListener("click", () => {
+        addToMapForDebounce(card.dataset.id, "decrease");
+        debouncedChanges();
     });
 }
-
-
-async function increaseQuantityRequest(productId, quantity = 1) {
+const debouncedChanges = debounce(async () => {
     try {
-        await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${ID_CART}`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                products: [
-                    {
-                        id: productId,
-                        quantity: quantity
-                    }
-                ]
-            })
-        }).then(response => {
-            if (!response.ok) {
-                throw new Error(`Request failed with status ${response.status}`);
+        const productsToUpdate = [];
+        const productsCartLocal=getProductsCartFromLocalStorage();
+        for (const productId in mapForDebounce) {
+            const operations = mapForDebounce[productId];
+            const quantity = operations.reduce((acc, op) => {
+                return acc + (op === "increase" ? 1 : -1);
+            }, 0);
+            const currentProduct= productsCartLocal.find(product => product.id === Number(productId));
+            if(currentProduct.quantity+quantity<=0){
+                await decreaseQuantityRequest(productId);
             }
-            return response.json();
-        })
-            .then(data => {
-                const products = data?.data.products;
-                saveProductsCartInLocalStorage(products);
-            });
+            else {
+                productsToUpdate.push({id: productId, quantity});
+            }
+        }
+        await increaseQuantityRequest(productsToUpdate);
+        clearMapForDebounce();
         updateQuantityProducts();
     } catch (error) {
-        console.error('Error increasing product quantity:', error);
+        console.error('Error updating product quantities:', error);
+    }
+});
+
+function addToMapForDebounce(productId, operation) {
+    if (!mapForDebounce[productId]) {
+        mapForDebounce[productId] = [];
+    }
+    mapForDebounce[productId].push(operation);
+}
+function clearMapForDebounce() {
+    for (const productId in mapForDebounce) {
+        delete mapForDebounce[productId];
     }
 }
 
+async function increaseQuantityRequest(productsToUpdate) {
+    await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${ID_CART}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            products: productsToUpdate
+        })
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error(`Request failed with status ${response.status}`);
+        }
+        return response.json();
+    })
+        .then(data => {
+            const products = data?.data.products;
+            saveProductsCartInLocalStorage(products);
+        });
+}
 
-async function decreaseQuantityRequest(productId, quantity = 1) {
-    const productsFromCart= getProductsCartFromLocalStorage();
+
+async function decreaseQuantityRequest(productId,quantity=1) {
+    const productsFromCart = getProductsCartFromLocalStorage();
     const productToUpdate = productsFromCart.find(product => product.id === Number(productId));
-    if (productToUpdate && productToUpdate.quantity + (-1) * quantity < 1) {
         try {
             await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${ID_CART}?products[]=${productId}`, {
                 method: 'DELETE',
                 headers: {'Content-Type': 'application/json'},
-            }) .then(response => {
+            }).then(response => {
                 if (!response.ok) {
                     throw new Error(`Request failed with status ${response.status}`);
                 }
@@ -153,14 +165,12 @@ async function decreaseQuantityRequest(productId, quantity = 1) {
                     const products = data?.data.products;
                     saveProductsCartInLocalStorage(products);
                 });
-            updateQuantityProducts();
             checkoutWindow.removeChild(document.querySelector(`.checkout-window__grid__box-item[data-id="${productId}"]`));
+            updateQuantityProducts();
+
         } catch (error) {
             console.error('Error deleting product:', error);
         }
-    } else {
-        increaseQuantityRequest(productId, -1 * quantity);
-    }
 }
 
 async function updateQuantityProducts() {
