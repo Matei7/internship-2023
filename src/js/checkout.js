@@ -1,12 +1,32 @@
+
 let checkoutWindow = document.querySelector(".checkout-window__grid");
 let totalText = document.querySelector(".checkout-window-total");
 let productsArrayAfterUpdateAProduct = [];
-const idCart = "64c77ddd8e88f";
+const ID_CART = "64c77ddd8e88f";
 let changedQuantityForProduct = 0;
+const cartLocalStorage = "cartStorage";
 
+
+function getProductsCartFromLocalStorage() {
+    const cachedProducts = localStorage.getItem(cartLocalStorage);
+    if (cachedProducts) {
+        return JSON.parse(cachedProducts);
+    }
+    return null;
+}
+
+function saveProductsCartInLocalStorage(products) {
+    let cartFromStorage = getProductsCartFromLocalStorage();
+    if (getProductsCartFromLocalStorage() != null) {
+        localStorage.setItem(cartLocalStorage, JSON.stringify(products));
+    } else {
+        localStorage.setItem(cartLocalStorage, JSON.stringify(products));
+    }
+
+}
 
 function fetchCart() {
-    return fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
+    return fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${ID_CART}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -56,7 +76,9 @@ function debounce(func, timeout = 700) {
             func.apply(this, args);
         }, timeout);
     };
+
 }
+
 
 const changes = debounce(async (productId, operation) => {
     await modifyQuantity(productId, operation);
@@ -66,9 +88,9 @@ const changes = debounce(async (productId, operation) => {
 
 async function modifyQuantity(productId, operation) {
     if (operation === "increase") {
-        increaseQuantityRequest(productId, changedQuantityForProduct);
+        await increaseQuantityRequest(productId, changedQuantityForProduct);
     } else {
-        decreaseQuantityRequest(productId, changedQuantityForProduct);
+        await decreaseQuantityRequest(productId, changedQuantityForProduct);
     }
 }
 
@@ -88,7 +110,7 @@ function plusMinusBtnListener(card) {
 
 async function increaseQuantityRequest(productId, quantity = 1) {
     try {
-        await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
+        await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${ID_CART}`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -99,11 +121,16 @@ async function increaseQuantityRequest(productId, quantity = 1) {
                     }
                 ]
             })
-        });
-        const productToUpdate = productsArrayAfterUpdateAProduct.find(product => product.id === Number(productId));
-        if (productToUpdate) {
-            productToUpdate.quantity += quantity;
-        }
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error(`Request failed with status ${response.status}`);
+            }
+            return response.json();
+        })
+            .then(data => {
+                const products = data?.data.products;
+                saveProductsCartInLocalStorage(products);
+            });
         updateQuantityProducts();
     } catch (error) {
         console.error('Error increasing product quantity:', error);
@@ -112,14 +139,23 @@ async function increaseQuantityRequest(productId, quantity = 1) {
 
 
 async function decreaseQuantityRequest(productId, quantity = 1) {
-    const productToUpdate = productsArrayAfterUpdateAProduct.find(product => product.id === Number(productId));
+    const productsFromCart= getProductsCartFromLocalStorage();
+    const productToUpdate = productsFromCart.find(product => product.id === Number(productId));
     if (productToUpdate && productToUpdate.quantity + (-1) * quantity < 1) {
         try {
-            await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}?products[]=${productId}`, {
+            await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${ID_CART}?products[]=${productId}`, {
                 method: 'DELETE',
                 headers: {'Content-Type': 'application/json'},
-            });
-            productsArrayAfterUpdateAProduct = productsArrayAfterUpdateAProduct.filter(product => product.id !== Number(productId));
+            }) .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Request failed with status ${response.status}`);
+                }
+                return response.json();
+            })
+                .then(data => {
+                    const products = data?.data.products;
+                    saveProductsCartInLocalStorage(products);
+                });
             updateQuantityProducts();
             checkoutWindow.removeChild(document.querySelector(`.checkout-window__grid__box-item[data-id="${productId}"]`));
         } catch (error) {
@@ -127,7 +163,7 @@ async function decreaseQuantityRequest(productId, quantity = 1) {
         }
     } else {
         try {
-            await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
+            await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${ID_CART}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -140,11 +176,16 @@ async function decreaseQuantityRequest(productId, quantity = 1) {
                         }
                     ]
                 })
-            });
-            const productToUpdate = productsArrayAfterUpdateAProduct.find(product => product.id === Number(productId));
-            if (productToUpdate) {
-                productToUpdate.quantity -= quantity;
-            }
+            }) .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Request failed with status ${response.status}`);
+                }
+                return response.json();
+            })
+                .then(data => {
+                    const products = data?.data.products;
+                    saveProductsCartInLocalStorage(products);
+                });
             updateQuantityProducts();
         } catch (error) {
             console.error('Error updating product quantity:', error);
@@ -154,12 +195,13 @@ async function decreaseQuantityRequest(productId, quantity = 1) {
 
 async function updateQuantityProducts() {
     try {
-        const total = productsArrayAfterUpdateAProduct.reduce((acc, product) => {
+            const productsFromCart=getProductsCartFromLocalStorage();
+            const total = productsFromCart.reduce((acc, product) => {
             const price = product.price - (product.price * product.discountPercentage) / 100;
             const totalPrice = product.quantity * price;
             return acc + totalPrice;
         }, 0);
-        productsArrayAfterUpdateAProduct.forEach(product => {
+        productsFromCart.forEach(product => {
             const itemBox = document.querySelector(`.checkout-window__grid__box-item[data-id="${product.id}"]`);
             const itemQuantity = itemBox.querySelector(".input-text.qty.text");
             const itemTotalPrice = itemBox.querySelector(".box-item__total-price");
@@ -175,23 +217,38 @@ async function updateQuantityProducts() {
 
 
 async function showCheckoutProducts() {
-    fetchCart()
-        .then(productsFromCart => {
-            for (const product of productsFromCart) {
-                let card = createItemBoxCheckout(product);
-                checkoutWindow.appendChild(card);
-                plusMinusBtnListener(card);
-            }
-            productsArrayAfterUpdateAProduct = productsFromCart;
-            const total = productsArrayAfterUpdateAProduct.reduce((acc, product) => {
-                const price = product.price - (product.price * product.discountPercentage) / 100;
-                return acc + product.quantity * price;
-            }, 0);
-            totalText.textContent = total.toFixed(2);
-        })
-        .catch(error => {
-            console.error('Error show cart items:', error);
-        });
+    const productsFromCartStorage=getProductsCartFromLocalStorage();
+    if(productsFromCartStorage.length>0) {
+        for (const product of productsFromCartStorage) {
+            let card = createItemBoxCheckout(product);
+            checkoutWindow.appendChild(card);
+            plusMinusBtnListener(card);
+        }
+        const total = productsFromCartStorage.reduce((acc, product) => {
+            const price = product.price - (product.price * product.discountPercentage) / 100;
+            return acc + product.quantity * price;
+        }, 0);
+        totalText.textContent = total.toFixed(2);
+    }
+    else {
+        fetchCart()
+            .then(productsFromCart => {
+                for (const product of productsFromCart) {
+                    let card = createItemBoxCheckout(product);
+                    checkoutWindow.appendChild(card);
+                    plusMinusBtnListener(card);
+                }
+                saveProductsCartInLocalStorage(productsFromCart)
+                const total = productsFromCart.reduce((acc, product) => {
+                    const price = product.price - (product.price * product.discountPercentage) / 100;
+                    return acc + product.quantity * price;
+                }, 0);
+                totalText.textContent = total.toFixed(2);
+            })
+            .catch(error => {
+                console.error('Error show cart items:', error);
+            });
+    }
 }
 
 
@@ -205,12 +262,13 @@ function generalListenerOnPage() {
             }, 3000);
             alert("Thank you for your order! Have a nice day!");
             localStorage.clear();
-            await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
+            await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${ID_CART}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                 }
             })
+        localStorage.removeItem(cartLocalStorage);
 
         }
     );

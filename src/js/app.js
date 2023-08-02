@@ -3,7 +3,7 @@ import {addDocumentListener} from "./galleryFunctions";
 
 let totalProductsInPage = 0;
 let mainContainer = document.querySelector(".product-grid");
-const idCart = "64c77ddd8e88f";
+const ID_CART = "64c77ddd8e88f";
 const productsLocalStorage = "productsStorage"
 let isFetching = false;//pentru scroll infinit
 let categories = [];
@@ -121,7 +121,7 @@ async function loadProductsInPage() {
 }
 
 export async function fetchCartProducts() {
-    await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
+    await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${ID_CART}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -185,7 +185,7 @@ function showPopUp() {
 
 async function addProductInCartRequest(cardElement) {
     const productId = Number(cardElement.dataset.id);
-    await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${idCart}`, {
+    await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${ID_CART}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -266,7 +266,9 @@ function addCartListener() {
 
 export async function init() {
     loadProductsInPage();
-    await fetchCartProducts();
+    if(getProductsCartFromLocalStorage() === null) {
+        await fetchCartProducts();
+    }
     getHowManyProductsInCart();
     updateCartItemsContainer();
     addDocumentListener();
