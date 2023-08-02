@@ -23,8 +23,6 @@ await saveCartToLocalStorage();
  * @returns {Promise<void>}
  */
 export async function loadCart(_cart=cart) {
-
-
     for (let cartItem of _cart.products) {
         let cartItemHTML = findItemInCartHTML(cartItem.id);
         if (!cartItemHTML) {
@@ -39,8 +37,6 @@ export async function loadCart(_cart=cart) {
     }
     await updateCartTotalPrice();
     await updateCartCount();
-    // saveCartToLocalStorage();
-
 
 }
 
@@ -97,7 +93,6 @@ async function removeItemFromCart(productId) {
  */
 function findItemInCartHTML(productId) {
     return document.querySelector(`.cart-item[product_id="${productId}"]`);
-
 }
 
 /**
@@ -200,8 +195,6 @@ async function updateCartCount(_cart=cart) {
     }
     const cartCount = document.getElementById('cart-count');
     cartCount.innerText = String(count);
-
-
 }
 
 /**

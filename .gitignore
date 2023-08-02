@@ -1,11 +1,3 @@
 /node_modules/
 .gitignore
-<<<<<<< HEAD
-<<<<<<< HEAD
-/dist/g
-=======
 /dist/
->>>>>>> 5717e82 (changed gitignore)
-=======
-/dist/
->>>>>>> 5717e82df5d20bfcd8a80f227d434f0dc3665b71

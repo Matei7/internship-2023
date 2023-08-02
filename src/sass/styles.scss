@@ -11,7 +11,6 @@ body {
 #app {
   min-width: 100vw;
   min-height: 100vh;
-  //padding: 50px;
   box-sizing: border-box;
 
   &.with-bg {
@@ -35,10 +34,6 @@ body {
     box-shadow: 1px 2px 10px 1px rgba(0,0,0,0.5);
     visibility: hidden;
     transition: all 0.3s ease-in-out;
-
-
-
-
   }
 
   header{

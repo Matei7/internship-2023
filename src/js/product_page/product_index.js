@@ -13,10 +13,11 @@ function showCurrentImage(index) {
     const images = imagesContainer.querySelectorAll("img");
 
     for (let i = 0; i < images.length; i++) {
-        if (i === index)
-            images[i].classList.remove("hidden");
-        else
-            images[i].classList.add("hidden");
+        // if (i === index)
+        //     images[i].classList.remove("hidden");
+        // else
+        //     images[i].classList.add("hidden");
+        images[i].classList.toggle("hidden",i!==index);
     }
 }
 

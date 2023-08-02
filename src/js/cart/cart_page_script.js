@@ -2,15 +2,23 @@ import {getCart, getCartProductForId, removeFromCartAPI, updateProductAPI} from 
 import {debounce} from "../utils";
 
 let cart=null;
-
 let value = 0;
 let isPressedOnce = false;
 
 
+/**
+ * Saves the cart to the local storage
+ * @returns {Promise<void>}
+ */
 async function saveCartToLocalStorage(){
     localStorage.setItem('cart',JSON.stringify(cart));
     await getCartFromLocalStorage();
 }
+
+/**
+ * Gets the cart from the local storage
+ * @returns {Promise<void>}
+ */
 async function getCartFromLocalStorage(){
     if (localStorage.getItem('cart') === null){
         cart=await getCart();
@@ -70,17 +78,17 @@ function loadCartPage() {
 function getCardProductFromId(productId) {
     return cart.find((product) => product.id === productId);
 }
+
 /**
  * Updates the price of a product on the frontend
  * @param cartProductItem
  * @returns {Promise<void>}
  */
 async function updateProduct(cartProductItem) {
-
     const productId = Number(cartProductItem.getAttribute("product-id"));
     const newPriceNode = cartProductItem.querySelector(`.cartpage-product-price[product-id="${productId}"]`);
-    // const updatedProduct = await getCartProductForId(productId);
-    const updatedProduct =  getCardProductFromId(productId);
+    const updatedProduct = await getCartProductForId(productId);
+    // const updatedProduct =  getCardProductFromId(productId);
     newPriceNode.innerHTML = `$${updatedProduct["discountedPrice"].toFixed(2)}`;
     value = 0;
 }

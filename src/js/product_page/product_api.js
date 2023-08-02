@@ -3,10 +3,9 @@
  * @param api
  * @returns {Promise<[{quantity: *, id: *}]|[{quantity: *, id: *}]|*>}
  */
-export async function getItems(api = 'https://dummyjson.com/products/?limit=10&skip=10') {
+export async function getItems(api = 'https://dummyjson.com/products/?limit=10') {
     const response = await fetch(api);
     const items = await response.json();
-    console.log(items.products);
     return items.products;
 }
 
