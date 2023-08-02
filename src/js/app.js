@@ -265,10 +265,10 @@ function addCartListener() {
 }
 
 export async function init() {
+    loadProductsInPage();
     await fetchCartProducts();
     getHowManyProductsInCart();
     updateCartItemsContainer();
-    loadProductsInPage();
     addDocumentListener();
     addCartListener();
     window.onscroll = function (ev) {
