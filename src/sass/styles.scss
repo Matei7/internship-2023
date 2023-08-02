@@ -82,8 +82,9 @@ h1{
 #cart-counter{
   display: inline-flex;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  align-items: center;
+  width: 25px;
+  height: 25px;
   background-color: red;
   color: var(--white1);
   border-radius: 50%;

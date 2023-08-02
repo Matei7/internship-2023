@@ -416,8 +416,8 @@ async function setupUI() {
         window.location = `checkout.html?cart-id=${cartID}`;
     });
 
-    let numberOfElementsInCart = (await loadCartData(cartURL, false)).totalProducts;
-    document.getElementById('cart-counter').innerText = numberOfElementsInCart;
+    //let numberOfElementsInCart = (await loadCartData(cartURL, false)).totalQuantity;
+    //document.getElementById('cart-counter').innerText = numberOfElementsInCart;
 }
 
 /**
@@ -427,7 +427,7 @@ async function setupUI() {
 async function loadCartUIContent() {
     let cartData = await loadCartData(cartURL, true);
 
-    let currentCount = cartData.totalProducts;
+    let currentCount = cartData.totalQuantity;
 
     const cartContainer = document.getElementById('cart-contents');
 
