@@ -326,15 +326,31 @@ function setupCartUI()
 
     const cartIcon = document.getElementById('cart-icon');
     const cartContents = document.getElementById('cart-contents');
-    cartIcon.addEventListener('mouseover', ()=>{
+    let cartDisplayTimer;
 
+    cartIcon.addEventListener('mouseover', ()=>{
+        clearTimeout(cartDisplayTimer);
         cartContents.style.setProperty('display', 'inline-block');
     });
 
     cartIcon.addEventListener('mouseout', ()=>{
-
-        cartContents.style.removeProperty('display');
+        cartDisplayTimer = setTimeout(() => {
+                cartContents.style.removeProperty('display');
+        }, 300);
     });
+
+
+    cartContents.addEventListener('mouseover', ()=>{
+        clearTimeout(cartDisplayTimer);
+        cartContents.style.setProperty('display', 'inline-block');
+    });
+
+    cartContents.addEventListener('mouseout', ()=>{
+        cartDisplayTimer = setTimeout(() => {
+            cartContents.style.removeProperty('display');
+        }, 300);
+    });
+
 }
 
 /**
@@ -502,8 +518,15 @@ function getHTMLForCategory(category)
  */
 function handleFilterCriteriaChange()
 {
-    const categorySelectionRadio = document.getElementsByName('category-selection');
-    categorySelectionRadio.forEach(checkbox => checkbox.addEventListener('change', setupNewItemsFiltered));
+    const categorySelectionRadioList = document.getElementsByName('category-selection');
+    categorySelectionRadioList.forEach(checkbox => checkbox.addEventListener('change', (event) =>{
+        categorySelectionRadio = event.target;
+        numberOfItemsLoaded = 0;
+
+        const productsContainer = document.getElementById("products-list");
+        productsContainer.innerHTML = "";
+        setupNewItemsFiltered();
+    }));
 }
 
 /**
@@ -512,15 +535,8 @@ function handleFilterCriteriaChange()
  * null, if the filtering criterium hasn't changed since the last call.
  * @returns {Promise<void>}
  */
-async function setupNewItemsFiltered(event= null)
+async function setupNewItemsFiltered()
 {
-    if(event !== null) {
-        categorySelectionRadio = event.target;
-        numberOfItemsLoaded = 0;
-
-        const productsContainer = document.getElementById("products-list");
-        productsContainer.innerHTML = "";
-    }
     productFilteringCriterium = categorySelectionRadio.value;
 
     let newlyAddedItemsCount = await loadShopProductsFiltered(numberOfItemsLoaded, numberOfItemsPerPage, productFilteringCriterium);

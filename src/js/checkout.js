@@ -1,6 +1,5 @@
 import '../sass/checkout.scss';
 
-
 const cartID = window.location.href.split('?')[1].split('=')[1];
 const totalText = document.getElementById('total-text');
 const cartURL = `http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`;
@@ -83,39 +82,47 @@ function createCartHTMLForItem(item)
             console.log('-------------');
             console.log(' ');
 
-            if(newValue > 0) {
-                numFetchesInProgress++;
-                setLoaderState();
-                await fetch(cartURL, {
-                    method: 'PUT',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        products: [{
-                            id: item["id"],
-                            quantity: addedAmount
-                        }]
-                    })
-                }).then((value) => value.json())
-                    .then(console.log).then(() => {numFetchesInProgress--; setLoaderState();});
+            if(addedAmount !== 0) {
+                if (newValue > 0) {
+                    numFetchesInProgress++;
+                    setLoaderState();
+                    await fetch(cartURL, {
+                        method: 'PUT',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            products: [{
+                                id: item["id"],
+                                quantity: addedAmount
+                            }]
+                        })
+                    }).then((value) => value.json())
+                        .then(console.log).then(() => {
+                            numFetchesInProgress--;
+                            setLoaderState();
+                        });
+                } else {
+                    console.log("This should delete it now");
+                    numFetchesInProgress++;
+                    setLoaderState();
+                    const deleteFetchRequest = fetch(`${cartURL}?products[]=${item["id"]}`, {
+                        method: 'DELETE',
+                        headers: {'Content-Type': 'application/json'}
+                    }).then(() => {
+                        numFetchesInProgress--;
+                        setLoaderState();
+                    });
+
+                    const itemsContainer = document.getElementById('products-list');
+                    const itemToDelete = itemsContainer.querySelector(`div[data-id="${item["id"]}"]`);
+
+                    await deleteFetchRequest;
+                    itemToDelete.remove();
+                }
+
+                totalText.innerText = `Total: ${(await loadCartData(cartURL, true)).total}`;
             }
-            else{
-                console.log("This should delete it now");
-                numFetchesInProgress++;
-                setLoaderState();
-                const deleteFetchRequest = fetch(`${cartURL}?products[]=${item["id"]}`, {
-                    method: 'DELETE',
-                    headers: {'Content-Type': 'application/json'}
-                }).then(() => {numFetchesInProgress--; setLoaderState();});
+        };
 
-                const itemsContainer = document.getElementById('products-list');
-                const itemToDelete = itemsContainer.querySelector(`div[data-id="${item["id"]}"]`);
-
-                await deleteFetchRequest;
-                itemToDelete.remove();
-            }
-
-            totalText.innerText = `Total: ${(await loadCartData(cartURL, true)).total}`;
-    };
 
     const eventHandlerDebounce = debounce(itemQuantityChangeFunction);
     itemAmount.addEventListener("change", eventHandlerDebounce);

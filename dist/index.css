@@ -10,7 +10,6 @@
   --gray2: hsl(0, 0%, 90%);
   --yellow1: hsl(43, 100%, 50%);
   --yellow2: hsl(55, 100%, 40%);
-  --green1: hsl(118, 88%, 49%);
   --button-unpressed: #55c2da;
   --button-hover: #5783db;
   --button-pressed: #4848ff;
@@ -94,7 +93,8 @@ h1 {
   display: grid;
   place-items: center;
   /*justify-content: space-between;*/
-  grid-template-columns: repeat(4, 1fr); }
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 10px; }
 
 .cart-item-thumbnail {
   height: 35px;
