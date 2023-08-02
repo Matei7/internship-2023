@@ -1,8 +1,8 @@
 export function debounce(func, timeout = 800) {
-    let timer;
+    let timer={};
     return (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
+        clearTimeout(timer[args[0]]);
+        timer[args[0]] = setTimeout(() => {
             func.apply(this, args);
         }, timeout);
     };

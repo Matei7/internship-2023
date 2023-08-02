@@ -142,5 +142,8 @@ setTimeout(() => {
 }, 1000);
 
 addEventListeners();
+document.querySelector('h1').addEventListener('click',()=>{
+    window.open('index.html','_self');
+});
 
 

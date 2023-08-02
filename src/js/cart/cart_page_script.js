@@ -2,8 +2,9 @@ import {getCart, getCartProductForId, removeFromCartAPI, updateProductAPI} from 
 import {debounce} from "../utils";
 
 let cart=null;
-let value = 0;
-let isPressedOnce = false;
+let productQuantityDict  = {};
+let isPressedOnce ={};
+
 
 
 /**
@@ -54,18 +55,21 @@ function loadCartPage() {
         const lowerButtonForCurrentProduct = cartProductItem.querySelector(".lower-btn");
         const higherButtonForCurrentProduct = cartProductItem.querySelector(".higher-btn");
 
-        //Add the click event listeners for the buttons that change the quantity of the product
-        //Update the cart on the fronted aswell as on the backend
+        const productId = cartProduct.id;
+        productQuantityDict[productId] = 0;
+        isPressedOnce[productId] = false;
+
         lowerButtonForCurrentProduct.addEventListener("click", async (event) => {
-            value -= 1;
-            debounceUpdateProduct(cartProduct.id);
 
+            productQuantityDict[productId] -=1;
+            await debounceUpdateProduct(productId);
         });
+
         higherButtonForCurrentProduct.addEventListener("click", async (event) => {
-            value += 1;
-            debounceUpdateProduct(cartProduct.id);
-
+            productQuantityDict[productId] += 1;
+            await debounceUpdateProduct(productId);
         });
+
         cartProductsContainer.appendChild(cartProductItem);
     }
     //Update the total price of the cart
@@ -76,7 +80,7 @@ function loadCartPage() {
     document.querySelector(".checkout-button").insertAdjacentElement("beforebegin", total);
 }
 function getCardProductFromId(productId) {
-    return cart.find((product) => product.id === productId);
+    return cart['products'].find((product) => product.id === productId);
 }
 
 /**
@@ -87,10 +91,9 @@ function getCardProductFromId(productId) {
 async function updateProduct(cartProductItem) {
     const productId = Number(cartProductItem.getAttribute("product-id"));
     const newPriceNode = cartProductItem.querySelector(`.cartpage-product-price[product-id="${productId}"]`);
-    const updatedProduct = await getCartProductForId(productId);
-    // const updatedProduct =  getCardProductFromId(productId);
+    const updatedProduct =  getCardProductFromId(productId);
     newPriceNode.innerHTML = `$${updatedProduct["discountedPrice"].toFixed(2)}`;
-    value = 0;
+    productQuantityDict[productId] = 0;
 }
 
 /**
@@ -98,10 +101,10 @@ async function updateProduct(cartProductItem) {
  * @type {(function(...[*]): void)|*}
  */
 const debounceUpdateProduct = debounce(async (productId) => {
-    if (!isPressedOnce) {
-        isPressedOnce = true;
+    if (!isPressedOnce[productId]) {
+        isPressedOnce[productId] = true;
         await updateCountForProduct(productId);
-        isPressedOnce = false;
+        isPressedOnce[productId] = false;
     }
 });
 
@@ -122,7 +125,7 @@ function updateCartpageTotalPrice() {
 async function updateCountForProduct(productId) {
     console.log('updateCountForProduct');
     const quantityNode = document.querySelector(`.quantity[product-id="${productId}"]`);
-
+    let value=productQuantityDict[productId];
     if (Number(quantityNode.innerHTML) + value < 1) {
         const product = document.querySelector(`.cartpage-product[product-id="${productId}"]`);
         product.remove();
@@ -134,7 +137,8 @@ async function updateCountForProduct(productId) {
         await saveCartToLocalStorage();
         quantityNode.innerHTML = String(Number(quantityNode.innerHTML) + value);
         const cartProductItem = document.querySelector(`.cartpage-product[product-id="${productId}"]`);
-        await updateProduct(cartProductItem);
+
+        setTimeout( updateProduct(cartProductItem),2000);
         updateCartpageTotalPrice();
     }
 
@@ -169,7 +173,9 @@ getCartFromLocalStorage().then(()=>{
 });
 //attach the click event listener for the checkout button
 await handleCheckoutButton();
-
+document.querySelector('h1').addEventListener('click',()=>{
+    window.open('index.html','_self');
+});
 
 
 

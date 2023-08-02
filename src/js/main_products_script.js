@@ -9,7 +9,7 @@ let loadedItemsOnPage = [];
 let currentPageIndex = 0;
 let currentFetchPageIndex = 0;
 let itemsPerPage = 3;
-let fetchCount = 6;
+let fetchCount = 9;
 let api = `https://dummyjson.com/products/category/${selectedCategory}/?limit=${fetchCount}&skip=${currentPageIndex * fetchCount}`
 
 
@@ -161,7 +161,10 @@ export async function loadItems(loadMorePressed = false) {
         if (fetchedItems.length === 0) {
             currentFetchPageIndex++;
             currentPageIndex=0;
-            api = `https://dummyjson.com/products/category/${selectedCategory}/?limit=${fetchCount}&skip=${currentFetchPageIndex * fetchCount}`;
+            if (selectedCategory!=='all')
+                api = `https://dummyjson.com/products/category/${selectedCategory}/?limit=${fetchCount}&skip=${currentFetchPageIndex * fetchCount}`;
+            else api=`https://dummyjson.com/products/?limit=${fetchCount}&skip=${currentFetchPageIndex * fetchCount}`;
+
             fetchedItems = await getItems(api);
             console.log('load more pressed, fetchedItems length: ' + fetchedItems.length);
             if (fetchedItems.length === 0) {
@@ -197,6 +200,15 @@ export async function loadFilterSection() {
     }
     categories = JSON.parse(localStorage.getItem('allCategories'));
 
+    const categoryButtonNode = document.createElement('button');
+    categoryButtonNode.setAttribute('title', 'all');
+    categoryButtonNode.classList.add('filter-btn');
+    categoryButtonNode.innerHTML = 'all';
+    filterSectionWrapper.appendChild(categoryButtonNode);
+    categoryButtonNode.addEventListener('click', async () => {
+        await loadShopPageForCategory('all');
+    });
+
     for (const category of categories) {
         const categoryButtonNode = document.createElement('button');
         categoryButtonNode.setAttribute('title', category);
@@ -207,6 +219,8 @@ export async function loadFilterSection() {
             await loadShopPageForCategory(category);
         });
     }
+
+
 }
 
 /**
@@ -220,7 +234,13 @@ export async function loadShopPageForCategory(category) {
     currentPageIndex = 0;
     currentFetchPageIndex= 0;
     console.log(fetchCount);
-    api = `https://dummyjson.com/products/category/${selectedCategory}/?limit=${fetchCount}&skip=${currentFetchPageIndex * fetchCount}`;
+    if (category==='all'){
+        api=`https://dummyjson.com/products/?limit=${fetchCount}&skip=${currentFetchPageIndex * fetchCount}`;
+    }
+    else{
+        api = `https://dummyjson.com/products/category/${selectedCategory}/?limit=${fetchCount}&skip=${currentFetchPageIndex * fetchCount}`;
+    }
+
     let items = await getItems(api);
     fetchedItems = items;
 
