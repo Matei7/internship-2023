@@ -1,6 +1,6 @@
 import * as events from "events";
 
-const cartID = "64c3b92532684"
+const cartID = "64ca2f11625dd"
 let modified = false;
 let cart = await getCart();
 
@@ -144,6 +144,35 @@ export async function removeFromCart(productID, totalQuantity, quantity = 1) {
     else await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}?products[]=${productID}`, {
         method: 'DELETE'
         }).then(res => res.json())
+    modified = true
+}
+
+// function to update cart
+export async function updateCart(requestedProducts, toDelete) {
+    if (requestedProducts.length > 0)
+        await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userId: 1,
+                products: requestedProducts
+            })
+        }).then(res => res.json())
+
+    if (toDelete.length > 0) {
+        // if we have anything that needs to be deleted, make the API call
+        if (toDelete.length > 0) {
+            let stringOfProducts = ""
+            for (let productId of toDelete) {
+                stringOfProducts += `products[]=${productId}&`
+            }
+
+            await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}?${stringOfProducts}`, {
+                method: 'DELETE',
+                headers: {'Content-Type': 'application/json'}
+            }).then(res => res.json())
+        }
+    }
     modified = true
 }
 

@@ -1,9 +1,14 @@
 import * as events from "events";
-import {addToCart, getCart, removeFromCart} from "./cart";
+import {addToCart, getCart, removeFromCart, updateCart} from "./cart";
 
 let cart
-const cartID = "64c3b92532684"
-let totalPresses = 0
+const cartID = "64ca2f11625dd"
+/**
+ * totalPresses = {
+ *     id: number { quantity: number }
+ * }
+ */
+let totalPresses = {}
 
 // creates a template for a product in HTML format
 function productTemplate(product) {
@@ -13,10 +18,10 @@ function productTemplate(product) {
             <p>${product.title}</p>
             <p>$${Math.floor(product.discountedPrice)}</p>
             <div class="cart-page-quantity">
-                <button id="minus-${product.id}" class="q-btn"><i class="fa fa-minus" aria-hidden="true"></i>
+                <button class="q-btn" id="minus-${product.id}"><i class="fa fa-minus" aria-hidden="true"></i>
 </button>
                 <p>${product.quantity}</p>
-                <button id="plus-${product.id}" class="q-btn"><i class="fa fa-plus" aria-hidden="true"></i>
+                <button class="q-btn" id="plus-${product.id}"><i class="fa fa-plus" aria-hidden="true"></i>
 </button>
             </div>
         </div>    
@@ -33,41 +38,68 @@ async function initCartPage() {
 // create event listeners for quantity buttons of cart product
 function generateQuantityBtnListeners() {
     for (let btn of document.getElementsByClassName("q-btn")) {
-        document.getElementById(btn.id).addEventListener("click", () => {
-            let currentProduct
-            for (let product of cart.products) {
-                if (String(product.id) === btn.id.split("-")[1])
-                    currentProduct = product
-            }
-            processChanges(btn, currentProduct)
-        })
+        document.getElementById(btn.id).addEventListener("click", quantityEvent)
+    }
+}
+let currentQEvent
+function quantityEvent(event) {
+    let currentProduct
+    for (let product of cart.products) {
+        if (String(product.id) === event.currentTarget.id.split("-")[1])
+            currentProduct = product
+    }
+
+    currentQEvent = event
+    processChanges(currentProduct)
+}
+
+// I made this function to use it in debounce and keep debounce function clean
+function modifyQuantity(event) {
+    // check if item is in total presses
+    let id = event.currentTarget.id.split("-")[1]
+    if (totalPresses[id] !== undefined)
+        event.currentTarget.id.split("-")[0] === "minus" ? totalPresses[id].quantity--: totalPresses[id].quantity++
+    else {
+        event.currentTarget.id.split("-")[0] === "minus" ? totalPresses[id] = { quantity: -1 }: totalPresses[id] = { quantity: 1 }
     }
 }
 
 // debounce function for fetching only once
-function debounce(func, timeout = 300){
+function debounce(func, timeout = 500){
     let timer;
     return (...args) => {
         clearTimeout(timer);
-        totalPresses++
         timer = setTimeout(() => { func.apply(this, args); }, timeout);
+        modifyQuantity(currentQEvent)
     };
 }
 
 // process changes after the user stops clicking
-const processChanges = debounce(async (btn, currentProduct) => {
+const processChanges = debounce(async (currentProduct) => {
     // make changes after user stops pressing button
-    await modifyCart(btn, currentProduct)
+    await modifyCart(currentProduct)
 
     // reset total presses
-    totalPresses = 0
+    totalPresses = {}
 });
 
-async function modifyCart(btn, currentProduct) {
-    if (btn.id.split("-")[0] === "minus")
-        await removeFromCart(btn.id.split("-")[1], currentProduct.quantity, totalPresses)
-    else
-        await addToCart(btn.id.split("-")[1], totalPresses)
+// currentProduct: current selected product from the cart before modification, because I needed to know whether I have to remove it or just modify quantity
+async function modifyCart(currentProduct) {
+    let requestProducts = []
+    let toDelete = []
+
+    for (let productId in totalPresses) {
+        let quantity = Number(totalPresses[productId].quantity)
+        if (currentProduct.quantity + quantity <= 0)
+            toDelete.push(productId)
+        else
+            requestProducts.push({
+                id: Number(productId),
+                quantity
+            })
+    }
+    await updateCart(requestProducts, toDelete)
+    totalPresses = {}
 
     // reinitialize cart
     await updateProducts(true)
@@ -97,6 +129,7 @@ async function buyEvent() {
     for (let product of cart.products) {
         stringOfProducts += `products[]=${product.id}&`
     }
+
     await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${cartID}?${stringOfProducts}`, {
         method: 'DELETE',
         headers: {'Content-Type': 'application/json'}
