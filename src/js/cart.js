@@ -8,6 +8,7 @@ function increaseQuantity(item){
     minusButton.style.cursor = "pointer";
     let quantityBox = item.getElementsByClassName("cart-product-quantity")[0];
     quantityBox.innerHTML = String(parseInt(quantityBox.innerHTML) + 1);
+    computeTotal();
 }
 
 function decreaseQuantity(item){
@@ -21,6 +22,7 @@ function decreaseQuantity(item){
         return;
     }
     quantityBox.innerHTML = String(parseInt(quantityBox.innerHTML) - 1);
+    computeTotal();
 }
 
 function deleteItem(item){
@@ -32,6 +34,10 @@ function displayItemInCart(itemData){
     itemToAdd.classList.add('cart-product');
     let newId = "cartitem" + String(itemData.id)
     itemToAdd.id = newId;
+
+    if (updateDuplicate(newId)){
+        return;
+    }
 
     const newItemIMG = document.createElement("img");
     newItemIMG.src=itemData.thumbnail;
@@ -56,10 +62,14 @@ function displayItemInCart(itemData){
     newItemMinus.innerHTML = "-";
     itemToAdd.append(newItemMinus);
     newItemMinus.setAttribute("onclick", "decreaseQuantity(this.parentElement)")
+    if (itemData.quantity === 0){
+        newItemMinus.style.opacity = "0.5";
+        newItemMinus.style.cursor = "default";
+    }
 
     const newItemQuantity = document.createElement("div");
     newItemQuantity.classList.add("cart-product-quantity");
-    newItemQuantity.innerHTML = "0";
+    newItemQuantity.innerHTML = String(itemData.quantity);
     itemToAdd.append(newItemQuantity);
 
     const newItemPlus = document.createElement("div");
@@ -70,21 +80,60 @@ function displayItemInCart(itemData){
 
     const newItemPrice = document.createElement("div");
     newItemPrice.classList.add("cart-product-price");
-    newItemPrice.innerHTML = itemData.price;
+    newItemPrice.innerHTML = "$"+String(parseInt(itemData.price));
     itemToAdd.append(newItemPrice);
 
     const newItemHeart = document.createElement("div");
     newItemHeart.classList.add("cart-product-heart");
     newItemHeart.innerHTML = "🖤";
     itemToAdd.append(newItemHeart);
+
+    document.getElementsByClassName("cart-items")[0].append(itemToAdd);
 }
 
-function addItemsInCart(){
-    console.log("hi");
-    fetch('https://dummyjson.com/product/' + String(15))
+function updateDuplicate(itemID){
+    let itemsListHTML = document.getElementsByClassName("cart-product");
+    let itemsList = Array.prototype.slice.call(itemsListHTML)
+    for (let i = 0; i < itemsList.length; i++){
+        let currentItemID = String(itemsList[i].id);
+        if (currentItemID === String(itemID)){
+            let existingItem = document.getElementById(itemID);
+            increaseQuantity(existingItem);
+            return true;
+        }
+    }
+    return false;
+}
+
+function computeTotal(){
+    let totalMoney = 0;
+    let totalQuantity = 0;
+    let itemsListHTML = document.getElementsByClassName("cart-product");
+    let itemsList = Array.prototype.slice.call(itemsListHTML)
+    for (let i = 0; i < itemsList.length; i++){
+        let currentMoney = parseInt((itemsList[i].querySelector(".cart-product-price").innerHTML).slice(1));
+        let currentQuantity = parseInt(itemsList[i].querySelector(".cart-product-quantity").innerHTML);
+        totalMoney += currentMoney * currentQuantity;
+        totalQuantity += currentQuantity;
+    }
+    let totalItem = document.querySelector(".summary-total-value");
+    totalItem.innerHTML = "$"+String(totalMoney);
+    let priceItem = document.querySelector(".summary-price-value");
+    priceItem.innerHTML = "$"+String(totalMoney);
+    let itemsItem = document.querySelector(".summary-items-value");
+    itemsItem.innerHTML = String(itemsList.length);
+    let quantityItem = document.querySelector(".summary-quantity-value");
+    quantityItem.innerHTML = String(totalQuantity);
+}
+
+async function addItemsInCart(){
+    fetch('http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64c38597d8f95')
         .then(response => response.json())
         .then(data => {
-            displayItemInCart(data);
+            for (let i = 0; i < data.products.length; i++){
+                displayItemInCart(data.products[i]);
+            }
+            computeTotal();
         })
         .catch(error => {
             console.error('Error fetching data:', error);
