@@ -5,7 +5,6 @@ let changedQuantityForProduct = 0;
 const cartLocalStorage = "cartStorage";
 
 
-
 function getProductsCartFromLocalStorage() {
     const cachedProducts = localStorage.getItem(cartLocalStorage);
     if (cachedProducts) {
@@ -200,7 +199,6 @@ async function updateQuantityProducts() {
             return acc + totalPrice;
         }, 0);
         productsFromCart.forEach(product => {
-            console.log("product");
             const itemBox = document.querySelector(`.checkout-window__grid__box-item[data-id="${product.id}"]`);
             const itemQuantity = itemBox.querySelector(".input-text.qty.text");
             const itemTotalPrice = itemBox.querySelector(".box-item__total-price");
@@ -228,7 +226,6 @@ function prepareCheckoutUI(productsFromCartStorage){
 }
 
 function showCheckoutProducts() {
-
         const productsFromCartStorage = getProductsCartFromLocalStorage();
         if (productsFromCartStorage) {
             prepareCheckoutUI(productsFromCartStorage);
@@ -243,7 +240,6 @@ function showCheckoutProducts() {
         }
 
 }
-
 
 function generalListenerOnPage() {
     const buyButton = document.querySelector(".checkout-window__button");
@@ -261,7 +257,8 @@ function generalListenerOnPage() {
                     'Content-Type': 'application/json',
                 }
             })
-        localStorage.removeItem(cartLocalStorage);
+            localStorage.removeItem(cartLocalStorage);
+            setTimeout(window.location.href = "index.html", 3000);
 
         }
     );
@@ -277,3 +274,4 @@ function initCheckout() {
 }
 
 initCheckout();
+

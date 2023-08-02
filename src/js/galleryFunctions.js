@@ -1,4 +1,4 @@
-import {getTotalProductsInPage} from "./app.js";
+import{getProductsFromLocalStorage} from "./app.js";
 
 let lastActiveProduct = null;
 let mapImageToProduct = {};
@@ -42,38 +42,23 @@ function arrowClicked(card, direction) {
 }
 
 export function changeImage(id, direction, card) {
-    let totalProductsInPage=getTotalProductsInPage();
-    fetch(`https://dummyjson.com/products?limit=${totalProductsInPage}&select=title,price,description,discountPercentage,rating,stock,brand,category,thumbnail,images`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Request failed with status ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            const products = data.products;
-            const currentProduct = products.find(product => product.id === id);
-            const currentImageIndex = mapImageToProduct[id];
-            const imagesLength = currentProduct.images.length;
+    const products=getProductsFromLocalStorage();
+    const currentProduct = products.find(product => product.id === id);
+    const currentImageIndex = mapImageToProduct[id];
+    const imagesLength = currentProduct.images.length;
 
-            let newIndex = currentImageIndex + direction;
+    let newIndex = currentImageIndex + direction;
 
-            if (newIndex >= imagesLength) {
-                newIndex = 0; // de la prima imagine
-            } else if (newIndex < 0) {
-                newIndex = imagesLength - 1; //  de la ultima
-            }
+    if (newIndex >= imagesLength) {
+        newIndex = 0; // from the start
+    } else if (newIndex < 0) {
+        newIndex = imagesLength - 1; //  from the end
+    }
 
-            mapImageToProduct[id] = newIndex;
-            const mainImage = card.querySelector(`#product-grid__product-card__image-wrapper__image__id${card.dataset.id}`);
-            mainImage.src = currentProduct.images[newIndex];
-        })
-        .catch(error => {
-            console.error("Error changing image:", error);
-            throw error;
-        });
+    mapImageToProduct[id] = newIndex;
+    const mainImage = card.querySelector(`#product-grid__product-card__image-wrapper__image__id${card.dataset.id}`);
+    mainImage.src = currentProduct.images[newIndex];
 }
-
 
 export function initiateMapGallery(id, imagesLength) {
     mapImageToProduct[id] = imagesLength - 1;

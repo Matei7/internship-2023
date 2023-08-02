@@ -1,4 +1,6 @@
 import {addArrowsListener,initiateMapGallery} from "./galleryFunctions.js";
+
+
 export function createCard(product) {
     const card = document.createElement("div");
     card.setAttribute("data-id", product.id);

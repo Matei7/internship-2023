@@ -3,13 +3,12 @@ import {addDocumentListener} from "./galleryFunctions";
 
 let totalProductsInPage = 0;
 let mainContainer = document.querySelector(".product-grid");
-const ID_CART = "64c77ddd8e88f";
 const productsLocalStorage = "productsStorage"
-let isFetching = false;//pentru scroll infinit
-let categories = [];
-let scrollAllProductsFilter = true;//sa nu se dea scroll decat daca sunt pe all products
 const cartLocalStorage = "cartStorage";
-
+let isFetching = false;//for infinite scroll
+let categories = [];
+let scrollAllProductsFilter = true; //scroll all products and not filtered products
+const ID_CART = "64c77ddd8e88f";
 
 export function getProductsCartFromLocalStorage() {
     const cachedProducts = localStorage.getItem(cartLocalStorage);
@@ -26,7 +25,6 @@ export function saveProductsCartInLocalStorage(products) {
     } else {
         localStorage.setItem(cartLocalStorage, JSON.stringify(products));
     }
-
 }
 
 function saveProductsInLocalStorage(products) {
@@ -39,7 +37,7 @@ function saveProductsInLocalStorage(products) {
     }
 }
 
-function getProductsFromLocalStorage() {
+export function getProductsFromLocalStorage() {
     const cachedProducts = localStorage.getItem(productsLocalStorage);
     if (cachedProducts) {
         return JSON.parse(cachedProducts);
@@ -63,7 +61,7 @@ function saveCategoryFilters(category) {
             cards.forEach(card => {
                 if (counter < totalProductsInPage) {
                     const categoryElement = card.querySelector(".category");
-                    const categoryText = categoryElement.textContent.trim().split(":")[1].trim()
+                    const categoryText = categoryElement.textContent.trim().split(":")[1].trim();
                     console.log(categoryText);
                     if (categoryText !== category) {
                         card.classList.add("filtered-out");
@@ -74,10 +72,6 @@ function saveCategoryFilters(category) {
         });
         categorySection.appendChild(categoryElement);
     }
-}
-
-export function getTotalProductsInPage() {
-    return totalProductsInPage;
 }
 
 async function loadProductsInPage() {
@@ -205,7 +199,6 @@ async function addProductInCartRequest(cardElement) {
             }
             return response.json();
         })
-        //.then(getHowManyProductsInCart);
         .then(data => {
             const products = data?.data.products;
             saveProductsCartInLocalStorage(products);
@@ -252,7 +245,6 @@ function addCartListener() {
                 cartWindowList.removeChild(emptyCart);
             }
         }
-
     });
     cartButton.addEventListener("mouseout", function () {
         const cartWindow = document.querySelector(".cart-window");

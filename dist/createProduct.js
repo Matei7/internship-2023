@@ -10,26 +10,6 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/sass/check-out.scss":
-/*!*********************************!*\
-  !*** ./src/sass/check-out.scss ***!
-  \*********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n\n\n//# sourceURL=webpack://internship-2023/./src/sass/check-out.scss?");
-
-/***/ }),
-
-/***/ "./src/sass/styles.scss":
-/*!******************************!*\
-  !*** ./src/sass/styles.scss ***!
-  \******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n\n\n//# sourceURL=webpack://internship-2023/./src/sass/styles.scss?");
-
-/***/ }),
-
 /***/ "./src/js/app.js":
 /*!***********************!*\
   !*** ./src/js/app.js ***!
@@ -57,16 +37,6 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   addArrowsListener: () => (/* binding */ addArrowsListener),\n/* harmony export */   addDocumentListener: () => (/* binding */ addDocumentListener),\n/* harmony export */   changeImage: () => (/* binding */ changeImage),\n/* harmony export */   initiateMapGallery: () => (/* binding */ initiateMapGallery)\n/* harmony export */ });\n/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./app.js */ \"./src/js/app.js\");\n\r\n\r\nlet lastActiveProduct = null;\r\nlet mapImageToProduct = {};\r\n\r\nfunction addArrowsListener(card){\r\n    const leftArrows = card.querySelector(\".arrow.left\");\r\n    const rightArrows = card.querySelector(\".arrow.right\");\r\n    leftArrows.addEventListener(\"click\", () => {\r\n        arrowClicked(card, -1);\r\n        lastActiveProduct = card;\r\n    });\r\n\r\n    rightArrows.addEventListener(\"click\", () => {\r\n        arrowClicked(card, 1);\r\n        lastActiveProduct = card;\r\n    });\r\n}\r\nfunction addDocumentListener(){\r\n    document.addEventListener(\"keyup\", function (event) {\r\n        console.log(event.key);\r\n        console.log(event.target);\r\n        const direction = event.key === \"ArrowLeft\" ? -1 : 1;\r\n        if (event.key === \"ArrowLeft\" ) {\r\n            arrowClicked(lastActiveProduct, direction);\r\n        } else if (event.key === \"ArrowRight\" ) {\r\n            arrowClicked(lastActiveProduct, direction);\r\n        }\r\n    });\r\n}\r\n\r\nfunction arrowClicked(card, direction) {\r\n    if (direction === -1) {\r\n        console.log(\"left arrow clicked\");\r\n        const productId = Number(card.dataset.id);\r\n        changeImage(productId, -1, card);\r\n    } else {\r\n        console.log(\"right arrow clicked\");\r\n        const productId = Number(card.dataset.id);\r\n        changeImage(productId, 1, card);\r\n    }\r\n}\r\n\r\nfunction changeImage(id, direction, card) {\r\n    const products=(0,_app_js__WEBPACK_IMPORTED_MODULE_0__.getProductsFromLocalStorage)();\r\n    const currentProduct = products.find(product => product.id === id);\r\n    const currentImageIndex = mapImageToProduct[id];\r\n    const imagesLength = currentProduct.images.length;\r\n\r\n    let newIndex = currentImageIndex + direction;\r\n\r\n    if (newIndex >= imagesLength) {\r\n        newIndex = 0; // from the start\r\n    } else if (newIndex < 0) {\r\n        newIndex = imagesLength - 1; //  from the end\r\n    }\r\n\r\n    mapImageToProduct[id] = newIndex;\r\n    const mainImage = card.querySelector(`#product-grid__product-card__image-wrapper__image__id${card.dataset.id}`);\r\n    mainImage.src = currentProduct.images[newIndex];\r\n}\r\n\r\nfunction initiateMapGallery(id, imagesLength) {\r\n    mapImageToProduct[id] = imagesLength - 1;\r\n}\r\n\r\n\n\n//# sourceURL=webpack://internship-2023/./src/js/galleryFunctions.js?");
-
-/***/ }),
-
-/***/ "./src/js/index.js":
-/*!*************************!*\
-  !*** ./src/js/index.js ***!
-  \*************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _sass_styles_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sass/styles.scss */ \"./src/sass/styles.scss\");\n/* harmony import */ var _sass_check_out_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sass/check-out.scss */ \"./src/sass/check-out.scss\");\n/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./app */ \"./src/js/app.js\");\n\r\n\r\n\r\n//import {showCheckoutProducts} from \"./app.js\";\r\n\r\n(0,_app__WEBPACK_IMPORTED_MODULE_2__.init)();\r\n\r\n\n\n//# sourceURL=webpack://internship-2023/./src/js/index.js?");
 
 /***/ })
 
@@ -129,8 +99,8 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _sas
 /******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	// This entry module can't be inlined because the eval devtool is used.
-/******/ 	var __webpack_exports__ = __webpack_require__("./src/js/index.js");
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__("./src/js/createProduct.js");
 /******/ 	
 /******/ })()
 ;
