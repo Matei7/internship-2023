@@ -33,12 +33,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #313131;
+    background: rgb(134, 134, 134);
     border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #101010;
+    background: #232323;
 }
 
 .cart-product{
@@ -97,7 +97,7 @@
 
 .cart-product-minus{
     opacity: 0.5;
-    cursor = "default";
+    cursor: default;
     bottom: 125%;
     left: 67%
 }
