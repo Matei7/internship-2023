@@ -38,6 +38,7 @@ function loadCartPage() {
     for (const cartProduct of cart.products) {
         let cartProductItem = document.createElement("div");
         cartProductItem.classList.add("cartpage-product");
+
         cartProductItem.setAttribute("product-id", cartProduct.id);
         cartProductItem.innerHTML = `
             <div class="cartpage-product-image">
