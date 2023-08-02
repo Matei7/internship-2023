@@ -260,7 +260,7 @@ function addCartListener() {
 
 export async function init() {
     loadProductsInPage();
-    if(getProductsCartFromLocalStorage() === null) {
+    if (getProductsCartFromLocalStorage() === null) {
         await fetchCartProducts();
     }
     getHowManyProductsInCart();
@@ -285,7 +285,4 @@ export async function init() {
         });
     });
 }
-
-
-
 

@@ -1,28 +1,10 @@
+import {getProductsCartFromLocalStorage,saveProductsCartInLocalStorage} from "./app";
+
 let checkoutWindow = document.querySelector(".checkout-window__grid");
 let totalText = document.querySelector(".checkout-window-total");
 const ID_CART = "64c77ddd8e88f";
-let changedQuantityForProduct = 0;
 const cartLocalStorage = "cartStorage";
 let mapForDebounce={};//id:quantity
-
-
-function getProductsCartFromLocalStorage() {
-    const cachedProducts = localStorage.getItem(cartLocalStorage);
-    if (cachedProducts) {
-        return JSON.parse(cachedProducts);
-    }
-    return null;
-}
-
-function saveProductsCartInLocalStorage(products) {
-    let cartFromStorage = getProductsCartFromLocalStorage();
-    if (getProductsCartFromLocalStorage() != null) {
-        localStorage.setItem(cartLocalStorage, JSON.stringify(products));
-    } else {
-        localStorage.setItem(cartLocalStorage, JSON.stringify(products));
-    }
-
-}
 
 function fetchCart() {
     return fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${ID_CART}`, {
@@ -122,6 +104,7 @@ function addToMapForDebounce(productId, operation) {
     }
     mapForDebounce[productId].push(operation);
 }
+
 function clearMapForDebounce() {
     for (const productId in mapForDebounce) {
         delete mapForDebounce[productId];
