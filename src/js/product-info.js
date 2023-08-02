@@ -1,8 +1,10 @@
 import { getProductAfterId } from "./api.js";
 
 export async function loadProductPage() {
+    document.title = 'Loading...';
     let productId = Number(new URLSearchParams(window.location.search).get("id"));
     let product = await getProductAfterId(productId);
+    document.title = product.title;
     let innerHtml  = `
         <div class="product-image">`;
     product.images.forEach(image => {

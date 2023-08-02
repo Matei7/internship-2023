@@ -10,47 +10,51 @@ let cartListClicked = false;
 let cartListTimeout = null;
 
 export async function initCartList() {
-    document.querySelector('.nav-bar-menu-right ul li:last-child').onmouseover = () => {
+    document.querySelector('.nav-bar-menu-right ul li:last-child').addEventListener('mouseover', () => {
         document.querySelector('.cart-list').classList.add('show');
         clearTimeout(cartListTimeout);
-    }
+    });
 
-    document.querySelector('.nav-bar-menu-right ul li:last-child').onmouseout = () => {
+    document.querySelector('.nav-bar-menu-right ul li:last-child').addEventListener('mouseout', () => {
         if (cartListClicked) {
             return;
         }
         cartListTimeout = setTimeout(() => {
             document.querySelector('.cart-list').classList.remove('show');
         }, 1000);
-    }
+    });
 
-    document.querySelector('.nav-bar-menu-right ul li:last-child').onclick = () => {
+    document.querySelector('.nav-bar-menu-right ul li:last-child').addEventListener('click', () => {
         cartListClicked = true;
         document.querySelector('.cart-list').classList.add('show');
-    }
+    });
 
-    document.querySelector('.cart-list-header-close').onclick = () => {
+    document.querySelector('.cart-list-header-close').addEventListener('click', () => {
         cartListClicked = false;
         document.querySelector('.cart-list').classList.remove('show');
-    }
+    });
 
-    document.querySelector('.cart-list').onmouseover = () => {
+    document.querySelector('.cart-list').addEventListener('mouseover', () => {
         document.querySelector('.cart-list').classList.add('show');
         clearTimeout(cartListTimeout);
-    }
+    });
 
-    document.querySelector('.cart-list').onmouseout = () => {
+    document.querySelector('.cart-list').addEventListener('mouseout', () => {
         if (cartListClicked) {
             return;
         }
         cartListTimeout = setTimeout(() => {
             document.querySelector('.cart-list').classList.remove('show');
         }, 1000);
-    }
+    });
+
+    document.querySelector('.cart-list-footer-checkout').addEventListener('click', () => {
+        window.location.href = 'checkout.html';
+    });
 
     let cart = await getCartAPI();
     document.querySelector('.quantity-cart').innerHTML = cart.totalQuantity;
-    document.querySelector('.cart-list-footer-total').innerHTML = 'Total: $' + cart.total;
+    document.querySelector('.cart-list-footer-total').innerHTML = 'Total: $' + Math.floor(cart.discountTotal);
     if (cart.totalQuantity !== 0) {
         document.querySelector('.quantity-cart').classList.remove('quantity-empty');
         for (let i = 0; i < cart.products.length; i++) {
@@ -58,10 +62,17 @@ export async function initCartList() {
             document.querySelector('.cart-list-body').insertAdjacentHTML('beforeend', createNewProductCartHTML(product));
             let addedProduct = document.querySelector(`.cart-list-body-item:last-child`);
             addedProduct.querySelector('.cart-list-body-item-quantity-value').innerHTML = product.quantity;
-            addedProduct.querySelector('.cart-list-body-item-total').innerHTML = '$' + String(product.price * product.quantity);
+            addedProduct.querySelector('.cart-list-body-item-total').innerHTML = '$' + String(calculatePriceWithDiscount(product.price, product.discountPercentage, product.quantity));
             attachEventHandlersToProduct(addedProduct, product);
         }
     }
+}
+
+export function calculatePriceWithDiscount(price, discountPercentage, quantity = 1) {
+    if (discountPercentage <= 7) {
+        return price;
+    }
+    return Math.floor(price * quantity * ((100 - discountPercentage) / 100));
 }
 
 function createNewProductCartHTML(product) {
@@ -79,7 +90,7 @@ function createNewProductCartHTML(product) {
             <div class="cart-list-body-item-quantity-value">1</div>
             <div class="cart-list-body-item-quantity-increase">+</div>
         </div>
-        <div class="cart-list-body-item-total">$${product.price}</div>
+        <div class="cart-list-body-item-total">$${calculatePriceWithDiscount(product.price, product.discountPercentage)}</div>
         <div class="cart-list-body-item-remove"><span class="material-symbols-outlined">close</span></div>
     </div>
     `;
@@ -132,9 +143,10 @@ function updateProductQuantity(addedProduct, productInfo, quantityToAdd) {
     updateProductQuantityAPI(productInfo.id, quantityToAdd);
     let quantity = Number(addedProduct.querySelector('.cart-list-body-item-quantity-value').innerHTML) + quantityToAdd;
     addedProduct.querySelector('.cart-list-body-item-quantity-value').innerHTML = quantity;
-    addedProduct.querySelector('.cart-list-body-item-total').innerHTML = '$' + (productInfo.price * quantity);
+    let totalProductPrice = calculatePriceWithDiscount(productInfo.price, productInfo.discountPercentage, quantity);
+    addedProduct.querySelector('.cart-list-body-item-total').innerHTML = '$' + totalProductPrice;
     updateQuantityInCart(quantityToAdd);
-    document.querySelector('.cart-list-footer-total').innerHTML = 'Total: $' + String(Number(document.querySelector('.cart-list-footer-total').innerHTML.split('$')[1]) + (productInfo.price * quantityToAdd));
+    document.querySelector('.cart-list-footer-total').innerHTML = 'Total: $' + String(Number(document.querySelector('.cart-list-footer-total').innerHTML.replace("Total: $", "")) + totalProductPrice - calculatePriceWithDiscount(productInfo.price, productInfo.discountPercentage, quantity - quantityToAdd));
 }
 
 
@@ -153,7 +165,7 @@ function increaseProductQuantity(addedProduct, productInfo) {
 async function removeProductFromCart(addedProduct, productInfo) {
     document.querySelector('.cart-list-body').removeChild(addedProduct);
     removeProductFromCartAPI(productInfo.id);
-    document.querySelector('.cart-list-footer-total').innerHTML = 'Total: $' + String(Number(document.querySelector('.cart-list-footer-total').innerHTML.replace('Total: $', '')) - productInfo.price * Number(addedProduct.querySelector('.cart-list-body-item-quantity-value').innerHTML));
+    document.querySelector('.cart-list-footer-total').innerHTML = 'Total: $' + String(Number(document.querySelector('.cart-list-footer-total').innerHTML.replace('Total: $', '')) - calculatePriceWithDiscount(productInfo.price, productInfo.discountPercentage, Number(addedProduct.querySelector('.cart-list-body-item-quantity-value').innerHTML)));
     updateQuantityInCart(addedProduct.querySelector('.cart-list-body-item-quantity-value').innerHTML * -1);
 }
 
@@ -167,12 +179,15 @@ async function updateCart(productId) {
     let product = await getProductAfterId(productId);
     let cartProducts = document.querySelectorAll('.cart-list-body-item');
     let productsExists = false;
-    let cart = null;
+    let totalProductPrice = 0;
     for (let cartIndex = 0; cartIndex < cartProducts.length; cartIndex++) {
         if (cartProducts[cartIndex].getAttribute('data-id') === String(productId)) {
             let newQuantity = Number(cartProducts[cartIndex].querySelector('.cart-list-body-item-quantity-value').innerHTML) + 1;
-            cart = updateProductQuantityAPI(product.id, 1);
+            updateProductQuantityAPI(product.id, 1);
             cartProducts[cartIndex].querySelector('.cart-list-body-item-quantity-value').innerHTML = String(newQuantity);
+            totalProductPrice = calculatePriceWithDiscount(product.price, product.discountPercentage, newQuantity);
+            product.quantity = newQuantity;
+            cartProducts[cartIndex].querySelector('.cart-list-body-item-total').innerHTML = '$' + totalProductPrice;
             productsExists = true;
             break;
         }
@@ -181,10 +196,11 @@ async function updateCart(productId) {
     if (!productsExists) {
         document.querySelector('.cart-list-body').insertAdjacentHTML('beforeend', createNewProductCartHTML(product));
         product.quantity = 1;
+        totalProductPrice = calculatePriceWithDiscount(product.price, product.discountPercentage);
         const addedProduct = document.querySelector('.cart-list-body-item:last-child');
         attachEventHandlersToProduct(addedProduct, product);
-        cart = addProductToCartAPI(product);
+        addProductToCartAPI(product);
     }
-    document.querySelector('.cart-list-footer-total').innerHTML = 'Total: $' + (Number(document.querySelector('.cart-list-footer-total').innerHTML.replace('Total: $', '')) + product.price);
+    document.querySelector('.cart-list-footer-total').innerHTML = 'Total: $' + String(Number(document.querySelector('.cart-list-footer-total').innerHTML.replace('Total: $', '')) + totalProductPrice - calculatePriceWithDiscount(product.price, product.discountPercentage, product.quantity - 1));
     updateQuantityInCart(1);
 }

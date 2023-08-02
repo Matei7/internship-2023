@@ -1,6 +1,11 @@
 export async function fetchProducts(limitNumber = 12, skipNumber = 0) {
-    console.log(limitNumber, skipNumber);
-    let jsonProducts = await fetch(`https://dummyjson.com/products?limit=${limitNumber}&skip=${skipNumber}`)
+    const jsonProducts = await fetch(`https://dummyjson.com/products?limit=${limitNumber}&skip=${skipNumber}`)
+        .then(res => res.json());
+    return jsonProducts['products'];
+}
+
+export async function fetchProductsByCategory(category, limitNumber = 12, skipNumber = 0) {
+    const jsonProducts = await fetch(`https://dummyjson.com/products/category/${category}?limit=${limitNumber}&skip=${skipNumber}`)
         .then(res => res.json());
     return jsonProducts['products'];
 }

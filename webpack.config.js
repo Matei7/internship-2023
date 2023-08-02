@@ -5,6 +5,7 @@ const config = {
 	entry: {
 		index: './src/js/index.js',
 		'product-page': './src/js/product-page.js',
+		checkout: './src/js/checkout.js',
 	},
 	output: {
 		path: path.resolve( __dirname, 'dist' ),
