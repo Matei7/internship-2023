@@ -20,6 +20,7 @@
     >
 </head>
 <body>
+    <script src="../src/js/cart.js"></script>
     <header class="giga-header">
         <div class="home-page">
             <img src="images/simple-logo-no-bg.png" alt="giga image logo" class="giga-logo">
@@ -33,7 +34,28 @@
     </header>
     <div class="cart-display">
         <h2 class="cart-title">YOUR CART</h2>
-        <div class="cart-items"></div>
+        <div class="cart-items">
+            <div class="cart-product" id="cart-item-1">
+                <img class="cart-product-pic" alt="Cart Product Picture" src="https://picsum.photos/200/300">
+                <div class="cart-product-title">##TITLE##</div>
+                <div class="cart-product-delete">🗑</div>
+                <div class="cart-product-minus">-</div>
+                <div class="cart-product-quantity">0</div>
+                <div class="cart-product-plus">+</div>
+                <div class="cart-product-price">000</div>
+                <div class="cart-product-heart">❤️</div>
+            </div>
+            <div class="cart-product" id="cart-item-2">
+                <img class="cart-product-pic" alt="Cart Product Picture" src="https://picsum.photos/300/300">
+                <div class="cart-product-title">##TITLE##</div>
+                <div class="cart-product-delete">🗑</div>
+                <div class="cart-product-minus">-</div>
+                <div class="cart-product-quantity">0</div>
+                <div class="cart-product-plus">+</div>
+                <div class="cart-product-price">000</div>
+                <div class="cart-product-heart">❤️</div>
+            </div>
+        </div>
     </div>
     <div class="cart-summary">
         <div class="summary-total">TOTAL</div>
@@ -44,7 +66,7 @@
         <div class="summary-quantity-value">##VALUE##</div>
         <div class="summary-price">PRICE</div>
         <div class="summary-price-value">##VALUE##</div>
-        <div class="summary-order">Proceed to payment</div>
+        <div class="summary-order" onclick="undone()">Proceed to payment</div>
     </div>
     <footer class="giga-footer" style="position: fixed">
         <div class="giga-name">
