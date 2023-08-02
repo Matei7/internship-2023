@@ -53,6 +53,7 @@ body{
     text-align: left;
     font-family: "Inter", serif;
     font-size: min(8vw, 8vh);
+    font-weight: bold;
     white-space: nowrap;
     overflow: hidden;
     color: #262626;

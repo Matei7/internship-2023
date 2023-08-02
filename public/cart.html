@@ -2,9 +2,54 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giga Cart</title>
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <link
+            rel="stylesheet"
+            href="../src/sass/display.css"
+
+    >
+    <link
+            rel="stylesheet"
+            href="../src/sass/cart.css"
+
+    >
 </head>
 <body>
-
+    <header class="giga-header">
+        <div class="home-page">
+            <img src="images/simple-logo-no-bg.png" alt="giga image logo" class="giga-logo">
+        </div>
+        <h1 class="giga-title">
+            GIGA Image
+        </h1>
+        <a href="./display.html" class="cart-in-title">
+            &lt;back&gt;
+        </a>
+    </header>
+    <div class="cart-display">
+        <h2 class="cart-title">YOUR CART</h2>
+        <div class="cart-items"></div>
+    </div>
+    <div class="cart-summary">
+        <div class="summary-total">TOTAL</div>
+        <div class="summary-total-value">##VALUE##</div>
+        <div class="summary-items">Items</div>
+        <div class="summary-items-value">##VALUE##</div>
+        <div class="summary-quantity">Quantity</div>
+        <div class="summary-quantity-value">##VALUE##</div>
+        <div class="summary-price">PRICE</div>
+        <div class="summary-price-value">##VALUE##</div>
+        <div class="summary-order">Proceed to payment</div>
+    </div>
+    <footer class="giga-footer" style="position: fixed">
+        <div class="giga-name">
+            Copyright © 2023 All rights reserved. Alexandru Negru.
+        </div>
+    </footer>
 </body>
 </html>
