@@ -1,10 +1,9 @@
-
 let checkoutWindow = document.querySelector(".checkout-window__grid");
 let totalText = document.querySelector(".checkout-window-total");
-let productsArrayAfterUpdateAProduct = [];
 const ID_CART = "64c77ddd8e88f";
 let changedQuantityForProduct = 0;
 const cartLocalStorage = "cartStorage";
+
 
 
 function getProductsCartFromLocalStorage() {
@@ -101,7 +100,6 @@ function plusMinusBtnListener(card) {
     plusBtn.addEventListener("click", () => {
         changes(card.dataset.id, "increase");
     });
-
     minusBtn.addEventListener("click", function () {
         changes(card.dataset.id, "decrease");
     });
@@ -202,6 +200,7 @@ async function updateQuantityProducts() {
             return acc + totalPrice;
         }, 0);
         productsFromCart.forEach(product => {
+            console.log("product");
             const itemBox = document.querySelector(`.checkout-window__grid__box-item[data-id="${product.id}"]`);
             const itemQuantity = itemBox.querySelector(".input-text.qty.text");
             const itemTotalPrice = itemBox.querySelector(".box-item__total-price");
@@ -215,40 +214,34 @@ async function updateQuantityProducts() {
     }
 }
 
+function prepareCheckoutUI(productsFromCartStorage){
+    for (const product of productsFromCartStorage) {
+        let card = createItemBoxCheckout(product);
+        checkoutWindow.appendChild(card);
+        plusMinusBtnListener(card);
+    }
+    const total = productsFromCartStorage.reduce((acc, product) => {
+        const price = product.price - (product.price * product.discountPercentage) / 100;
+        return acc + product.quantity * price;
+    }, 0);
+    totalText.textContent = total.toFixed(2);
+}
 
-async function showCheckoutProducts() {
-    const productsFromCartStorage=getProductsCartFromLocalStorage();
-    if(productsFromCartStorage.length>0) {
-        for (const product of productsFromCartStorage) {
-            let card = createItemBoxCheckout(product);
-            checkoutWindow.appendChild(card);
-            plusMinusBtnListener(card);
+function showCheckoutProducts() {
+
+        const productsFromCartStorage = getProductsCartFromLocalStorage();
+        if (productsFromCartStorage) {
+            prepareCheckoutUI(productsFromCartStorage);
+        } else {
+            fetchCart()
+                .then(productsFromCart => {
+                    prepareCheckoutUI(productsFromCart);
+                })
+                .catch(error => {
+                    console.error('Error show cart items:', error);
+                });
         }
-        const total = productsFromCartStorage.reduce((acc, product) => {
-            const price = product.price - (product.price * product.discountPercentage) / 100;
-            return acc + product.quantity * price;
-        }, 0);
-        totalText.textContent = total.toFixed(2);
-    }
-    else {
-        fetchCart()
-            .then(productsFromCart => {
-                for (const product of productsFromCart) {
-                    let card = createItemBoxCheckout(product);
-                    checkoutWindow.appendChild(card);
-                    plusMinusBtnListener(card);
-                }
-                saveProductsCartInLocalStorage(productsFromCart)
-                const total = productsFromCart.reduce((acc, product) => {
-                    const price = product.price - (product.price * product.discountPercentage) / 100;
-                    return acc + product.quantity * price;
-                }, 0);
-                totalText.textContent = total.toFixed(2);
-            })
-            .catch(error => {
-                console.error('Error show cart items:', error);
-            });
-    }
+
 }
 
 
@@ -278,6 +271,9 @@ function generalListenerOnPage() {
     });
 }
 
+function initCheckout() {
+    showCheckoutProducts();
+    generalListenerOnPage();
+}
 
-showCheckoutProducts();
-generalListenerOnPage();
+initCheckout();

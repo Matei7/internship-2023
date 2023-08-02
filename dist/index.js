@@ -66,7 +66,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _sass_styles_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sass/styles.scss */ \"./src/sass/styles.scss\");\n/* harmony import */ var _sass_check_out_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sass/check-out.scss */ \"./src/sass/check-out.scss\");\n/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./app */ \"./src/js/app.js\");\n\r\n\r\n\r\n//import {showCheckoutProducts} from \"./app.js\";\r\n\r\n//showCheckoutProducts();\r\n(0,_app__WEBPACK_IMPORTED_MODULE_2__.init)();\r\n\n\n//# sourceURL=webpack://internship-2023/./src/js/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _sass_styles_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sass/styles.scss */ \"./src/sass/styles.scss\");\n/* harmony import */ var _sass_check_out_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sass/check-out.scss */ \"./src/sass/check-out.scss\");\n/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./app */ \"./src/js/app.js\");\n\r\n\r\n\r\n//import {showCheckoutProducts} from \"./app.js\";\r\n\r\n//showCheckoutProducts();\r\n(0,_app__WEBPACK_IMPORTED_MODULE_2__.init)();\r\n\r\n\n\n//# sourceURL=webpack://internship-2023/./src/js/index.js?");
 
 /***/ })
 
