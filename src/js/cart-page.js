@@ -101,7 +101,7 @@ async function buyEvent() {
         method: 'DELETE',
         headers: {'Content-Type': 'application/json'}
     }).then(res => res.json())
-    await updateProducts(true)
+    await updateProducts(true).finally(() => alert("Congratulations! You've been scammed!"))
 }
 
 await initCartPage()

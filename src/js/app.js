@@ -88,6 +88,7 @@ async function checkBoxEvent() {
 	await initCart()
 }
 
+// filter products if there are filters checked
 function filterProducts(products, filters = undefined) {
 	if (filters === undefined)
 		return products

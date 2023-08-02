@@ -35,12 +35,16 @@ function generateCartListener() {
     document.getElementById("cart").addEventListener("mouseover", () => {
         let cartHTML = document.getElementById("cart")
         cartHTML.classList.replace("cartHidden", "cartVisible")
+        clearTimeout(timeOutID)
     })
 
+    let timeOutID
     // event listener for when the user moves the mouse from the cart icon
     document.getElementById("cart-btn").addEventListener("mouseleave", () => {
-        let cartHTML = document.getElementById("cart")
-        cartHTML.classList.replace("cartVisible", "cartHidden")
+        timeOutID = setTimeout(() => {
+            let cartHTML = document.getElementById("cart")
+            cartHTML.classList.replace("cartVisible", "cartHidden")
+        }, 300)
     })
 
     // event listener for when the user moves the mouse from the mini-cart
