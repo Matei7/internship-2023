@@ -2,28 +2,30 @@ import '../sass/cart.scss'
 import {fetchAddProductToCart, fetchRemoveProductFromCart, fetchDeleteProductFromCart} from "./app";
 
 let cartTotal = 0;
-let numberOfClicksAdd = 0;
-let numberOfClicksRemove = 0;
+let numberOfClicksAdd;
+let numberOfClicksRemove;
+let products = [];
 
 const cartItems = document.querySelector('.cart-page-items');
 const API_CART_ID = '64c3aa50d27ba';
 const API_CART_GET = `http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${API_CART_ID}`;
 
 export async function initCartPageProducts() {
-    if(localStorage.getItem('cart') === null) {
+    let cartProducts;
+    if (localStorage.getItem('cart') === null) {
         const response = await fetch(API_CART_GET);
-        const cartProducts = await response.json();
+        cartProducts = await response.json();
         console.log("Cart fetched from API...");
-        createCartItems(cartProducts.products);
-        updateCartTotal(cartProducts.total);
         localStorage.setItem('cart', JSON.stringify(cartProducts));
-    }
-    else {
+    } else {
         console.log("Fetching cart from local storage...");
-        const cartProducts = JSON.parse(localStorage.getItem('cart'));
-        createCartItems(cartProducts.products);
-        updateCartTotal(cartProducts.total);
+        cartProducts = JSON.parse(localStorage.getItem('cart'));
     }
+    createCartItems(cartProducts.products);
+    updateCartTotal(cartProducts.total);
+    products = cartProducts.products;
+    numberOfClicksRemove = new Array(101).fill(0);
+    numberOfClicksAdd = new Array(101).fill(0);
 }
 
 function createCartItems(cartProducts) {
@@ -57,53 +59,59 @@ function createCartItem(product) {
     const cartItemRemoveButton = document.createElement('button');
     cartItemRemoveButton.innerText = '-';
     cartItemRemoveButton.classList.add('cart-item-edit-quantity');
-    const handleEditQuantityButtonsClick = () => {
-        const difference = numberOfClicksAdd - numberOfClicksRemove;
-        if (difference === 0) {
 
-        }
-        else if (difference > 0) {
-            cartItemCounter.innerText = `x${product.quantity + difference}`;
-            fetchAddProductToCart(product.id, difference).then(() => {
-                updateCartTotal(cartTotal + product.price * difference);
+    const handleRemoveButtonClick = () => {
+        const cartItem = cartItems.querySelector(`[data-id="${product.id}"]`);
+        if (numberOfClicksRemove[product.id] === numberOfClicksAdd[product.id]) {
+
+        } else if (numberOfClicksRemove[product.id] > numberOfClicksAdd[product.id]) {
+            const difference = numberOfClicksRemove[product.id] - numberOfClicksAdd[product.id];
+            if (difference >= product.quantity) {
+                updateCartTotal(cartTotal - product.price * product.quantity);
+                cartItems.removeChild(cartItem);
                 localStorage.removeItem('cart');
-            });
-        }
-        else if (difference < 0) {
-            const cartItem = cartItems.querySelector(`[data-id="${product.id}"]`);
-            if (product.quantity + difference <= 0) {
                 fetchDeleteProductFromCart(product.id).then(() => {
-                    updateCartTotal(cartTotal - product.price * product.quantity);
-                    cartItems.removeChild(cartItem);
-                    localStorage.removeItem('cart');
                 });
             } else {
-                cartItemCounter.innerText = `x${product.quantity + difference}`;
-                fetchRemoveProductFromCart(product.id, difference).then(() => {
-                    updateCartTotal(cartTotal - product.price * product.quantity);
-                    localStorage.removeItem('cart');
+                cartItemCounter.innerText = `x${product.quantity - difference}`;
+                updateCartTotal(cartTotal - product.price * difference);
+                localStorage.removeItem('cart');
+                fetchRemoveProductFromCart(product.id, -difference).then(() => {
                 });
             }
+        } else {
+            const difference = numberOfClicksAdd[product.id] - numberOfClicksRemove[product.id];
+            cartItemCounter.innerText = `x${product.quantity + difference}`;
+            updateCartTotal(cartTotal + product.price * difference);
+            localStorage.removeItem('cart');
+            fetchAddProductToCart(product.id, difference).then(() => {
+            });
         }
-        numberOfClicksRemove = 0;
-        numberOfClicksAdd = 0;
-    };
+        numberOfClicksRemove[product.id] = 0;
+        numberOfClicksAdd[product.id] = 0;
+    }
 
-    const debounceHandleEditQuantityButtonsClick = debounce(handleEditQuantityButtonsClick);
+    const debounceHandleEditQuantityButtonsClick = debounce(handleRemoveButtonClick);
 
     cartItemRemoveButton.addEventListener('click', () => {
-        numberOfClicksRemove++;
-        debounceHandleEditQuantityButtonsClick(); // Call the debounced version of removeButtonClickHandler
+        numberOfClicksRemove[product.id]++;
+        debounceHandleEditQuantityButtonsClick();
     });
 
+    const handleAddButtonClick = () => {
+        // Same as Remove button, but needed for a new debounce handler
+        handleRemoveButtonClick();
+    }
+
+    const debouncedClickEventHandlerAdd = debounce(handleAddButtonClick);
 
     const cartItemAddButton = document.createElement('button');
     cartItemAddButton.innerText = '+';
     cartItemAddButton.classList.add('cart-item-edit-quantity');
 
     cartItemAddButton.addEventListener('click', () => {
-        numberOfClicksAdd++;
-        debounceHandleEditQuantityButtonsClick();
+        numberOfClicksAdd[product.id]++;
+        debouncedClickEventHandlerAdd();
     });
 
     cartItem.appendChild(cartItemImage);
@@ -124,6 +132,7 @@ function debounce(func, timeout = 1000) {
         }, timeout);
     };
 }
+
 function updateCartTotal(newTotal) {
     cartTotal = newTotal;
     const totalElement = document.querySelector('.cart-total');

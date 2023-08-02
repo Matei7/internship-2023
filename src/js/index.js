@@ -13,4 +13,3 @@ hoverCartEvent();
 filterBar();
 handleWindowScrollEvent();
 displayProductInPageByFilter('');
-await getAllProductsAndSaveToLocalStorage();
