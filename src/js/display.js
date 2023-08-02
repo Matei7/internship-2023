@@ -282,3 +282,20 @@ async function addElementToCart(elementID){
         .then(res => res.json())
         .then(console.log);
 }
+
+async function setCartNumber(){
+    let numberItems = 0;
+    return await fetch('http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64ca3b5518e75')
+        .then(response => response.json())
+        .then(data => {
+            numberItems = data.totalProducts;
+            console.log(numberItems);
+            let cartItem = document.getElementsByClassName("cart-in-title")[0];
+            cartItem.innerHTML = "🛒" + String(numberItems);
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+}
+
+setCartNumber();
