@@ -60,7 +60,7 @@ async function addShopProducts(numberOfItemsLoaded, numberOfItemsPerPage) {
 
     let itemsNotAdded = [];
     let skippedItemsCount = 0;
-    
+
     if((alreadyStoredItems === []) || (alreadyStoredItems.length <= numberOfItemsLoaded)) {
         let fetchResult = (await getProductsPaginatedJSON(numberOfItemsLoaded, numberOfItemsPerPage));
 
@@ -552,8 +552,6 @@ function handleFilterCriteriaChange()
 
 /**
  * Manages the addition of new items to the page with filters, as well as the other elements in the page that are involved.
- * @param event The event that might trigger the addition. Will be a change event from the category radio buttons, or
- * null, if the filtering criterion hasn't changed since the last call.
  * @returns {Promise<void>}
  */
 async function setupNewItemsFiltered()
