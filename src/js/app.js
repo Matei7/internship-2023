@@ -7,7 +7,7 @@ const productsLocalStorage = "productsStorage"
 const cartLocalStorage = "cartStorage";
 let isFetching = false;//for infinite scroll
 let categories = [];
-let scrollAllProductsFilter = true; //scroll all products and not filtered products
+let scrollJustAllProducts = true; //scroll just all products (not when are filtered products)
 const ID_CART = "64c77ddd8e88f";
 
 export function getProductsCartFromLocalStorage() {
@@ -52,7 +52,7 @@ function saveCategoryFilters(category) {
         const categoryElement = document.createElement("p");
         categoryElement.innerText = category;
         categoryElement.addEventListener("click", function () {
-            scrollAllProductsFilter = false;
+            scrollJustAllProducts = false;
             document.querySelectorAll(".filtered-out").forEach(card => {
                 card.classList.remove("filtered-out");
             });
@@ -207,7 +207,7 @@ async function addProductInCartRequest(cardElement) {
     getHowManyProductsInCart();
 }
 
-export function addAddToCardBtnListener(product) {
+function addAddToCardBtnListener(product) {
     let btnAddToCart = product.querySelector(".product-grid__product-card__add-to-cart-button");
     btnAddToCart.addEventListener("click", function () {
         const initialColor = btnAddToCart.style.backgroundColor;
@@ -215,15 +215,17 @@ export function addAddToCardBtnListener(product) {
         btnAddToCart.style.backgroundColor = "#023020";
         btnAddToCart.textContent = "Added to cart";
         btnAddToCart.style.scale = "1.3";
+        btnAddToCart.disabled = true;
         addProductInCartRequest(product);
         showPopUp();
         setTimeout(function () {
             btnAddToCart.style.backgroundColor = initialColor;
             btnAddToCart.textContent = initialText;
             btnAddToCart.style.scale = "1";
+            btnAddToCart.disabled = false;
             const bodyElement = document.querySelector("body");
             bodyElement.removeChild(bodyElement.lastChild);
-        }, 2000);
+        }, 1500);
     });
 }
 
@@ -266,15 +268,15 @@ export async function init() {
     addDocumentListener();
     addCartListener();
     window.onscroll = function (ev) {
-        console.log(scrollAllProductsFilter);
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && scrollAllProductsFilter === true) {
+        console.log(scrollJustAllProducts);
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && scrollJustAllProducts === true) {
             loadProductsInPage();
         }
     };
 
     const allProductsFilter = document.querySelector(".all-products-filter");
     allProductsFilter.addEventListener("click", function () {
-        scrollAllProductsFilter = true;
+        scrollJustAllProducts = true;
         const cards = document.querySelectorAll(".product-grid__product-card");
         cards.forEach(card => {
             if (card.classList.contains("filtered-out")) {

@@ -3,6 +3,7 @@ let totalText = document.querySelector(".checkout-window-total");
 const ID_CART = "64c77ddd8e88f";
 let changedQuantityForProduct = 0;
 const cartLocalStorage = "cartStorage";
+let mapForDebounce={};//id:[op,op,op]
 
 
 function getProductsCartFromLocalStorage() {
@@ -74,7 +75,6 @@ function debounce(func, timeout = 700) {
             func.apply(this, args);
         }, timeout);
     };
-
 }
 
 
@@ -159,34 +159,7 @@ async function decreaseQuantityRequest(productId, quantity = 1) {
             console.error('Error deleting product:', error);
         }
     } else {
-        try {
-            await fetch(`https://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/${ID_CART}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    products: [
-                        {
-                            id: productId,
-                            quantity: -1 * quantity,
-                        }
-                    ]
-                })
-            }) .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Request failed with status ${response.status}`);
-                }
-                return response.json();
-            })
-                .then(data => {
-                    const products = data?.data.products;
-                    saveProductsCartInLocalStorage(products);
-                });
-            updateQuantityProducts();
-        } catch (error) {
-            console.error('Error updating product quantity:', error);
-        }
+        increaseQuantityRequest(productId, -1 * quantity);
     }
 }
 

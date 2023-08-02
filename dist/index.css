@@ -260,7 +260,8 @@ html {
   right: 8px;
   cursor: pointer;
   margin-right: 20px;
-  display: none; }
+  display: none;
+  overflow-y: auto; }
 
 .cart-window-list {
   display: flex;
