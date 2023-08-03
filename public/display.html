@@ -38,7 +38,7 @@
 <!--            <div class="item-add-to-cart" onclick="addToCart(this)">🛒 ADD</div>-->
 <!--        </div>-->
     </div>
-    <div id="background-cover"></div>
+    <div id="background-cover" onclick="closePreview()"></div>
     <div id="product-preview">
         <img class="preview-image" alt="Product Preview" src="https://picsum.photos/300/400">
         <div class="preview-title">##TITLE##</div>
@@ -56,6 +56,25 @@
         <div class="preview-left-pic" onclick="leftPic()"><</div>
         <div class="preview-right-pic" onclick="rightPic()">></div>
 
+    </div>
+    <div class="smallcart">
+        <div class="smallcart-title">LAST ADDED</div>
+        <div class="smallcart-items">
+            <div class="smallcart-item" id="smallcart-item-1">
+                <img class="smallcart-item-image" src="https://picsum.photos/200/300" alt="product preview">
+                <div class="smallcart-item-title">product title</div>
+                <div class="smallcart-item-quantity">x1</div>
+                <div class="smallcart-item-price">$10</div>
+            </div>
+            <div class="smallcart-item" id="smallcart-item-2">
+                <img class="smallcart-item-image" src="https://picsum.photos/200/300" alt="product preview">
+                <div class="smallcart-item-title">product title</div>
+                <div class="smallcart-item-quantity">x1</div>
+                <div class="smallcart-item-price">$10</div>
+            </div>
+        </div>
+        <div class="smallcart-total">TOTAL:</div>
+        <div class="smallcart-price">$0</div>
     </div>
     <div id="cart-popup">item added to cart</div>
     <footer class="giga-footer">
