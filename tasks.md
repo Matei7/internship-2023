@@ -10,7 +10,7 @@
 - aceelasi tip de navigare ca si pt butoane, doar ca facut din tastatura(cand se apasa sagetiile)
 - in header-ul paginii, adaugati un icon de cart si un counter(numarul care zice cate produse sunt in cos)
 - cand se da click pe add to cart se mareste numarul produselor din cos
-- ❌ la hover pe icon-ul de cart apare un dropdown/tooltip cu produsele adaugate in cart(similar cu ce e la emag)
+- la hover pe icon-ul de cart apare un dropdown/tooltip cu produsele adaugate in cart(similar cu ce e la emag)
 - daca sunt produse adaugate de mai multe ori apar doar odata in list si in dreptul lor apare de cate ori au fost adaugate
 - ❌ paginare la shop
 - add to cart cu requests

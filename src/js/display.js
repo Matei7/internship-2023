@@ -356,6 +356,8 @@ function hideSmallCart(){
 function showSmalLCart(){
     const theSmallCart = document.getElementsByClassName("smallcart")[0];
     theSmallCart.style.visibility = "visible";
+    const itemsListed = document.getElementsByClassName("smallcart-items")[0];
+    itemsListed.innerHTML = '';
     fillCartPreview();
 }
 
