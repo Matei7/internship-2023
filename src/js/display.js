@@ -307,6 +307,10 @@ async function fillCartPreview(){
             for (let i = 0; i < data.products.length; i++){
                 displayItemInSmallCart(data.products[i]);
             }
+            const priceHolder = document.getElementsByClassName("smallcart-price")[0];
+            priceHolder.innerHTML = "$"+data.total;
+            const quantityHolder = document.getElementsByClassName("smallcart-total")[0];
+            quantityHolder.innerHTML="TOTAL: "+data.totalQuantity;
         })
         .catch(error => {
             console.error('Error fetching data:', error);

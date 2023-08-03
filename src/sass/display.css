@@ -346,7 +346,7 @@ body{
 .smallcart{
     background-color: rgba(255, 255, 255, 0.7);
     position: fixed;
-    width: 15%;
+    width: 20%;
     height: 50%;
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
