@@ -344,15 +344,15 @@ body{
 }
 
 .smallcart{
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.7);
     position: fixed;
     width: 15%;
     height: 50%;
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
-    box-shadow: 0 1px 5px rgba(255, 255, 255, 0.3);
     top: 13%;
     right: 2.5%;
+    visibility: hidden;
 }
 
 .smallcart-title{
@@ -370,21 +370,24 @@ body{
     letter-spacing: 6px;
     white-space: nowrap;
     overflow: hidden;
+    user-select: none;
 }
 
 .smallcart-items{
     position: absolute;
     /*background-color: rgba(250, 0, 0, 0.2);*/
     width: 100%;
-    height: 85%;
-    top: 7.5%;
+    height: 90%;
+    top: 5%;
+    overflow: auto;
 }
 
 .smallcart-total{
     position: absolute;
     bottom: 0;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    background-color: rgba(0, 0, 0, 0.9);
     box-shadow: 0 1px 5px rgb(3, 0, 0);
     height: 5%;
     user-select: none;
@@ -392,7 +395,6 @@ body{
     align-items: center;
     justify-content: left;
     padding-left: 2%;
-    font-weight: bold;
 }
 
 .smallcart-price{
@@ -406,6 +408,7 @@ body{
     justify-content: right;
     padding-right: 2%;
     font-weight: bold;
+    color: white;
 }
 
 .smallcart-item{
@@ -436,7 +439,7 @@ body{
     font-size: 1rem;
     display: flex;
     align-items: center;
-    text-align: justify;
+    text-align: left;
     overflow: hidden;
     padding-left: 2%;
 }

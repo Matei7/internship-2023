@@ -300,4 +300,59 @@ async function setCartNumber(){
         });
 }
 
+async function fillCartPreview(){
+    return await fetch('http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64ca3b5518e75')
+        .then(response => response.json())
+        .then(data => {
+            for (let i = 0; i < data.products.length; i++){
+                displayItemInSmallCart(data.products[i]);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+}
+
+async function displayItemInSmallCart(itemData){
+    const itemToAdd = document.createElement("div");
+    itemToAdd.classList.add('smallcart-item');
+    let newId = "smallcart-item" + String(itemData.id)
+    itemToAdd.id = newId;
+
+    const newItemIMG = document.createElement("img");
+    newItemIMG.src=itemData.thumbnail;
+    newItemIMG.alt="product preview";
+    newItemIMG.classList.add("smallcart-item-image");
+    itemToAdd.append(newItemIMG);
+    newItemIMG.setAttribute("onerror", "loadfallback(this)");
+
+    const newItemTitle = document.createElement("div");
+    newItemTitle.classList.add("smallcart-item-title");
+    newItemTitle.innerHTML = itemData.title;
+    itemToAdd.append(newItemTitle);
+
+    const newItemQuantity = document.createElement("div");
+    newItemQuantity.classList.add("smallcart-item-quantity");
+    newItemQuantity.innerHTML = "x"+String(itemData.quantity);
+    itemToAdd.append(newItemQuantity);
+
+    const newItemPrice = document.createElement("div");
+    newItemPrice.classList.add("smallcart-item-price");
+    newItemPrice.innerHTML = "$"+String(parseInt(itemData.price));
+    itemToAdd.append(newItemPrice);
+
+    document.getElementsByClassName("smallcart-items")[0].append(itemToAdd);
+}
+
+function hideSmallCart(){
+    const theSmallCart = document.getElementsByClassName("smallcart")[0];
+    theSmallCart.style.visibility = "hidden";
+}
+
+function showSmalLCart(){
+    const theSmallCart = document.getElementsByClassName("smallcart")[0];
+    theSmallCart.style.visibility = "visible";
+    fillCartPreview();
+}
+
 setCartNumber();
