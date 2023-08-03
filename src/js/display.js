@@ -304,6 +304,8 @@ async function fillCartPreview(){
     return await fetch('http://vlad-matei.thrive-dev.bitstoneint.com/wp-json/internship-api/v1/cart/64ca3b5518e75')
         .then(response => response.json())
         .then(data => {
+            const itemsListed = document.getElementsByClassName("smallcart-items")[0];
+            itemsListed.innerHTML = '';
             for (let i = 0; i < data.products.length; i++){
                 displayItemInSmallCart(data.products[i]);
             }
@@ -356,8 +358,6 @@ function hideSmallCart(){
 function showSmalLCart(){
     const theSmallCart = document.getElementsByClassName("smallcart")[0];
     theSmallCart.style.visibility = "visible";
-    const itemsListed = document.getElementsByClassName("smallcart-items")[0];
-    itemsListed.innerHTML = '';
     fillCartPreview();
 }
 
